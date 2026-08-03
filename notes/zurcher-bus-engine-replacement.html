@@ -1023,6 +1023,93 @@
           一句話：NFXP 的 nested 就是「外層估參數，內層解 Zurcher 在該參數下的最適動態決策」。
         </p>
       </section>
+
+      <section class="section" aria-labelledby="nfxp-cpr">
+        <h2 id="nfxp-cpr">9. CPR for NFXP：SA+NK 和 analytical derivative</h2>
+        <p>
+          講義裡的 CPR Step 3 是要避免只靠 successive approximation 慢慢磨 fixed point。
+          先把 Bellman fixed point 改寫成 residual equation：
+        </p>
+        <div class="formula-box">
+          \[
+          F(\bar V)=\bar V-\bar\Gamma_\theta(\bar V)=0.
+          \]
+          \[
+          \bar V_{k+1}
+          =
+          \bar V_k
+          -
+          \left[I-\bar\Gamma_\theta'(\bar V_k)\right]^{-1}
+          \left[\bar V_k-\bar\Gamma_\theta(\bar V_k)\right].
+          \]
+        </div>
+        <p>
+          直覺是：SA 只問「套一次 Bellman operator 會去哪裡」；Newton-Kantorovich 則問
+          「在目前 \(\bar V_k\) 附近，用線性近似看，要往哪個方向修正才能把 residual 推到 0」。
+          所以實作上不是只用 Newton，而是用 poly-algorithm：先用 SA 安全靠近 fixed point，
+          等 residual ratio 接近 \(\beta\) 時，再切到 NK 快速收尾。
+        </p>
+
+        <div class="timeline">
+          <div class="step">
+            <div class="step-label">SA</div>
+            <div>
+              \(\bar V_{k+1}=\bar\Gamma_\theta(\bar V_k)\)。因為 \(\bar\Gamma_\theta\)
+              是 contraction，所以 global convergence 很穩，但只有 linear convergence：
+              \(\|\bar V_{k+1}-\bar V^*\|\leq \beta\|\bar V_k-\bar V^*\|\)。
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-label">Switch</div>
+            <div>
+              當 \(\mathrm{tol}_{k+1}/\mathrm{tol}_k\) 接近 \(\beta\)，代表 SA 已經進入慢速線性區。
+              這時繼續 SA 會很慢，尤其 \(\beta\) 接近 1。
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-label">NK</div>
+            <div>
+              NK 在 fixed point 附近有 quadratic convergence：
+              \(\|\bar V_{k+1}-\bar V^*\|\leq A\|\bar V_k-\bar V^*\|^2\)。
+              誤差會像 \(10^{-3}\to 10^{-6}\to 10^{-12}\) 一樣快速下降。
+            </div>
+          </div>
+        </div>
+
+        <p>
+          Step 4 的角色是讓 Step 3 的 Newton step 真正可靠：提供 Bellman operator 對 value function
+          的 analytical derivative。以 integrated value function 為例：
+        </p>
+        <div class="formula-box">
+          \[
+          \bar\Gamma(\bar V)(x)
+          =
+          \log\sum_d
+          \exp\left\{
+          u(x,d)+\beta\sum_y P_d(x,y)\bar V(y)
+          \right\}.
+          \]
+          \[
+          \frac{\partial \bar\Gamma(x)}{\partial \bar V(y)}
+          =
+          \beta\sum_d P(d\mid x)P_d(x,y),
+          \qquad
+          \bar\Gamma'
+          =
+          \beta\sum_d \operatorname{diag}\{P(d\mid x)\}P_d.
+          \]
+        </div>
+        <p>
+          這個 derivative 的讀法很直覺：未來 state \(y\) 的 value 多一點，今天 state \(x\) 的
+          Bellman update 會增加多少，取決於三件事：discount factor、今天選 \(d\) 的機率、
+          以及選 \(d\) 後明天到 \(y\) 的 transition probability。因此 \(\bar\Gamma'\)
+          就是 \(\beta\) 乘上目前 policy 下的 weighted transition matrix。
+        </p>
+        <p class="footer-note">
+          一句話：Step 3 給 NFXP 快速收斂的 Newton step；Step 4 給這個 Newton step 精準的 slope。
+          沒有 analytical derivative，NK 會變貴、變吵，也比較難保住 quadratic convergence。
+        </p>
+      </section>
     </main>
   </div>
 
