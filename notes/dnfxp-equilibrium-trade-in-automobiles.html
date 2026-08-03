@@ -1,0 +1,1952 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DNFXP：汽車新舊市場的動態均衡模型</title>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]],
+        macros: {
+          EV: "\\operatorname{EV}",
+          ED: "\\operatorname{ED}",
+          Pr: "\\operatorname{Pr}"
+        }
+      },
+      svg: { fontCache: "global" }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    :root {
+      --paper: #f4f6f8;
+      --surface: #ffffff;
+      --ink: #1d2731;
+      --muted: #5d6975;
+      --line: #d7dde3;
+      --blue: #315f9c;
+      --blue-soft: #e8f0fa;
+      --teal: #0f766e;
+      --teal-soft: #e2f3f0;
+      --coral: #c94c43;
+      --coral-soft: #f8e8e5;
+      --amber: #9a6a08;
+      --amber-soft: #f6edd4;
+      --violet: #6b4e8f;
+      --violet-soft: #eee8f5;
+      --shadow: 0 14px 36px rgba(31, 42, 54, 0.09);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.68;
+      letter-spacing: 0;
+    }
+
+    a {
+      color: var(--blue);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.9em;
+    }
+
+    .shell {
+      width: min(1380px, 100%);
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .masthead {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 22px;
+    }
+
+    .masthead-copy {
+      padding: 30px 34px;
+      border-right: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--teal);
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 820px;
+      margin: 0 0 12px;
+      font-size: clamp(2rem, 4vw, 3.25rem);
+      line-height: 1.08;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 1.55rem;
+      line-height: 1.22;
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 1.08rem;
+      line-height: 1.3;
+    }
+
+    h4 {
+      margin: 0 0 6px;
+      font-size: 0.97rem;
+    }
+
+    p {
+      margin: 0 0 13px;
+    }
+
+    .lead {
+      max-width: 780px;
+      margin-bottom: 0;
+      color: #354351;
+      font-size: 1.05rem;
+    }
+
+    .masthead-map {
+      display: grid;
+      grid-template-rows: repeat(3, 1fr);
+    }
+
+    .layer {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 12px;
+      align-items: center;
+      min-height: 94px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .layer:last-child {
+      border-bottom: 0;
+    }
+
+    .layer-number {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--blue);
+      font-weight: 850;
+    }
+
+    .layer:nth-child(2) .layer-number {
+      background: var(--coral);
+    }
+
+    .layer:nth-child(3) .layer-number {
+      background: var(--teal);
+    }
+
+    .layer strong,
+    .layer span {
+      display: block;
+    }
+
+    .layer span {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 236px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .toc {
+      position: sticky;
+      top: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      padding: 16px;
+      box-shadow: 0 8px 24px rgba(31, 42, 54, 0.06);
+    }
+
+    .toc strong {
+      display: block;
+      margin-bottom: 9px;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .toc a {
+      display: block;
+      padding: 5px 8px;
+      border-left: 2px solid transparent;
+      color: #3f4d5a;
+      font-size: 0.9rem;
+      text-decoration: none;
+    }
+
+    .toc a:hover,
+    .toc a:focus-visible {
+      border-left-color: var(--teal);
+      color: var(--teal);
+      background: var(--teal-soft);
+    }
+
+    main {
+      min-width: 0;
+    }
+
+    .section {
+      scroll-margin-top: 20px;
+      margin-bottom: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      padding: 28px;
+      box-shadow: 0 10px 28px rgba(31, 42, 54, 0.055);
+    }
+
+    .section-heading {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 18px;
+    }
+
+    .section-index {
+      display: grid;
+      width: 36px;
+      height: 36px;
+      place-items: center;
+      border-radius: 6px;
+      color: #fff;
+      background: var(--ink);
+      font-weight: 850;
+    }
+
+    .section-heading p {
+      margin: 5px 0 0;
+      color: var(--muted);
+    }
+
+    .takeaway {
+      margin: 0 0 18px;
+      border-left: 4px solid var(--teal);
+      background: var(--teal-soft);
+      padding: 12px 15px;
+    }
+
+    .takeaway strong {
+      color: var(--teal);
+    }
+
+    .grid-2,
+    .grid-3 {
+      display: grid;
+      gap: 14px;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .mini-card {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 15px;
+      background: #fbfcfd;
+    }
+
+    .mini-card.blue {
+      border-top: 4px solid var(--blue);
+    }
+
+    .mini-card.coral {
+      border-top: 4px solid var(--coral);
+    }
+
+    .mini-card.teal {
+      border-top: 4px solid var(--teal);
+    }
+
+    .mini-card.amber {
+      border-top: 4px solid var(--amber);
+    }
+
+    .mini-card.violet {
+      border-top: 4px solid var(--violet);
+    }
+
+    .mini-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .symbol-table,
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.94rem;
+    }
+
+    .symbol-table th,
+    .symbol-table td,
+    .comparison-table th,
+    .comparison-table td {
+      padding: 10px 11px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .symbol-table th,
+    .comparison-table th {
+      color: #34424f;
+      background: #f1f4f7;
+      font-size: 0.86rem;
+    }
+
+    .symbol-table tr:last-child td,
+    .comparison-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .equation-card {
+      margin: 14px 0;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      overflow: hidden;
+      background: var(--surface);
+    }
+
+    .equation-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 42px;
+      padding: 9px 13px;
+      border-bottom: 1px solid var(--line);
+      background: #f5f7f9;
+    }
+
+    .equation-title strong {
+      line-height: 1.3;
+    }
+
+    .tag {
+      flex: 0 0 auto;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      padding: 2px 8px;
+      color: var(--blue);
+      font-size: 0.74rem;
+      font-weight: 800;
+    }
+
+    .equation {
+      padding: 11px 16px 5px;
+      overflow-x: auto;
+      color: #142536;
+    }
+
+    .equation mjx-container[display="true"] {
+      margin: 0.55em 0;
+    }
+
+    .intuition {
+      margin: 8px 12px 12px;
+      border-left: 3px solid var(--amber);
+      background: var(--amber-soft);
+      padding: 10px 12px;
+      color: #3b3528;
+    }
+
+    .intuition strong {
+      color: var(--amber);
+    }
+
+    .note {
+      margin: 12px 0;
+      border-left: 3px solid var(--blue);
+      background: var(--blue-soft);
+      padding: 10px 13px;
+    }
+
+    .warning {
+      margin: 12px 0;
+      border-left: 3px solid var(--coral);
+      background: var(--coral-soft);
+      padding: 10px 13px;
+    }
+
+    .choice-tree {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin: 16px 0;
+    }
+
+    .choice-branch {
+      position: relative;
+      min-height: 156px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 14px;
+      background: #fbfcfd;
+    }
+
+    .choice-branch::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 4px;
+      background: var(--blue);
+    }
+
+    .choice-branch:nth-child(2)::before {
+      background: var(--teal);
+    }
+
+    .choice-branch:nth-child(3)::before {
+      background: var(--coral);
+    }
+
+    .choice-symbol {
+      display: inline-grid;
+      min-width: 34px;
+      min-height: 28px;
+      place-items: center;
+      margin-bottom: 8px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: #fff;
+      font-weight: 800;
+    }
+
+    .choice-branch ul,
+    .clean-list {
+      margin: 8px 0 0;
+      padding-left: 20px;
+    }
+
+    .choice-branch li,
+    .clean-list li {
+      margin-bottom: 5px;
+    }
+
+    .algorithm-map {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(74px, 1fr));
+      gap: 8px;
+      align-items: stretch;
+      margin: 18px 0;
+    }
+
+    .algo-node,
+    .algo-arrow {
+      display: grid;
+      place-items: center;
+      min-height: 78px;
+      text-align: center;
+    }
+
+    .algo-node {
+      border: 1px solid var(--line);
+      border-top: 4px solid var(--blue);
+      border-radius: 6px;
+      padding: 10px 8px;
+      background: #fbfcfd;
+      font-size: 0.9rem;
+      line-height: 1.35;
+    }
+
+    .algo-node.price {
+      border-top-color: var(--coral);
+    }
+
+    .algo-node.aggregate {
+      border-top-color: var(--teal);
+    }
+
+    .algo-node.teal {
+      border-top-color: var(--teal);
+    }
+
+    .algo-node.market {
+      border-top-color: var(--amber);
+    }
+
+    .algo-arrow {
+      min-width: 24px;
+      color: var(--muted);
+      font-size: 1.45rem;
+      font-weight: 800;
+    }
+
+    .loop-label {
+      margin-top: -5px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      text-align: center;
+    }
+
+    .pseudo {
+      margin: 15px 0;
+      border: 1px solid #243442;
+      border-radius: 6px;
+      background: #17232d;
+      color: #e7eef5;
+      padding: 16px 18px;
+      overflow-x: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.88rem;
+      line-height: 1.7;
+      white-space: pre;
+    }
+
+    .pseudo .outer {
+      color: #8cc8ff;
+    }
+
+    .pseudo .middle {
+      color: #ffaaa2;
+    }
+
+    .pseudo .inner {
+      color: #8fe0d8;
+    }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      margin: 15px 0;
+    }
+
+    .pipe-step {
+      position: relative;
+      min-height: 112px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 13px;
+      background: #fbfcfd;
+    }
+
+    .pipe-step:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      top: 42px;
+      right: -12px;
+      z-index: 2;
+      display: grid;
+      width: 22px;
+      height: 22px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      color: var(--muted);
+      background: var(--surface);
+      font-weight: 800;
+    }
+
+    .pipe-step span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .result-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .result {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 13px;
+      background: #fbfcfd;
+    }
+
+    .result strong {
+      display: block;
+      color: var(--blue);
+      font-size: 1.2rem;
+    }
+
+    .result span {
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    details {
+      margin: 12px 0;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fbfcfd;
+    }
+
+    summary {
+      cursor: pointer;
+      padding: 11px 13px;
+      font-weight: 800;
+    }
+
+    details > div {
+      padding: 0 13px 13px;
+    }
+
+    .source {
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .back-top {
+      display: inline-block;
+      margin-top: 6px;
+      font-size: 0.88rem;
+    }
+
+    @media (max-width: 1040px) {
+      .masthead {
+        grid-template-columns: 1fr;
+      }
+
+      .masthead-copy {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .masthead-map {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: auto;
+      }
+
+      .layer {
+        border-right: 1px solid var(--line);
+        border-bottom: 0;
+      }
+
+      .layer:last-child {
+        border-right: 0;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .toc {
+        position: static;
+        columns: 2;
+      }
+
+      .toc strong {
+        column-span: all;
+      }
+
+      .algorithm-map {
+        grid-template-columns: 1fr;
+      }
+
+      .algo-arrow {
+        min-height: 22px;
+        transform: rotate(90deg);
+      }
+
+      .pipeline {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .pipe-step:not(:last-child)::after {
+        display: none;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .shell {
+        padding: 12px;
+      }
+
+      .masthead-copy,
+      .section {
+        padding: 21px;
+      }
+
+      .masthead-map,
+      .grid-2,
+      .grid-3,
+      .choice-tree,
+      .pipeline,
+      .result-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .layer {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .toc {
+        columns: 1;
+      }
+
+      .section-heading {
+        grid-template-columns: 34px minmax(0, 1fr);
+      }
+
+      .section-index {
+        width: 32px;
+        height: 32px;
+      }
+
+      .equation-title {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .symbol-table,
+      .comparison-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      .shell {
+        width: 100%;
+        padding: 0;
+      }
+
+      .toc {
+        display: none;
+      }
+
+      .layout {
+        display: block;
+      }
+
+      .masthead,
+      .section {
+        box-shadow: none;
+        break-inside: avoid;
+      }
+
+      .section {
+        page-break-before: auto;
+      }
+
+      a {
+        color: inherit;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell" id="top">
+    <header class="masthead">
+      <div class="masthead-copy">
+        <p class="eyebrow">Lecture 3 · Equilibrium Trade in Automobiles</p>
+        <h1>DNFXP：汽車新舊市場的動態均衡模型</h1>
+        <p class="lead">
+          這份筆記把 Doubly Nested Fixed Point 拆成三個會彼此回饋的經濟物件：
+          家戶的動態選擇、二手車市場的均衡價格，以及用資料估計的結構參數。
+          重點不只是「怎麼算」，而是每一層 fixed point 到底要求哪一種行為或市場狀態保持一致。
+        </p>
+      </div>
+      <div class="masthead-map" aria-label="DNFXP three layers">
+        <div class="layer">
+          <span class="layer-number">1</span>
+          <div><strong>個體最適</strong><span>給定 \(P,\theta\)，解 Bellman fixed point</span></div>
+        </div>
+        <div class="layer">
+          <span class="layer-number">2</span>
+          <div><strong>市場均衡</strong><span>找 \(P^\star\)，讓每個二手車市場出清</span></div>
+        </div>
+        <div class="layer">
+          <span class="layer-number">3</span>
+          <div><strong>統計估計</strong><span>找 \(\theta\)，讓模型轉移最貼近資料</span></div>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <nav class="toc" aria-label="目錄">
+        <strong>目錄</strong>
+        <a href="#overview">1. 一眼看懂 DNFXP</a>
+        <a href="#environment">2. 經濟環境與符號</a>
+        <a href="#household">3. 家戶的動態選擇</a>
+        <a href="#logsum">4. EV、CCP 與 Bellman</a>
+        <a href="#distribution">5. 持有分布的動態</a>
+        <a href="#clearing">6. 需求、供給與出清</a>
+        <a href="#heterogeneity">7. 持久異質性與 sorting</a>
+        <a href="#algorithm">8. DNFXP algorithm</a>
+        <a href="#derivatives">9. Newton 與 analytical derivatives</a>
+        <a href="#likelihood">10. MLE 與 BHHH</a>
+        <a href="#driving">11. Driving 的靜態子問題</a>
+        <a href="#policy">12. 反事實與均衡回饋</a>
+        <a href="#pitfalls">13. 常見誤解</a>
+      </nav>
+
+      <main>
+        <section class="section" id="overview">
+          <div class="section-heading">
+            <span class="section-index">1</span>
+            <div>
+              <h2>一眼看懂 DNFXP</h2>
+              <p>為什麼它叫「doubly nested」，以及每一層到底在固定什麼。</p>
+            </div>
+          </div>
+
+          <div class="takeaway">
+            <strong>一句話：</strong>
+            NFXP 在每個 \(\theta\) 下解一次個體 DP；DNFXP 還必須在 DP 外面找一組二手車價格，
+            使家戶最適行為所產生的需求與供給恰好一致。
+          </div>
+
+          <div class="grid-3">
+            <article class="mini-card blue">
+              <h3>Bellman consistency</h3>
+              <p>\(EV^\star=\Gamma(EV^\star;P,\theta)\)</p>
+              <p>家戶對未來的價值評估，必須等於按照最適行為向前推一期後得到的價值。</p>
+            </article>
+            <article class="mini-card coral">
+              <h3>Market consistency</h3>
+              <p>\(\ED(P^\star,q(P^\star))=0\)</p>
+              <p>價格要調到每一種「車型 × 車齡」的二手車需求量等於供給量。</p>
+            </article>
+            <article class="mini-card teal">
+              <h3>Statistical consistency</h3>
+              <p>\(\widehat\theta=\arg\max_\theta L(\theta)\)</p>
+              <p>結構參數要讓均衡模型預測的家庭狀態轉移，對實際資料給出最高機率。</p>
+            </article>
+          </div>
+
+          <div class="note">
+            <strong>「Double」不是說模型只有兩個方程。</strong>
+            對每個 \(\theta\)，equilibrium solver 要搜尋 \(P^\star\)；而每一次試算 \(P\)
+            又要解家戶的 Bellman fixed point。固定分布 \(q=q\Omega Q\) 也是一個 fixed-point
+            condition，但它是有限 Markov chain 的 stationary distribution，通常可用線性代數直接求。
+          </div>
+        </section>
+
+        <section class="section" id="environment">
+          <div class="section-heading">
+            <span class="section-index">2</span>
+            <div>
+              <h2>經濟環境與符號</h2>
+              <p>新車供給與報廢需求是外生的，二手車價格則由模型內生決定。</p>
+            </div>
+          </div>
+
+          <div class="choice-tree" aria-label="consumer choice tree">
+            <article class="choice-branch">
+              <span class="choice-symbol">\(\varnothing\)</span>
+              <h3>Purge：不再持有車</h3>
+              <ul>
+                <li>\(s=1_s\)：scrap，拿報廢價</li>
+                <li>\(s=0_s\)：sell，在二手市場出售</li>
+              </ul>
+            </article>
+            <article class="choice-branch">
+              <span class="choice-symbol">\(\kappa\)</span>
+              <h3>Keep：繼續持有</h3>
+              <ul>
+                <li>本期享受現有車服務</li>
+                <li>下期車齡增加或因事故進入 terminal age</li>
+              </ul>
+            </article>
+            <article class="choice-branch">
+              <span class="choice-symbol">\(j,d\)</span>
+              <h3>Replace：換成另一台車</h3>
+              <ul>
+                <li>買入車型 \(j\)、車齡 \(d\)</li>
+                <li>原車同時選擇 sell 或 scrap</li>
+              </ul>
+            </article>
+          </div>
+
+          <table class="symbol-table">
+            <thead>
+              <tr><th>符號</th><th>定義</th><th>經濟角色</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>\((i,a)\)</td><td>目前持有的車型與車齡</td><td>家戶的 endogenous ownership state</td></tr>
+              <tr><td>\((j,d)\)</td><td>打算買入的車型與車齡</td><td>replace choice 的標的</td></tr>
+              <tr><td>\(\bar a\)</td><td>terminal age</td><td>事故全損或車輛物理壽命終點</td></tr>
+              <tr><td>\(P_{jd}\)</td><td>車型 \(j\)、車齡 \(d\) 的價格</td><td>\(d=0\) 的新車價外生；可交易二手車價內生</td></tr>
+              <tr><td>\(\underline P_i\)</td><td>車型 \(i\) 的報廢價格</td><td>外生且有完全彈性的 scrap demand</td></tr>
+              <tr><td>\(T_b,T_s\)</td><td>買方與賣方 transaction costs</td><td>在買賣價差之外形成交易楔子</td></tr>
+              <tr><td>\(\mu\)</td><td>金錢的邊際效用</td><td>把貨幣成本轉為 utility units</td></tr>
+              <tr><td>\(\alpha_i\)</td><td>車型 \(i\) 的全損機率</td><td>物理狀態轉移，不是家戶選擇</td></tr>
+              <tr><td>\(q_{ia}\)</td><td>持有 \((i,a)\) 的人口比例</td><td>市場供需的 aggregate state</td></tr>
+            </tbody>
+          </table>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>單期效用的骨架</strong><span class="tag">preferences</span></div>
+            <div class="equation">
+              \[
+                U(i,a,c)=u(i,a)-\mu\,C(i,a,c;P)+\epsilon(c).
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              \(u(i,a)\) 是車輛服務與維修負擔的淨效用，通常隨車齡下降；
+              \(C\) 是選擇 \(c\) 所造成的淨貨幣支出；\(\epsilon(c)\) 捕捉研究者看不到、
+              但家戶當期知道的偏好。價格乘上 \(\mu\)，才可和 utility 直接比較。
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="household">
+          <div class="section-heading">
+            <span class="section-index">3</span>
+            <div>
+              <h2>家戶的動態選擇：五條 choice-specific value</h2>
+              <p>每條式子都遵循「本期車輛服務 − 淨支出 + 折現後未來價值」。</p>
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>離開市場並報廢原車</strong><span class="tag">purge + scrap</span></div>
+            <div class="equation">
+              \[
+                v(i,a,\varnothing,1_s)
+                =u(\varnothing)+\mu\underline P_i+\beta\EV(\varnothing).
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              家戶下一期進入「無車」狀態；本期不再享受汽車服務，但拿到報廢價
+              \(\underline P_i\)。報廢價越高，老車退出市場的誘因越強。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>離開市場並出售原車</strong><span class="tag">purge + sell</span></div>
+            <div class="equation">
+              \[
+                v(i,a,\varnothing,0_s)
+                =u(\varnothing)+\mu\!\left[P_{ia}-T_s(P,i,a)\right]
+                +\beta\EV(\varnothing).
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              賣車收入不是 \(P_{ia}\) 全部進入口袋，還要扣賣方交易成本 \(T_s\)。
+              所以交易成本會創造一個 inaction region：即使家戶不太喜歡現有車，也可能不值得出售。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>保留現有車</strong><span class="tag">keep</span></div>
+            <div class="equation">
+              \[
+                v(i,a,\kappa)
+                =u(i,a)
+                +\beta(1-\alpha_i)\EV(i,a+1)
+                +\beta\alpha_i\EV(i,\bar a).
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              車子以 \(1-\alpha_i\) 的機率正常老一歲，以 \(\alpha_i\) 的機率因全損事故跳到
+              terminal state。這是「物理風險」對 continuation value 的機率加權，不是家戶把
+              \(\alpha_i\) 比例的車主動報廢。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>買入 \((j,d)\)，並報廢原車</strong><span class="tag">replace + scrap</span></div>
+            <div class="equation">
+              \[
+              \begin{aligned}
+                v(i,a,j,d,1_s)
+                ={}&u(j,d)
+                -\mu\!\left[P_{jd}-\underline P_i+T_b(P,j,d)\right] \\
+                &+\beta(1-\alpha_j)\EV(j,d+1)
+                +\beta\alpha_j\EV(j,\bar a).
+              \end{aligned}
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              淨支出是新持有車的價格，加上買方交易成本，再扣掉原車報廢收入。
+              換車決策同時比較「今天要補多少錢」與「買到的車未來還值多少效用」。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>買入 \((j,d)\)，並出售原車</strong><span class="tag">replace + sell</span></div>
+            <div class="equation">
+              \[
+              \begin{aligned}
+                v(i,a,j,d,0_s)
+                ={}&u(j,d)
+                -\mu\!\left[P_{jd}-P_{ia}+T_s(P,i,a)+T_b(P,j,d)\right] \\
+                &+\beta(1-\alpha_j)\EV(j,d+1)
+                +\beta\alpha_j\EV(j,\bar a).
+              \end{aligned}
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              這是完整的 replacement wedge：買入價減賣出價，再加兩側交易成本。
+              \(T_b+T_s\) 越大，家戶越不常換車，二手市場越薄，車也更可能直接持有到報廢。
+            </div>
+          </div>
+
+          <div class="takeaway">
+            <strong>為什麼需要這麼多條？</strong>
+            一個完整 action 不只是 keep 或 replace，而是必須同時指定：
+            下一期要不要持有車、若換車要買哪個 \((j,d)\)，以及原車要 sell 還是 scrap。
+            每個完整 action 都有不同的 cash flow、下一期 ownership state 與 aggregate market flow。
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>五條式子的共同骨架</strong><span class="tag">one template</span></div>
+            <div class="equation">
+              \[
+                v(x,c)
+                =
+                u(x,c;P,\theta)
+                -\mu C(x,c;P)
+                +\beta\sum_{x'}p(x'\mid x,c;\theta)\EV(x').
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              理論上可以只寫這一條 generic equation，但計算時仍要把每個 \(c\) 展開。
+              否則無法判斷原車是進入 used-car supply 還是退出實體車 stock，也無法知道買入行為形成哪一個
+              \((j,d)\) 市場的 demand。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>Sell 或 scrap 的 separability</strong><span class="tag">disposal margin</span></div>
+            <div class="equation">
+              \[
+              \begin{aligned}
+                &v(i,a,j,d,0_s)-v(i,a,j,d,1_s)\\
+                &\qquad
+                =\mu\left[P_{ia}-T_s(P,i,a)-\underline P_i\right].
+              \end{aligned}
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              比較 sell 與 scrap 時，新買車的效用、買入價格、買方交易成本和 continuation value 全部抵消。
+              沒有當期 taste shocks 時，只要原車的淨二手收入
+              \(P_{ia}-T_s\) 高於報廢價 \(\underline P_i\)，sell 就優於 scrap。
+              這也是講義所說 disposal decision 可以和買哪台車部分分離的原因。
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <article class="mini-card blue">
+              <h3>Keep vs. replace</h3>
+              <p>決定 ownership state 是否改變，因而決定未來 value 與車齡 transition。</p>
+            </article>
+            <article class="mini-card coral">
+              <h3>Sell vs. scrap</h3>
+              <p>決定原車成為二手市場供給，或直接退出可交易的 physical stock。</p>
+            </article>
+            <article class="mini-card teal">
+              <h3>Which \((j,d)\)</h3>
+              <p>決定哪個細分市場產生需求，也決定新車的服務流、老化路徑與事故風險。</p>
+            </article>
+          </div>
+
+          <div class="warning">
+            <strong>別漏掉價格的雙重角色：</strong>
+            \(P_{ia}\) 對現有車主是 potential sale value，\(P_{jd}\) 對買方則是 acquisition cost。
+            因此同一個價格變動會同時改變供給與需求，這正是 equilibrium feedback 的來源。
+          </div>
+        </section>
+
+        <section class="section" id="logsum">
+          <div class="section-heading">
+            <span class="section-index">4</span>
+            <div>
+              <h2>整合 taste shocks：EV、CCP 與 Bellman operator</h2>
+              <p>EV1/GEV 讓高維離散選擇的 expected maximum 可以解析計算。</p>
+            </div>
+          </div>
+
+          <div class="takeaway">
+            <strong>EV 不是直接對 choices 取平均。</strong>
+            家戶先看到自己的 choice-specific shocks，再選 value 最大的 action；
+            econometrician 最後才把看不到的 shocks 積分掉。因此正確順序是
+            \(E_\epsilon[\max_c\{\cdot\}]\)，不是 \(\max_c E_\epsilon[\cdot]\)，也不是單純的
+            \(\sum_c\Pi(c\mid x)v(x,c)\)。
+          </div>
+
+          <div class="pipeline" aria-label="timing behind integrated value">
+            <div class="pipe-step"><span>step 1</span><strong>進入 \(x\)</strong><p>observed ownership state</p></div>
+            <div class="pipe-step"><span>step 2</span><strong>抽到 \(\epsilon\)</strong><p>各 action 的私人 taste shocks</p></div>
+            <div class="pipe-step"><span>step 3</span><strong>家戶看見 shocks</strong><p>研究者看不見</p></div>
+            <div class="pipe-step"><span>step 4</span><strong>選 \(c^\star\)</strong><p>最大化 \(v+\epsilon\)</p></div>
+            <div class="pipe-step"><span>step 5</span><strong>積分 \(\epsilon\)</strong><p>得到 ex ante \(EV(x)\)</p></div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>Ex post value 與 ex ante integrated value</strong><span class="tag">timing</span></div>
+            <div class="equation">
+              \[
+              \begin{aligned}
+                V(x,\epsilon)
+                  &=\max_{c\in\mathcal C(x)}
+                    \left\{v(x,c)+\epsilon(c)\right\},\\
+                \EV(x)
+                  &=E_\epsilon\!\left[V(x,\epsilon)\mid x\right]\\
+                  &=E_\epsilon\!\left[
+                    \max_{c\in\mathcal C(x)}
+                    \{v(x,c)+\epsilon(c)\}
+                    \,\middle|\,x
+                  \right].
+              \end{aligned}
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              \(V(x,\epsilon)\) 是家戶已經看見本期 shocks 後的 value；
+              \(\EV(x)\) 則是在只知道 observed state \(x\)、尚未知道這期特別偏好哪個 action 時的 ex ante value。
+              Choice \(c^\star(x,\epsilon)\) 是 shocks 的函數，所以積分 shocks 會間接產生 choice probabilities，
+              但 integration variable 仍然是 \(\epsilon\)，不是 choice label。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>Expected value 的 log-sum</strong><span class="tag">integrated value</span></div>
+            <div class="equation">
+              \[
+                \EV(x)
+                =
+                \sigma\log\!\left[
+                  \sum_{c\in\mathcal C(x)}
+                  \exp\!\left(\frac{v(x,c)}{\sigma}\right)
+                \right].
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              log-sum 是「平滑後的最大值」。\(\sigma\) 小時，幾乎只有 deterministic value 最高的選項有權重；
+              \(\sigma\) 大時，未觀察偏好較重要，次佳選項也有可觀的選擇機率。它同時衡量 available options
+              所帶來的 option value。式子可能差一個由 EV1 location normalization 決定的共同常數；
+              講義把它正規化掉。
+            </div>
+          </div>
+
+          <div class="note">
+            對 state \(x=(i,a)\)，完整 action set \(\mathcal C(x)\) 包含
+            keep \(\kappa\)、purge-and-dispose \((\varnothing,s)\)，以及所有
+            replace choices \((j,d,s)\)。因此 p.13 的每一條 choice-specific value
+            都是這個 log-sum 裡的一個 alternative family。
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>先用任意 candidate \(W\) 定義 Bellman operator</strong><span class="tag">operator</span></div>
+            <div class="equation">
+              \[
+              \begin{aligned}
+                v_W(x,c;P,\theta)
+                  &=
+                  u(x,c;\theta)-\mu C(x,c;P)
+                  +\beta\sum_{x'}p(x'\mid x,c;\theta)W(x'),\\
+                [\Gamma(W,P;\theta)](x)
+                  &=
+                  E_\epsilon\!\left[
+                    \max_{c\in\mathcal C(x)}
+                    \{v_W(x,c;P,\theta)+\epsilon(c)\}
+                  \right]\\
+                  &=
+                  \sigma\log\!\left[
+                    \sum_{c\in\mathcal C(x)}
+                    \exp\!\left(\frac{v_W(x,c;P,\theta)}{\sigma}\right)
+                  \right].
+              \end{aligned}
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              先不要假設 \(W\) 已經是正確的 lifetime value。Operator \(\Gamma\) 把目前猜測的
+              \(W\) 放進所有 continuation values，讓家戶重新最佳化，再積分掉 shocks，
+              最後輸出一個更新後的 value vector。p.13 的五類式子正是第一行在不同 actions 下的展開。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>Bellman fixed point</strong><span class="tag">DP consistency</span></div>
+            <div class="equation">
+              \[
+                \EV(P)=\Gamma\!\left(\EV(P),P;\theta\right).
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              左邊是家戶目前相信各 ownership state 的未來價值，右邊是用這些價值做最適選擇後重新算出的價值。
+              fixed point 要求兩者一致。寫成 \(\EV(P)\) 是在提醒：即使偏好參數不變，均衡價格改變也會重塑整張 value function。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>Conditional choice probability</strong><span class="tag">behavior</span></div>
+            <div class="equation">
+              \[
+                \Pi(c\mid x;P)
+                =
+                \frac{\exp[v(x,c)/\sigma]}
+                {\sum_{k\in\mathcal C(x)}\exp[v(x,k)/\sigma]}.
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              一個選項的機率取決於它相對於所有其他選項的 value。價格不直接出現在符號左側，
+              卻透過每一條 \(v\) 影響 CCP；因此 \(\Pi\)、交易流量與持有分布都隱含依賴 \(P\)。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>為什麼 EV 不等於 choice-weighted average</strong><span class="tag">option value</span></div>
+            <div class="equation">
+              \[
+              \begin{aligned}
+                \EV(x)
+                  &\neq \sum_c\Pi(c\mid x)v(x,c),\\
+                \EV(x)
+                  &=
+                  \sum_c\Pi(c\mid x)v(x,c)
+                  -\sigma\sum_c\Pi(c\mid x)\log\Pi(c\mid x),\\
+                \frac{\partial \EV(x)}{\partial v(x,c)}
+                  &=\Pi(c\mid x).
+              \end{aligned}
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              第一個總和只平均 deterministic values，第二個 entropy term 則保留未觀察偏好與多個可選方案帶來的 option value。
+              CCP 是 log-sum 對某個 alternative value 的邊際反應，但 log-sum 本身不是只用 CCP 做加權平均。
+            </div>
+          </div>
+
+          <h3>把 \(EV\) 壓縮成 observed-state function 所需的假設</h3>
+          <table class="comparison-table">
+            <thead>
+              <tr><th>假設</th><th>在推導中的作用</th><th>若沒有</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Additive separability</td>
+                <td>\(U(x,c,\epsilon)=v(x,c)+\epsilon(c)\)，可把 deterministic value 與 shock 分開。</td>
+                <td>Expected maximum 通常不能只由一組 choice-specific \(v\) 表示。</td>
+              </tr>
+              <tr>
+                <td>Conditional independence</td>
+                <td>給定 \(x'\) 後，未來 shocks 不依賴本期 \(\epsilon\)，continuation value 可寫成 \(\EV(x')\)。</td>
+                <td>目前 shock 會成為 persistent hidden state，state space 必須擴張。</td>
+              </tr>
+              <tr>
+                <td>Markov state</td>
+                <td>\(p(x'\mid\text{history},x,c)=p(x'\mid x,c)\)，目前 \(x\) 足以預測未來。</td>
+                <td>Bellman equation 需要攜帶更多歷史資訊，不能只寫成 \(\EV(x)\)。</td>
+              </tr>
+              <tr>
+                <td>i.i.d. EV1 或適當 GEV</td>
+                <td>Flat EV1 給 log-sum 與 logit；GEV 允許用 nested inclusive values。</td>
+                <td>\(\EV\) 仍可定義，但 expected maximum 通常要 numerical integration 或 simulation。</td>
+              </tr>
+              <tr>
+                <td>\(\beta&lt;1\) 與有限 value</td>
+                <td>使 integrated Bellman operator 具有 contraction 性質並保證唯一 fixed point。</td>
+                <td>迭代未必收斂，lifetime value 也可能不有限或不唯一。</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="note">
+            講義也允許 GEV/nested choice tree，使相近選項的 shocks 可以相關，例如先選 keep/purge/replace，
+            再在 replace 裡選車型與車齡。這時不是把所有 leaf alternatives 硬套一個 flat logit，
+            而是逐層使用 inclusive value；解析期望與平滑性仍然保留。
+          </div>
+        </section>
+
+        <section class="section" id="distribution">
+          <div class="section-heading">
+            <span class="section-index">5</span>
+            <div>
+              <h2>從個體選擇到 stationary ownership distribution</h2>
+              <p>\(\Omega(P)\) 描述交易，\(Q\) 描述老化與事故；兩者不可混為一談。</p>
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>持有分布向量</strong><span class="tag">aggregate state</span></div>
+            <div class="equation">
+              \[
+                q=\big((q_{11},\ldots,q_{1\bar a}),\ldots,
+                (q_{J1},\ldots,q_{J\bar a}),q_{\varnothing}\big),
+                \qquad q\mathbf 1=1.
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              \(q_{ia}\) 是人口中目前持有 \((i,a)\) 的比例，最後一格是無車人口。
+              沒有 \(q_{j0}\)，因為本期買的新車依照 timing convention，到下期記為一歲車。
+            </div>
+          </div>
+
+          <div class="pipeline" aria-label="ownership transition timeline">
+            <div class="pipe-step"><span>period \(t\)</span><strong>\(q_t\)</strong><p>期初持有分布</p></div>
+            <div class="pipe-step"><span>choice</span><strong>\(\Omega(P)\)</strong><p>keep、交易、退出</p></div>
+            <div class="pipe-step"><span>after trade</span><strong>\(q_t\Omega(P)\)</strong><p>交易後誰持有哪台車</p></div>
+            <div class="pipe-step"><span>physics</span><strong>\(Q\)</strong><p>車齡增加與全損</p></div>
+            <div class="pipe-step"><span>period \(t+1\)</span><strong>\(q_{t+1}\)</strong><p>下一期期初分布</p></div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>一期 aggregate law of motion</strong><span class="tag">transition</span></div>
+            <div class="equation">
+              \[
+                q_{t+1}=q_t\Omega(P)Q.
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              先由家戶交易行為重新分配車輛，再由時間與事故改變車齡。
+              \(\Omega(P)\) 是 endogenous behavior，因為 CCP 受價格影響；\(Q\) 是 physical technology。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>Stationarity condition</strong><span class="tag">distribution fixed point</span></div>
+            <div class="equation">
+              \[
+                q^\star=q^\star\Omega(P)Q.
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              個別家庭每期都可能換車，但整體「各車型 × 車齡」的比例不變。
+              stationarity 不是沒有流動，而是流入恰好等於流出。
+            </div>
+          </div>
+
+          <div class="note">
+            當 GEV shock scale 為正，所有相關選擇通常具有正機率，使 ownership Markov chain
+            具有足夠的混合性，因此給定 \(P\) 的 stationary \(q(P)\) 唯一。
+            但 \(q(P)\) 唯一不代表出清價格 \(P^\star\) 必然唯一；講義對 equilibrium price 只主張存在。
+          </div>
+        </section>
+
+        <section class="section" id="clearing">
+          <div class="section-heading">
+            <span class="section-index">6</span>
+            <div>
+              <h2>需求、供給與二手車市場出清</h2>
+              <p>每一個可交易的 \((j,d)\) 都有一條 excess-demand equation。</p>
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>車 \((j,d)\) 的需求</strong><span class="tag">demand flow</span></div>
+            <div class="equation">
+              \[
+                D_{jd}(P,q)
+                =\Pi(j,d\mid\varnothing,P)q_{\varnothing}
+                +\sum_{i=1}^{J}\sum_{a=1}^{\bar a}
+                  \Pi(j,d\mid i,a,P)q_{ia}.
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              第一項是目前無車者的購買流量，第二項是所有現有車主換入 \((j,d)\) 的流量。
+              CCP 是「每個狀態的人有多想買」，\(q\) 是「那個狀態有多少人」；兩者相乘才是市場需求量。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>車 \((j,d)\) 的供給</strong><span class="tag">supply flow</span></div>
+            <div class="equation">
+              \[
+                S_{jd}(P,q)
+                =
+                \left[1-\Pi(\kappa\mid j,d,P)\right]
+                \left[1-\Pi(1_s\mid j,d,P)\right]q_{jd}.
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              只有目前持有 \((j,d)\)、決定不 keep、而且離手時不 scrap 的家戶，才把車送進二手市場。
+              報廢是退出實體車 stock，不構成另一位消費者可購買的 supply。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>Excess demand 與市場出清</strong><span class="tag">price equation</span></div>
+            <div class="equation">
+              \[
+                \ED(P,q)\equiv D(P,q)-S(P,q)=0.
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              若某種舊車 \(ED_{jd}>0\)，想買的人比願意賣的人多，價格需要上升；
+              若 \(ED_{jd}<0\)，價格需要下降。共有 \(J(\bar a-1)\) 個內生二手車價格，
+              也有同樣數目的市場出清方程。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>Stationary equilibrium</strong><span class="tag">joint consistency</span></div>
+            <div class="equation">
+              \[
+                q^\star=q^\star\Omega(P^\star)Q,
+                \qquad
+                0=\ED(P^\star,q^\star).
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              第一式讓 population distribution 隨時間不漂移，第二式讓每個二手市場沒有未滿足的買賣量。
+              兩式共同決定 \(q^\star\) 與 \(P^\star\)：不能先把持有分布當成固定資料，再單獨解價格。
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="heterogeneity">
+          <div class="section-heading">
+            <span class="section-index">7</span>
+            <div>
+              <h2>持久異質性：共同價格，不同持有分布</h2>
+              <p>不同消費者類型可以有不同偏好與金錢邊際效用，但在同一市場面對同一組價格。</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="equation-card">
+              <div class="equation-title"><strong>各類型的 stationarity</strong><span class="tag">within type</span></div>
+              <div class="equation">
+                \[
+                  \forall\tau,\qquad
+                  q_\tau^\star=q_\tau^\star\Omega_\tau(P^\star)Q.
+                \]
+              </div>
+              <div class="intuition">
+                <strong>經濟直覺：</strong>
+                每一類型 \(\tau\) 都有自己的選擇機率與長期持有分布；富裕者可能集中在較新、較好的車，
+                貧窮者則集中在較舊車或無車狀態。
+              </div>
+            </div>
+
+            <div class="equation-card">
+              <div class="equation-title"><strong>跨類型的市場出清</strong><span class="tag">aggregate market</span></div>
+              <div class="equation">
+                \[
+                  0=\sum_{\tau=1}^{N}f_\tau\,
+                  \ED(P^\star,q_\tau^\star).
+                \]
+              </div>
+              <div class="intuition">
+                <strong>經濟直覺：</strong>
+                市場不要求每個 income type 自己供需平衡；富人賣出的舊車可以由窮人買走。
+                權重 \(f_\tau\) 把各類型的交易流加總，這正是 gains from trade 與 sorting 的來源。
+              </div>
+            </div>
+          </div>
+
+          <div class="takeaway">
+            <strong>交易成本的 general-equilibrium 效果：</strong>
+            高交易成本不只讓每個人少換車，也可能把低所得者擠出二手市場、使車更早報廢，
+            並讓均衡價格更接近「只有富人參與」的市場。
+          </div>
+        </section>
+
+        <section class="section" id="algorithm">
+          <div class="section-heading">
+            <span class="section-index">8</span>
+            <div>
+              <h2>DNFXP algorithm：從試算參數到 likelihood</h2>
+              <p>真正昂貴的是：每次外層改變 \(\theta\)，整個均衡都要重新解。</p>
+            </div>
+          </div>
+
+          <div class="algorithm-map" aria-label="DNFXP evaluation sequence">
+            <div class="algo-node"><strong>試算 \(\theta\)</strong><span>outer MLE</span></div>
+            <div class="algo-arrow">→</div>
+            <div class="algo-node price"><strong>試算 \(P\)</strong><span>equilibrium root</span></div>
+            <div class="algo-arrow">→</div>
+            <div class="algo-node"><strong>解 \(EV\)</strong><span>household DP</span></div>
+            <div class="algo-arrow">→</div>
+            <div class="algo-node aggregate"><strong>算 \(\Omega,q\)</strong><span>aggregate flows</span></div>
+          </div>
+          <div class="algorithm-map" aria-label="DNFXP market feedback">
+            <div class="algo-node market"><strong>算 \(ED\)</strong><span>demand minus supply</span></div>
+            <div class="algo-arrow">→</div>
+            <div class="algo-node price"><strong>更新 \(P\)</strong><span>直到 \(ED=0\)</span></div>
+            <div class="algo-arrow">→</div>
+            <div class="algo-node teal"><strong>得到 \(P^\star,q^\star\)</strong><span>stationary equilibrium</span></div>
+            <div class="algo-arrow">→</div>
+            <div class="algo-node"><strong>計算 \(L(\theta)\)</strong><span>return to optimizer</span></div>
+          </div>
+          <p class="loop-label">中間的 price loop 每試一次 \(P\)，都會重新走過 DP → CCP → distribution → excess demand。</p>
+
+          <div class="pseudo" aria-label="DNFXP pseudocode"><span class="outer">for each trial θ from the MLE optimizer:</span>
+    initialize equilibrium prices P
+    <span class="middle">repeat until market clearing:</span>
+        <span class="inner">solve EV = Γ(EV, P; θ)</span>
+        compute CCPs and trade matrix Ω(P)
+        solve q = q Ω(P) Q, with q1 = 1
+        evaluate ED(P, q)
+        update P with a Newton step
+    construct Π(x' | x, τ, θ) at equilibrium
+    return likelihood and analytic score to optimizer</div>
+
+          <div class="grid-3">
+            <article class="mini-card blue">
+              <h3>Inner DP</h3>
+              <p>給定價格，把家戶當成 price taker。這一小步仍然是標準 NFXP 的 Bellman problem。</p>
+            </article>
+            <article class="mini-card coral">
+              <h3>Equilibrium solver</h3>
+              <p>價格不是政策輸入，而是讓所有二手車市場同時出清的未知數。</p>
+            </article>
+            <article class="mini-card teal">
+              <h3>Outer estimator</h3>
+              <p>參數改變偏好與交易行為，也會改變 equilibrium prices；likelihood 必須納入這條回饋。</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="derivatives">
+          <div class="section-heading">
+            <span class="section-index">9</span>
+            <div>
+              <h2>為什麼 Newton 與 analytical derivatives 是可行性的關鍵</h2>
+              <p>講義的核心計算策略，是把已算過的局部 derivative 用 chain rule 一路往外傳。</p>
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>一般 Newton update</strong><span class="tag">root finding</span></div>
+            <div class="equation">
+              \[
+                z_{k+1}
+                =z_k-\left[\frac{\partial F(z_k)}{\partial z'}\right]^{-1}F(z_k).
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              \(F(z_k)\) 告訴我們目前「不一致」多少，Jacobian 告訴我們每個未知數改一點會讓不一致如何變化。
+              Newton step 解一個局部線性化系統，直接選擇最可能把 residual 推回零的方向與幅度。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>Bellman residual 與 Newton-Kantorovich</strong><span class="tag">DP layer</span></div>
+            <div class="equation">
+              \[
+                F_{EV}(EV,P)=EV-\Gamma(EV,P;\theta)=0.
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              residual 是「目前猜的 lifetime value」減去「按照目前猜測重新最佳化得到的 lifetime value」。
+              Newton-Kantorovich 就是把一般 Newton method 用在整條 value function 上。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>價格如何影響已解出的 value function</strong><span class="tag">implicit derivative</span></div>
+            <div class="equation">
+              \[
+                \frac{dEV^\star}{dP'}
+                =
+                \left[I-\Gamma_{EV}\right]^{-1}\Gamma_P.
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              \(\Gamma_P\) 是價格對「今天 payoff」的直接效果；
+              \([I-\Gamma_{EV}]^{-1}\) 把這個衝擊反覆傳到所有未來期。
+              所以它不是普通 demand derivative，而是包含整條 lifetime adjustment 的 long-run derivative。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>Stationary distribution 的 derivative</strong><span class="tag">aggregation layer</span></div>
+            <div class="equation">
+              \[
+                M(P)=\Omega(P)Q,\qquad
+                \frac{dq}{dP'}(I-M)
+                =q\frac{dM}{dP'},
+                \qquad
+                \frac{dq}{dP'}\mathbf 1=0.
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              價格先改變 choice probabilities，再改變長期有多少人落在每個 ownership state。
+              最後一個 normalization 表示所有 population shares 的變化加總必須為零；
+              它也處理 stationary transition matrix 所帶來的奇異性。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>Equilibrium price Jacobian</strong><span class="tag">market layer</span></div>
+            <div class="equation">
+              \[
+                \frac{d\,\ED}{dP'}
+                =
+                \ED_P
+                +\ED_{EV}\frac{dEV^\star}{dP'}
+                +\ED_q\frac{dq^\star}{dP'}.
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              價格有三條效果：直接改變交易 payoff、透過 lifetime value 改變選擇、再透過長期持有分布改變市場上有哪些買方與賣方。
+              analytical Jacobian 把三條路徑都保留下來，Newton price solver 才能穩定而快速。
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <article class="mini-card amber">
+              <h3>Precise starting values</h3>
+              <p>先解沒有 transaction costs 的相近模型，取得價格的線性解，再用它啟動完整非線性模型。</p>
+            </article>
+            <article class="mini-card violet">
+              <h3>Warm starts</h3>
+              <p>相鄰的 \(\theta\) 或 Newton iterations 通常很接近，沿用上一輪 \(P,EV,q\) 可大幅減少工作。</p>
+            </article>
+            <article class="mini-card teal">
+              <h3>Chain rule reuse</h3>
+              <p>DP 已算出的 derivative 不丟掉，而是繼續用來組合 market Jacobian 與 likelihood score。</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="likelihood">
+          <div class="section-heading">
+            <span class="section-index">10</span>
+            <div>
+              <h2>MLE：用家庭狀態轉移辨識結構參數</h2>
+              <p>資料不是單純的 market shares，而是家庭從 \(x\) 到 \(x'\) 的轉移 counts。</p>
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>Grouped transition likelihood</strong><span class="tag">estimation</span></div>
+            <div class="equation">
+              \[
+                L(\theta)
+                =
+                \sum_{\tau}\sum_{x'}\sum_x
+                N_{x'x\tau}
+                \log\Pi(x'\mid x,\tau,\theta).
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              若某種轉移在資料中出現 \(N_{x'x\tau}\) 次，模型就會因為給它低機率而被重罰很多次。
+              \(\Pi(x'\mid x,\tau,\theta)\) 結合家戶 choice 與車輛 physical transition，
+              而且是在 \(\theta\) 所隱含的 equilibrium \(P^\star(\theta)\) 下計算。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>BHHH 的 outer-product curvature</strong><span class="tag">optimizer</span></div>
+            <div class="equation">
+              \[
+                s_n(\theta)=\frac{\partial\log\Pi_n(\theta)}{\partial\theta},
+                \qquad
+                B(\theta)=\sum_n s_n(\theta)s_n(\theta)'.
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              score \(s_n\) 指出第 \(n\) 筆轉移希望參數往哪裡移；\(B\) 用 scores 的外積近似 likelihood curvature。
+              它避免直接計算昂貴的二階 derivative，同時利用 analytical first derivatives。
+            </div>
+          </div>
+
+          <div class="warning">
+            <strong>估計時不能 freeze prices。</strong>
+            若改變 \(\theta\) 後仍使用舊的 \(P^\star\)，score 會漏掉
+            \(\theta\rightarrow P^\star\rightarrow CCP\) 的 general-equilibrium channel，
+            得到的不是這個 structural equilibrium model 的 likelihood derivative。
+          </div>
+        </section>
+
+        <section class="section" id="driving">
+          <div class="section-heading">
+            <span class="section-index">11</span>
+            <div>
+              <h2>Driving：如何把連續選擇變成可先解的靜態子問題</h2>
+              <p>關鍵假設是事故與物理劣化不依賴當期行駛里程 \(x\)。</p>
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>Ownership 與 driving utility</strong><span class="tag">within-period problem</span></div>
+            <div class="equation">
+              \[
+              \begin{aligned}
+                u(a,x)&=u_{\text{car}}(a)+u_{\text{drive}}(a,x)
+                +\mu[\text{net trade payoff}],\\
+                u_{\text{car}}(a)&=\alpha_0+\alpha_1a+\alpha_2a^2,\\
+                u_{\text{drive}}(a,x)
+                &=(\gamma_0+\gamma_1a)x-\mu px+\frac{\phi}{2}x^2,
+                \qquad \phi&lt;0.
+              \end{aligned}
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              車齡用 quadratic 捕捉服務品質與維修成本的非線性；
+              每公里 benefit 是 \(\gamma_0+\gamma_1a\)，每公里貨幣成本是 \(p\)，
+              \(\phi&lt;0\) 使 driving 的邊際效用遞減並保證 interior maximum。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>最適行駛里程</strong><span class="tag">FOC</span></div>
+            <div class="equation">
+              \[
+                x^\star(p,a)
+                =-\frac{1}{\phi}\left[\gamma_0+\gamma_1a-\mu p\right]
+                =d_0+d_1a+d_2p.
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              driving demand 對車齡與每公里成本是線性的 reduced form。
+              因為 \(\phi&lt;0\) 且 \(\mu&gt;0\)，\(d_2=\mu/\phi&lt;0\)：燃料或道路使用成本越高，行駛越少。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>把 \(x^\star\) 代回：indirect utility</strong><span class="tag">dimension reduction</span></div>
+            <div class="equation">
+              \[
+              \begin{aligned}
+                u\!\left(a,x^\star(p,a)\right)
+                &=
+                \alpha_0+\alpha_1a+\alpha_2a^2
+                -\frac{1}{2\phi}
+                \left[\gamma_0+\gamma_1a-\mu p\right]^2\\
+                &=u_0+u_1a+u_2a^2.
+              \end{aligned}
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              家戶先在每個 ownership state 內選最適里程，動態模型只需要帶入「已經最佳化過」的車齡效用。
+              因此不必把連續的 \(x\) 加進 Bellman state/action grid，計算量大幅下降。
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <article class="mini-card blue">
+              <h3>Stage 1</h3>
+              <p>用 driving data 估 \(d_0,d_1,d_2\)，取得里程對車齡與價格的 reduced-form response。</p>
+            </article>
+            <article class="mini-card coral">
+              <h3>Stage 2</h3>
+              <p>用 DNFXP MLE 估 \(u_0,u_1,u_2,\mu,\phi\)、交易成本與事故機率。</p>
+            </article>
+            <article class="mini-card teal">
+              <h3>Stage 3</h3>
+              <p>結合兩階段係數，back out \(\alpha\) 與 \(\gamma\) 等 structural parameters 做政策模擬。</p>
+            </article>
+          </div>
+
+          <div class="warning">
+            <strong>為什麼需要「事故不依賴 \(x\)」？</strong>
+            若開得越多會提高未來事故或劣化機率，\(x\) 就同時影響本期 utility 與未來 \(Q\)；
+            driving 不再是靜態子問題，必須在 Bellman equation 內和換車選擇聯合求解。
+          </div>
+        </section>
+
+        <section class="section" id="policy">
+          <div class="section-heading">
+            <span class="section-index">12</span>
+            <div>
+              <h2>反事實政策：為什麼一定要重新求均衡</h2>
+              <p>降低新車登記稅會同時改變新車價格、二手價格、車隊年齡、行駛里程與稅基。</p>
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>真正的 revenue-neutral constraint</strong><span class="tag">counterfactual</span></div>
+            <div class="equation">
+              \[
+                R\!\left(t_{\mathrm{reg}},t_{\mathrm{fuel}};
+                P^\star(t),q^\star(t)\right)=R_{\mathrm{baseline}}.
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              稅率改變後，稅基不是固定的：家庭會改變買車、換車、持有與 driving，
+              二手價格和車隊結構也會內生調整。只用固定稅基算出的「預期 revenue neutrality」
+              不等於均衡中的 realized revenue neutrality。
+            </div>
+          </div>
+
+          <table class="comparison-table">
+            <thead>
+              <tr><th>情境</th><th>是否重求均衡</th><th>模型中的意義</th><th>講義結果</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Naive, expected</td>
+                <td>否</td>
+                <td>假設新舊車價格同比下降，再用固定反應調 fuel tax</td>
+                <td>帳面上 revenue neutral</td>
+              </tr>
+              <tr>
+                <td>Naive, realized</td>
+                <td>是</td>
+                <td>把同一政策放回 equilibrium model</td>
+                <td>實際稅收約比預期低 20%</td>
+              </tr>
+              <tr>
+                <td>Sophisticated</td>
+                <td>是</td>
+                <td>直接在 equilibrium outcomes 上選 revenue-neutral fuel tax</td>
+                <td>較低 fuel tax 即可維持基準稅收</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>位於 Laffer curve 頂點右側</strong><span class="tag">policy diagnosis</span></div>
+            <div class="equation">
+              \[
+                \left.\frac{dR}{dt_{\mathrm{reg}}}\right|_{\mathrm{baseline}}&lt;0.
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              在目前高稅率附近，再提高登記稅會讓新車銷量與後續稅基萎縮得更快，總稅收反而下降。
+              因此降低登記稅並提高 usage tax，可能同時提高 welfare、稅收並降低 CO2；
+              但政策幅度必須在 general equilibrium 中決定。
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="pitfalls">
+          <div class="section-heading">
+            <span class="section-index">13</span>
+            <div>
+              <h2>常見誤解與讀模型的檢查順序</h2>
+              <p>把這幾件事分清楚，DNFXP 就不會只剩下巢狀迴圈。</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="mini-card coral">
+              <h3>「家戶把價格當外生」不等於「模型價格外生」</h3>
+              <p>個體 solver 中家戶是 price taker；所有家戶行為加總後，\(P^\star\) 仍由 market clearing 內生決定。</p>
+            </article>
+            <article class="mini-card amber">
+              <h3>Stationarity 不等於沒有人交易</h3>
+              <p>\(q_t=q_{t+1}\) 只要求 aggregate shares 不變，背後可以有大量 replacement、sale 與 scrappage flows。</p>
+            </article>
+            <article class="mini-card teal">
+              <h3>\(q\) 不是隨便校準的 market share</h3>
+              <p>它必須同時符合 CCP 所產生的 \(\Omega(P)\) 與物理轉移 \(Q\)，是均衡未知數的一部分。</p>
+            </article>
+            <article class="mini-card blue">
+              <h3>\(q(P)\) 唯一不保證 \(P^\star\) 唯一</h3>
+              <p>給定價格的 Markov chain 可有唯一 invariant distribution，但 nonlinear excess-demand system 仍可能有多個 root。</p>
+            </article>
+            <article class="mini-card violet">
+              <h3>Persistent types 不各自出清</h3>
+              <p>每個類型有自己的 stationary distribution，但所有類型在共同價格下加總供需，允許跨類型交易。</p>
+            </article>
+            <article class="mini-card coral">
+              <h3>Counterfactual 不能只改 utility</h3>
+              <p>政策改變後必須重算 \(EV^\star,\Omega,q^\star,P^\star\)；否則遺漏價格與市場組成的回饋。</p>
+            </article>
+          </div>
+
+          <details>
+            <summary>用五個問題快速檢查一個 DNFXP implementation</summary>
+            <div>
+              <ol class="clean-list">
+                <li>Bellman residual \(\|EV-\Gamma(EV,P)\|\) 是否足夠小？</li>
+                <li>stationarity residual \(\|q-q\Omega(P)Q\|\) 與 \(q\mathbf1-1\) 是否足夠小？</li>
+                <li>每一個二手車市場的 \(\ED_{jd}\) 是否接近零，而不只是總量加總為零？</li>
+                <li>outer likelihood derivative 是否包含 \(dP^\star/d\theta\) 與 \(dEV^\star/d\theta\)？</li>
+                <li>政策反事實是否重新解了整個 equilibrium，而非沿用基準價格與分布？</li>
+              </ol>
+            </div>
+          </details>
+
+          <div class="takeaway">
+            <strong>最後的 mental model：</strong>
+            \(\theta\) 決定 preferences 與 technology；\(P\) 協調所有家戶的買賣；
+            \(EV\) 讓每個家戶跨期一致；\(q\) 讓個體行為變成市場供需；
+            DNFXP 就是不斷調整這些物件，直到「個體最適、分布穩定、市場出清」同時成立。
+          </div>
+
+          <p class="source">
+            依據 Bertel Schjerning, “Doubly Nested Fixed Point (DNFXP) Algorithm for Estimation of Equilibrium Models:
+            Equilibrium Trade in Automobiles,” Lecture 3, Econometric Society Summer School in Dynamic Structural Econometrics,
+            University of Michigan, 3 August 2026。核心對應投影片：8–31、33–36、45–51。
+          </p>
+          <a class="back-top" href="#top">回到頁首 ↑</a>
+        </section>
+      </main>
+    </div>
+  </div>
+</body>
+</html>
