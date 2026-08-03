@@ -1348,6 +1348,87 @@
           </div>
 
           <div class="equation-card">
+            <div class="equation-title"><strong>p.15：任選一個 state-time benchmark</strong><span class="tag">observational equivalence</span></div>
+            <div class="equation">
+              \[
+                l(x,t)\in\{1,\ldots,J\},
+                \qquad
+                u^*_{l(x,t),t}(x)=c_t(x),
+                \qquad
+                \sup_t|c_t(x)|<\infty.
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              在每個 \((x,t)\) 任選一個 normalizing action \(l(x,t)\)，再任意指定一個 bounded
+              benchmark flow \(c_t(x)\)。對任何這樣的 \(\{c_t(x)\}\)，都能同步調整其他
+              current payoffs，抵銷它對 continuation values 的影響，使所有 choice-specific
+              value differences、CCPs 與 observed histories 完全不變。反過來，每一個
+              observationally equivalent payoff system 都可由某組 \(c_t(x)\) 描述。
+            </div>
+          </div>
+
+          <div class="note">
+            <strong>不只缺一個全域常數。</strong>
+            Unrestricted dynamic model 原則上在每個 state-time 都缺一個 payoff anchor。
+            提高某個 future-state 的共同 value level，會改變今天各 actions 的 continuation values；
+            但只要把今天通往該 state 的 actions 之 current payoffs 反向調整，choices 仍然一樣。
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>由 lifetime-value difference 拆回 current flow</strong><span class="tag">Bellman difference</span></div>
+            <div class="equation">
+              \[
+              \begin{aligned}
+                \Delta v_{jt}(x)
+                  &\equiv v_{jt}(x)-v_{1t}(x)
+                   =\psi_{1t}(x)-\psi_{jt}(x)\\
+                  &=
+                  u_{jt}(x)-u_{1t}(x)
+                  +\beta\sum_{x'}V_{t+1}(x')
+                  \left[f_{jt}(x'|x)-f_{1t}(x'|x)\right],\\[3pt]
+                u_{jt}(x)
+                  &=
+                  u_{1t}(x)+\psi_{1t}(x)-\psi_{jt}(x)\\
+                  &\quad+
+                  \beta\sum_{x'}V_{t+1}(x')
+                  \left[f_{1t}(x'|x)-f_{jt}(x'|x)\right].
+              \end{aligned}
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              CCP inversion 告訴我們 \(j\) 相對於 1 的 lifetime advantage；
+              transition difference 告訴我們其中有多少來自較好的 future states。
+              把 continuation advantage 扣掉，剩下的才是 current flow advantage。
+              若 \(j\) 是一項會改善未來的投資，它今天的 \(u_j\) 可以很低，仍然有很高的 \(v_j\)。
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="mini-card coral">
+              <h3>Terminal period</h3>
+              <p>
+                \(T\) 期沒有 continuation value，因此
+                \[
+                  u_{jT}(x)
+                  =
+                  u_{1T}(x)+\psi_{1T}(x)-\psi_{jT}(x).
+                \]
+                一旦 \(u_{1T}(x)\) 已知，terminal-period 的所有 flow payoffs 都能恢復。
+              </p>
+            </article>
+            <article class="mini-card teal">
+              <h3>Backward identification</h3>
+              <p>
+                已知 \(u_T\) 後即可算 \(V_T\)，再用 \(f_{j,T-1}\) 恢復 \(u_{j,T-1}\)；
+                如此從 \(T\) 一路向後到 \(t=1\)。這就是「每個 state-time 一個 benchmark payoff」
+                足以 point identify 其餘 \(J-1\) 個 payoffs 的原因。
+              </p>
+            </article>
+          </div>
+
+          <div class="equation-card">
             <div class="equation-title"><strong>Identification formula</strong><span class="tag">known benchmark</span></div>
             <div class="equation">
               \[
@@ -1376,6 +1457,15 @@
             </div>
           </div>
 
+          <div class="note">
+            <strong>Static special case：</strong>
+            若所有 actions 具有相同 transition，
+            \(f_{jt}(x'|x)=f_{1t}(x'|x)\)，則所有 \(\kappa\) differences 消失，
+            識別式退化成
+            \(u_{jt}(x)-u_{1t}(x)=\psi_{1t}(x)-\psi_{jt}(x)\)。
+            動態模型額外需要 transitions，正是因為選擇會改變未來。
+          </div>
+
           <div class="grid-3">
             <article class="mini-card coral">
               <h3>Utility level</h3>
@@ -1391,11 +1481,53 @@
             </article>
           </div>
 
+          <h3>Point identification 所需條件</h3>
+          <table class="comparison-table">
+            <thead>
+              <tr><th>條件</th><th>數學角色</th><th>若不成立</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>\((T,\beta,f,g)\) 已知或先被識別</td>
+                <td>固定 horizon、discounting、state dynamics 與 probability-to-value mapping</td>
+                <td>不同的 \(\beta,g,u\) 組合可能產生相同 CCPs</td>
+              </tr>
+              <tr>
+                <td>Conditional independence 與完整的 Markov state</td>
+                <td>使 continuation value 只依賴 \(x_{t+1}\)，且 \(f_j\) 可由 observed transitions 估計</td>
+                <td>遺漏的 persistent heterogeneity 使 pooled CCP inversion 與 \(f_j\) 失真</td>
+              </tr>
+              <tr>
+                <td>\(Q_t\) 可逆、shock scale/location 已知</td>
+                <td>由 \(p_t(x)\) 唯一恢復 \(\Delta v_t(x)\)</td>
+                <td>只能識別 utility/scale ratios，或存在多組 relative values</td>
+              </tr>
+              <tr>
+                <td>Relevant CCPs 為正且 state-action cells 有 support</td>
+                <td>估計每個 \(p_j(x)\) 與 counterfactual transition \(f_j(x'|x)\)</td>
+                <td>Zero CCP 無法取 log；未被選過的 action 也沒有 transition data</td>
+              </tr>
+              <tr>
+                <td>每個 \((x,t)\) 一個已知 benchmark flow</td>
+                <td>固定 observational-equivalence class 中的 utility level</td>
+                <td>只識別一整族 \(u\)，不能 point identify unrestricted primitives</td>
+              </tr>
+              <tr>
+                <td>Infinite horizon 時 \(\beta<1\) 且 payoffs bounded</td>
+                <td>確保 discounted representation 收斂且 value functions 有限</td>
+                <td>Backward／infinite-sum representation 可能不存在</td>
+              </tr>
+            </tbody>
+          </table>
+
           <div class="warning">
             <strong>Setting \(u_1(x)=0\) 是 normalization，不是資料發現。</strong>
             它選出 observational-equivalence class 的一個代表。若要識別 \(\beta\)、shock scale
             或有直接 welfare 意義的 utility levels，通常需要額外 exclusion restrictions、
-            payoff information 或 functional-form restrictions。
+            payoff information 或 functional-form restrictions。若 benchmark payoff 來自真正的
+            exit value、scrap value 或會計成本，它提供經濟識別；若只是任意設為零，原始 choices
+            的預測可以不受影響，但 welfare level 或改變 benchmark payoff 的 counterfactual
+            不應被解讀成由資料本身識別。
           </div>
         </section>
 
