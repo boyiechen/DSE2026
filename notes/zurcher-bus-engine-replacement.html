@@ -889,6 +889,12 @@
                 每次猜參數都能快速重解 Bellman fixed point 的關鍵。
               </p>
               <p>
+                這也是為什麼很多 discrete choice model 都愛用 EV1：它不一定是最真實的 shock
+                distribution，但它把 random utility model 變成 multinomial logit，把 dynamic model
+                裡反覆出現的 expected maximum 變成 log-sum，讓 likelihood 平滑、估計穩定，
+                也避免每次都做高維 numerical integration。
+              </p>
+              <p>
                 <strong>如果沒有：</strong>
                 模型不一定錯，但 expected maximum 和 choice probability 通常沒有簡單公式，
                 需要 quadrature、simulation 或更大的 state space。若完全沒有 shock，決策會接近硬 threshold，
@@ -897,6 +903,31 @@
             </div>
           </div>
         </div>
+
+        <div class="formula-box">
+          \[
+          \frac{P(j\mid x)}{P(k\mid x)}
+          =
+          \frac{\exp\{v(x,j)\}}{\exp\{v(x,k)\}}
+          \]
+          <p>
+            i.i.d. EV1 的代價是 IIA：兩個選項 \(j\) 和 \(k\) 的相對 odds 不會受到其他選項影響。
+            在 Zurcher 的二元 keep/replace 例子裡，這比較像是 logistic smoothing 的來源；
+            在多選項問題裡，IIA 會變成很強的 substitution pattern 限制。
+          </p>
+        </div>
+
+        <p>
+          IIA 和 CI 有關係，但不是同一個假設。IIA 管的是同一期、不同 alternatives 之間的
+          unobserved utility 是否獨立同分布；CI 管的是跨期 transition，也就是今天的
+          \(\varepsilon_t\) 會不會變成明天必須追蹤的 hidden state。CI 本身不 imply IIA：
+          shocks 可以跨期條件獨立，但同一期不同選項之間仍然 correlated。反過來，i.i.d. EV1
+          也不等於 CI，因為它主要規定 shock 的分布形狀和 alternatives 之間的獨立性。
+        </p>
+        <p class="footer-note">
+          一句話：EV1/i.i.d. 給 logit 與 IIA；CI 把動態問題的 state space 降下來。
+          Rust 把它們放在一起，是因為兩者合力讓 NFXP 可計算。
+        </p>
       </section>
 
       <section class="section two-col" aria-labelledby="threshold">
@@ -933,6 +964,10 @@
             Rust 的設定讓 \(\varepsilon_t(d)\) 是 additive 且服從 extreme value type I。
             好處是不用對所有 shocks 做高維積分，choice probability 可以寫成平滑的 logit 形式。
           </p>
+          <p>
+            對二元選擇來說，兩個 i.i.d. EV1 shocks 的差服從 logistic distribution，
+            所以 keep 和 replace 的 value difference 會直接轉成 logistic probability。
+          </p>
         </div>
         <div class="formula-box">
           \[
@@ -944,6 +979,13 @@
           \sum_{j\in\{0,1\}}
           \exp\{u(x,j;\theta_1)+\beta EV_\theta(x,j)\}
           }.
+          \]
+          \[
+          P(d=1\mid x,\theta)
+          =
+          \Lambda\left(
+          v_\theta(x,1)-v_\theta(x,0)
+          \right)
           \]
         </div>
       </section>
