@@ -1793,6 +1793,163 @@
             </div>
           </div>
 
+          <div class="takeaway">
+            <strong>Identification 的核心：</strong>
+            structural driving equation 單獨只能辨識 \(\gamma_0,\gamma_1,\mu,\phi\) 的 ratios，
+            不能決定它們各自的 utility scale。必須再用 DNFXP 從買車、賣車與換車行為辨識
+            money coefficient \(\mu\) 和 indirect utility，才能把 structural parameters 分別反解出來。
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>Stage 1：driving regression 辨識三個 ratios</strong><span class="tag">reduced form</span></div>
+            <div class="equation">
+              \[
+              \begin{aligned}
+                x^\star(p,a)
+                  &=d_0+d_1a+d_2p,\\
+                d_0&=-\frac{\gamma_0}{\phi},
+                \qquad
+                d_1=-\frac{\gamma_1}{\phi},
+                \qquad
+                d_2=\frac{\mu}{\phi}.
+              \end{aligned}
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              車齡 variation 告訴我們 \(d_1\)，每公里成本 \(p\) 的 variation 告訴我們 \(d_2\)，
+              平均 driving level 則定位 \(d_0\)。但若把
+              \((\gamma_0,\gamma_1,\mu,\phi)\) 同時乘上一個常數，三個 \(d\)'s 完全不變；
+              所以 driving data 本身沒有足夠資訊決定 utility 的絕對 scale。
+            </div>
+          </div>
+
+          <div class="pipeline" aria-label="identification chain for structural driving parameters">
+            <div class="pipe-step"><span>driving data</span><strong>\(d_0,d_1,d_2\)</strong><p>辨識 behavioral ratios</p></div>
+            <div class="pipe-step"><span>DNFXP choices</span><strong>\(u_0,u_1,u_2,\mu\)</strong><p>indirect utility 與 money scale</p></div>
+            <div class="pipe-step"><span>combine</span><strong>\(\phi=\mu/d_2\)</strong><p>恢復 curvature scale</p></div>
+            <div class="pipe-step"><span>combine</span><strong>\(\gamma_0,\gamma_1\)</strong><p>恢復 driving benefits</p></div>
+            <div class="pipe-step"><span>invert utility</span><strong>\(\alpha_0,\alpha_1,\alpha_2\)</strong><p>恢復 ownership utility</p></div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>Stage 2：用 money scale 反解 \(\phi\) 與 \(\gamma\)</strong><span class="tag">scale recovery</span></div>
+            <div class="equation">
+              \[
+                \phi=\frac{\mu}{d_2},
+                \qquad
+                \gamma_0=-\phi d_0,
+                \qquad
+                \gamma_1=-\phi d_1.
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              DNFXP 利用不同 purchase prices、resale values 與 transaction costs
+              如何改變離散選擇機率，辨識金錢在 utility units 中的權重 \(\mu\)。
+              一旦 money scale 固定，\(d_2=\mu/\phi\) 就能定位 driving curvature \(\phi\)，
+              再用 \(d_0,d_1\) 恢復每公里 driving benefit 的 level。
+            </div>
+          </div>
+
+          <div class="note">
+            嚴格來說，random-utility model 辨識的是 \(\mu/\sigma\)，其中 \(\sigma\) 是 taste-shock scale。
+            實作通常 normalize \(\sigma=1\)，才把估計值直接稱為 \(\mu\)。
+            若程式在 DNFXP 中直接 parameterize \(\phi\)，那麼 \(d_2=\mu/\phi\)
+            就是一條 cross-equation restriction，而不是額外獨立的 information source。
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>Stage 3：由 indirect utility 反解 \(\alpha\)</strong><span class="tag">structural inversion</span></div>
+            <div class="equation">
+              \[
+              \begin{aligned}
+                u_0(p)
+                  &=\alpha_0-\frac{(\gamma_0-\mu p)^2}{2\phi},
+                &\quad
+                \alpha_0
+                  &=u_0(p)+\frac{(\gamma_0-\mu p)^2}{2\phi},\\
+                u_1(p)
+                  &=\alpha_1-\frac{\gamma_1(\gamma_0-\mu p)}{\phi},
+                &\quad
+                \alpha_1
+                  &=u_1(p)+\frac{\gamma_1(\gamma_0-\mu p)}{\phi},\\
+                u_2
+                  &=\alpha_2-\frac{\gamma_1^2}{2\phi},
+                &\quad
+                \alpha_2
+                  &=u_2+\frac{\gamma_1^2}{2\phi}.
+              \end{aligned}
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              DNFXP 從不同車齡的持有、換車與報廢 patterns 辨識的是「已經讓 driving 最適化」之後的
+              \(u_0,u_1,u_2\)。前面恢復 \(\mu,\phi,\gamma_0,\gamma_1\) 後，
+              就能扣回 optimal-driving surplus，留下純粹的 ownership utility
+              \(\alpha_0+\alpha_1a+\alpha_2a^2\)。
+            </div>
+          </div>
+
+          <details>
+            <summary>若 \(p\) 在資料中變動，indirect utility 的完整展開</summary>
+            <div>
+              <div class="equation">
+                \[
+                \begin{aligned}
+                  \widetilde u(a,p)
+                  ={}&
+                  \left(\alpha_0-\frac{\gamma_0^2}{2\phi}\right)
+                  +\left(\alpha_1-\frac{\gamma_0\gamma_1}{\phi}\right)a
+                  +\left(\alpha_2-\frac{\gamma_1^2}{2\phi}\right)a^2\\
+                  &+\frac{\gamma_0\mu}{\phi}p
+                  +\frac{\gamma_1\mu}{\phi}ap
+                  -\frac{\mu^2}{2\phi}p^2.
+                \end{aligned}
+                \]
+              </div>
+              <p>
+                因此模型對 \(p\)、\(ap\) 與 \(p^2\) 的 coefficients 施加一組 cross-equation restrictions。
+                講義寫成 \(u_0+u_1a+u_2a^2\)，可以理解為對給定 \(p\)，或已把已知的
+                car/type-specific driving cost 吸收到 indirect utility coefficients。
+              </p>
+            </div>
+          </details>
+
+          <h3>資料中的 identification variation 與必要 normalization</h3>
+          <table class="comparison-table">
+            <thead>
+              <tr><th>需要的資訊</th><th>主要辨識什麼</th><th>若缺少</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>車齡 \(a\) 的 variation</td>
+                <td>Driving slope \(d_1\)，以及 DNFXP 中的 \(u_1,u_2\)。</td>
+                <td>無法分離車齡造成的 driving 與 ownership-utility 變化。</td>
+              </tr>
+              <tr>
+                <td>可信的 per-kilometer cost \(p\) variation</td>
+                <td>\(d_2=\mu/\phi\)，以及 fuel-cost response。</td>
+                <td>\(\phi\) 無法透過 money scale 單獨恢復；若 \(p\) endogenous，通常需要 instrument 或額外結構。</td>
+              </tr>
+              <tr>
+                <td>車價、resale value 與 transaction-cost variation</td>
+                <td>DNFXP 中的 \(\mu/\sigma\) 與 indirect ownership utility。</td>
+                <td>Money sensitivity 與非貨幣偏好難以分離。</td>
+              </tr>
+              <tr>
+                <td>Normalize \(\sigma=1\) 與 outside-option utility</td>
+                <td>Utility scale 與 \(\alpha_0\) 的相對位置。</td>
+                <td>只能辨識共同 scale 下的係數；utility level 可任意平移。</td>
+              </tr>
+              <tr>
+                <td>Interior driving solution 與 \(\phi&lt;0\)</td>
+                <td>FOC 的線性 driving equation 與唯一 maximum。</td>
+                <td>若大量 \(x=0\) 是 corner solution，需另外處理 censoring，不能直接套 interior FOC。</td>
+              </tr>
+            </tbody>
+          </table>
+
           <div class="grid-3">
             <article class="mini-card blue">
               <h3>Stage 1</h3>
@@ -1800,7 +1957,7 @@
             </article>
             <article class="mini-card coral">
               <h3>Stage 2</h3>
-              <p>用 DNFXP MLE 估 \(u_0,u_1,u_2,\mu,\phi\)、交易成本與事故機率。</p>
+              <p>用 DNFXP MLE 估 \(u_0,u_1,u_2,\mu\)、交易成本與事故機率；\(\phi\) 可透過 \(d_2=\mu/\phi\) jointly restrict 或事後恢復。</p>
             </article>
             <article class="mini-card teal">
               <h3>Stage 3</h3>
