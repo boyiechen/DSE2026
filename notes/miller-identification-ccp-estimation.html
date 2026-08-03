@@ -1655,6 +1655,27 @@
             </div>
           </div>
 
+          <div class="equation-card">
+            <div class="equation-title"><strong>QML criterion</strong><span class="tag">match choices</span></div>
+            <div class="equation">
+              \[
+                \widehat\theta_{\mathrm{QML}}^{(1)}
+                =
+                \arg\max_{\theta^{(1)}}
+                \sum_n\sum_t\sum_{j=1}^{J}
+                d_{jnt}
+                \log\widehat p_{jt}
+                (x_{nt};\theta^{(1)},\widehat\theta^{(2)}).
+              \]
+            </div>
+            <div class="intuition">
+              <strong>精神：</strong>
+              把 \(\widehat h\) 當成 static multinomial-logit index 裡預先估好的 dynamic offset，
+              找出讓 observed choices 最可能的 utility parameters。它是 observation-level criterion，
+              不直接把每個 cell 的 unrestricted payoff 當作 dependent variable。
+            </div>
+          </div>
+
           <div class="pseudo" aria-label="CCP QML pseudocode"><span class="first">first stage:</span>
     estimate transition parameters and CCPs
     construct future transition weights κ
@@ -1674,6 +1695,26 @@
             <div>
               <h2>QML、Minimum Distance 與 Simulated Moments</h2>
               <p>三者使用相同的 inversion/representation 邏輯，只是第二階段如何對結構模型施加限制不同。</p>
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>共同起點：先限制 primitives</strong><span class="tag">two-step</span></div>
+            <div class="equation">
+              \[
+                \theta=(\theta^{(1)},\theta^{(2)}),
+                \qquad
+                u_{jt}(x)=u_j(x;\theta^{(1)}),
+                \qquad
+                f_{jt}(x'|x)=f_j(x'|x;\theta^{(2)}).
+              \]
+            </div>
+            <div class="intuition">
+              <strong>共同精神：</strong>
+              第一階段先估 \(\widehat\theta^{(2)},\widehat f,\widehat p\)，再把 CCP inversion
+              與 value representation 當成 reduced-form bridge。Population 中三種方法都在要求
+              \(u(\theta_0)=\Psi(p_0,f_0)\)；差別是 sample 中匹配 choices、implied utilities，
+              或 simulated lifetime-value moments。
             </div>
           </div>
 
@@ -1701,16 +1742,90 @@
             </div>
           </div>
 
+          <div class="equation-card">
+            <div class="equation-title"><strong>Linear utility 的 MD projection</strong><span class="tag">closed form</span></div>
+            <div class="equation">
+              \[
+                u(\theta)=X\theta
+                \quad\Longrightarrow\quad
+                \widehat\theta_{\mathrm{MD}}
+                =
+                (X'WX)^{-1}X'W\Psi(\widehat p,\widehat f).
+              \]
+            </div>
+            <div class="intuition">
+              <strong>幾何直覺：</strong>
+              \(\Psi(\widehat p,\widehat f)\) 是高維 state-choice cells 給出的 unrestricted payoff vector；
+              \(X\theta\) 是 parametric model 允許的低維 utility surface。MD 把前者投影到後者，
+              因而特別適合線性 utility、規格檢查與查看哪些 cells 最不符合模型。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>Methods of Simulated Moments</strong><span class="tag">match paths</span></div>
+            <div class="equation">
+              \[
+              \begin{aligned}
+                m_{nj}(\theta)
+                  &=
+                  \widehat v_{j,t_n}(x_{nt_n};\theta,\widehat f,\widehat p)
+                  -\widehat v_{J,t_n}(x_{nt_n};\theta,\widehat f,\widehat p)\\
+                  &\quad+
+                  \widehat\psi_{j,t_n}(x_{nt_n})
+                  -\widehat\psi_{J,t_n}(x_{nt_n}),\\
+                \widehat\theta_{\mathrm{MSM}}
+                  &=
+                  \arg\min_\theta
+                  \overline g_N(\theta)'W_S\overline g_N(\theta),
+                  \qquad
+                  \overline g_N(\theta)
+                  =
+                  \frac{1}{N}\sum_n z_nm_n(\theta).
+              \end{aligned}
+              \]
+            </div>
+            <div class="intuition">
+              <strong>精神：</strong>
+              從每個 initial choice 出發，用 \(\widehat f,\widehat p\) 模擬 lifetime paths，
+              再要求 simulated value differences 符合 CCP inversion 的
+              \(v_j-v_J=\psi_J-\psi_j\)。講義稱它 Simulated Moments Estimator／MSM；
+              它把難做的 future-state 積分換成 Monte Carlo paths。
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <article class="mini-card blue">
+              <h3>QML 問什麼？</h3>
+              <p>這組 \(\theta\) 加上估計好的 dynamic offset，能否讓實際 choices 具有高 likelihood？</p>
+            </article>
+            <article class="mini-card coral">
+              <h3>MD 問什麼？</h3>
+              <p>Parametric utilities 是否靠近 CCPs/transitions 反推出的 unrestricted payoff cells？</p>
+            </article>
+            <article class="mini-card teal">
+              <h3>MSM 問什麼？</h3>
+              <p>模擬出的 lifetime value restrictions，乘上 instruments 後是否在平均上接近零？</p>
+            </article>
+          </div>
+
           <table class="comparison-table">
             <thead>
-              <tr><th>方法</th><th>第二階段做什麼</th><th>優點</th><th>代價</th></tr>
+              <tr><th>方法</th><th>匹配物件</th><th>計算形式</th><th>適合場景</th><th>主要代價</th></tr>
             </thead>
             <tbody>
-              <tr><td>QML</td><td>把 \(u(\theta)+\widehat h\) 放進 quasi likelihood</td><td>熟悉、平滑、適合 T1EV</td><td>需要正 CCPs，variance 要處理 first stage</td></tr>
-              <tr><td>MD</td><td>讓 parametric utility 貼近 inversion implied utility</td><td>線性 utility 時簡單，weighting 清楚</td><td>結果依賴 \(W\)，高維 moments 可能不穩</td></tr>
-              <tr><td>MSM</td><td>模擬各 initial choice 的 lifetime path，再匹配 value differences</td><td>適合複雜 transition 或難以解析積分</td><td>Simulation noise、instruments 與 weighting choice</td></tr>
+              <tr><td>QML</td><td>Observed choices</td><td>Smooth nonlinear likelihood</td><td>T1EV 合理、choices 多、\(\widehat h\) 易算</td><td>Likelihood specification、zero CCP、first-stage variance</td></tr>
+              <tr><td>MD</td><td>CCP-implied flow utilities</td><td>Quadratic projection；線性時 closed form</td><td>Finite cells 穩定、utility 線性、重視透明診斷</td><td>\(W\) 敏感、sparse cells、covariance 高維</td></tr>
+              <tr><td>MSM</td><td>Simulated lifetime-value moments</td><td>Forward simulation 加 GMM criterion</td><td>State 連續／高維、transition 易模擬但難積分</td><td>Simulation noise、instruments、\(W_S\) 與 runtime</td></tr>
             </tbody>
           </table>
+
+          <div class="warning">
+            <strong>沒有普遍的效率排名，也沒有任何一種方法免除 first stage。</strong>
+            三者都依賴 \(\widehat p,\widehat f\) 與指定的 \(g\)，standard errors 都必須反映 generated-regressor
+            uncertainty。Sparse state-action cells 時，MD 的 unrestricted payoffs 尤其不穩；
+            MSM 也仍需 CCPs。此時應先考慮 smoothing、parametric first stage、state reduction，
+            或改用 NFXP／MPEC，而不是只更換 second-stage criterion。
+          </div>
         </section>
 
         <section class="section" id="finite-dependence">
@@ -1719,6 +1834,40 @@
             <div>
               <h2>Finite dependence：讓遠期 continuation values 抵消</h2>
               <p>不是假設 agent 只看幾期，而是構造 paths，使不同 initial choices 的 state distributions 在有限期後相同。</p>
+            </div>
+          </div>
+
+          <div class="takeaway">
+            <strong>核心：</strong>
+            Agent 仍可完全 forward-looking；finite dependence 不是把 horizon 截短的 approximation。
+            它要求兩個 initial choices 經過有限期後，對所有遠期 states 產生相同 distribution，
+            因而更遠期的 \(V\) 雖然存在，卻在 choice-value difference 中精確相消。
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>Future choice weights 與 induced transitions</strong><span class="tag">weighted paths</span></div>
+            <div class="equation">
+              \[
+              \begin{aligned}
+                \sum_{k=1}^{J}\omega^a_{k\tau}(x_\tau)
+                  &=1,
+                  \qquad
+                  |\omega^a_{k\tau}(x_\tau)|<\infty,
+                  \qquad a\in\{i,j\},\\
+                \kappa_{\tau+1}^{(\omega^a)}(x_{\tau+1}|a,t,x)
+                  &=
+                  \sum_{x_\tau}\sum_{k=1}^{J}
+                  \omega^a_{k\tau}(x_\tau)
+                  f_{k\tau}(x_{\tau+1}|x_\tau)
+                  \kappa_{\tau}^{(\omega^a)}(x_\tau|a,t,x).
+              \end{aligned}
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              本期先分別選 \(i\) 與 \(j\)，之後各自使用一組 state-contingent choice weights。
+              \(\kappa^{(\omega^a)}\) 記錄這套加權 transition process 抵達未來各 states 的 distribution。
+              中間 choices 與 realized paths 不必相同；只要最後的 distribution 可以配平。
             </div>
           </div>
 
@@ -1743,6 +1892,57 @@
             </div>
           </div>
 
+          <div class="equation-card">
+            <div class="equation-title"><strong>為什麼遠期 \(V\) 精確消失？</strong><span class="tag">exact cancellation</span></div>
+            <div class="equation">
+              \[
+              \begin{aligned}
+                v_{at}(x)
+                  &=
+                  u_{at}(x)
+                  +\mathcal F_a^{(\rho)}(x)
+                  +\beta^{\rho+1}
+                  \sum_sV_{t+\rho+1}(s)
+                  \kappa_{t+\rho+1}^{(\omega^a)}(s|a,t,x),
+                  \quad a\in\{i,j\},\\
+                v_{jt}(x)-v_{it}(x)
+                  &=
+                  u_{jt}(x)-u_{it}(x)
+                  +\mathcal F_j^{(\rho)}(x)-\mathcal F_i^{(\rho)}(x)\\
+                  &\quad+
+                  \beta^{\rho+1}
+                  \sum_sV_{t+\rho+1}(s)
+                  \left[
+                    \kappa^{(\omega^j)}(s)
+                    -\kappa^{(\omega^i)}(s)
+                  \right].
+              \end{aligned}
+              \]
+            </div>
+            <div class="intuition">
+              <strong>推導：</strong>
+              \(\mathcal F_a^{(\rho)}\) 收集 \(t+1,\ldots,t+\rho\) 的加權
+              flow utilities 與 CCP corrections \(u+\psi\)。Finite dependence 令最後一行的
+              \(\kappa\) difference 對每個 \(s\) 都為零，所以 unknown distant continuation value
+              整塊消失；剩下的是有限期內可由 \(u,p,f,g\) 建立的 terms。
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <article class="mini-card blue">
+              <h3>計算</h3>
+              <p>不必求完整 Bellman fixed point 或無限期 state sums，只向前處理到 \(t+\rho\)。</p>
+            </article>
+            <article class="mini-card coral">
+              <h3>統計</h3>
+              <p>需要估計的 future CCPs 較少，\(\widehat p,\widehat f\) 的 sampling error 不會沿太多期累積。</p>
+            </article>
+            <article class="mini-card teal">
+              <h3>可檢驗性</h3>
+              <p>在 CI 下，matching condition 只涉及 estimated transition matrices，不必先指定 flow utilities。</p>
+            </article>
+          </div>
+
           <div class="warning">
             <strong>\(\omega\) 不一定是可執行 policy probabilities。</strong>
             講義的 search example 中，某些 weights 可以大於 1 或為負；它們是用來匹配 transition distributions
@@ -1752,17 +1952,36 @@
           <div class="grid-2">
             <article class="mini-card coral">
               <h3>Terminal choice</h3>
-              <p>選了就結束問題，continuation value 為零。Exit、退休、死亡或採用不可逆技術常具有這種結構。</p>
+              <p>
+                選了就結束問題，該 path 的 continuation value 為零。Exit、退休、死亡或不可逆終止
+                常具有這種結構；比較 terminal 與 continue 時，只需 current payoff、短期 transitions
+                與 CCP corrections。
+              </p>
             </article>
             <article class="mini-card teal">
               <h3>Renewal choice</h3>
-              <p>下一期 state distribution 不依賴目前 state，例如更換引擎後 mileage reset。初始差異很快被洗掉。</p>
+              <p>
+                Renewal 後的 state distribution 不依賴 renewal 前的 state，例如更換引擎後 mileage reset。
+                若兩個 initial paths 在下一期都安排 renewal，通常到 \(t+2\) distributions 即相同，
+                形成 one-period dependence。
+              </p>
             </article>
           </div>
 
           <div class="note">
             在 CI 下，finite dependence 只涉及 transition matrices，因此在不指定 flow utilities 的情況下也具有可檢驗內容。
-            它可以只對某些 action pairs 或 states 成立；不需要整個模型 everywhere 都有同一個 \(\rho\)。
+            它可以只對某些 action pairs 或 states 成立，\(\rho\) 也可隨 \((i,j,t,x)\) 改變；
+            不需要整個模型 everywhere 都有同一個 \(\rho\)。有限 horizon 下取
+            \(\rho=T-t\) 當然永遠成立，但只有 \(\rho<T-t\) 或 infinite horizon 中的小 \(\rho\)
+            才帶來實際計算利益。
+          </div>
+
+          <div class="warning">
+            <strong>State 必須真的完整。</strong>
+            若 observed distributions 已配平，但遺漏的 persistent type distributions 仍不同，
+            兩條路徑的 continuation values 不會真正相同。Finite dependence 的 testability 依賴
+            conditional independence 與正確的 Markov state specification；不能只看 mileage 等
+            observed state 相同就直接宣稱成立。
           </div>
         </section>
 
