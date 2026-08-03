@@ -1,0 +1,1856 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dynamic Discrete Choice：Identification 與 CCP Estimation</title>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]],
+        macros: {
+          Pr: "\\operatorname{Pr}",
+          E: "\\operatorname{E}",
+          argmax: "\\operatorname*{arg\\,max}",
+          argmin: "\\operatorname*{arg\\,min}"
+        }
+      },
+      svg: { fontCache: "global" }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    :root {
+      --paper: #f3f5f7;
+      --surface: #ffffff;
+      --ink: #1c2731;
+      --muted: #5e6b77;
+      --line: #d6dce2;
+      --blue: #315f9c;
+      --blue-soft: #e7eff9;
+      --teal: #0f766e;
+      --teal-soft: #e0f2ef;
+      --coral: #c94d44;
+      --coral-soft: #f8e7e4;
+      --amber: #956709;
+      --amber-soft: #f6edd4;
+      --violet: #6c4f90;
+      --violet-soft: #eee8f5;
+      --shadow: 0 14px 36px rgba(29, 41, 53, 0.09);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.68;
+      letter-spacing: 0;
+    }
+
+    a {
+      color: var(--blue);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.9em;
+    }
+
+    .shell {
+      width: min(1380px, 100%);
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .masthead {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 22px;
+    }
+
+    .masthead-copy {
+      min-width: 0;
+      padding: 30px 34px;
+      border-right: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--teal);
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 850px;
+      margin: 0 0 12px;
+      font-size: clamp(2rem, 4vw, 3.15rem);
+      line-height: 1.08;
+      overflow-wrap: anywhere;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 1.55rem;
+      line-height: 1.22;
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 1.08rem;
+      line-height: 1.3;
+    }
+
+    h4 {
+      margin: 0 0 6px;
+      font-size: 0.97rem;
+    }
+
+    p {
+      margin: 0 0 13px;
+    }
+
+    .lead {
+      max-width: 800px;
+      margin-bottom: 0;
+      color: #344350;
+      font-size: 1.05rem;
+    }
+
+    .masthead-map {
+      display: grid;
+      grid-template-rows: repeat(3, 1fr);
+    }
+
+    .layer {
+      display: grid;
+      grid-template-columns: 48px minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+      min-height: 94px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .layer:last-child {
+      border-bottom: 0;
+    }
+
+    .layer-number {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--blue);
+      font-weight: 850;
+    }
+
+    .layer:nth-child(2) .layer-number {
+      background: var(--coral);
+    }
+
+    .layer:nth-child(3) .layer-number {
+      background: var(--teal);
+    }
+
+    .layer strong,
+    .layer > div > span {
+      display: block;
+    }
+
+    .layer > div > span {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 238px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .toc {
+      position: sticky;
+      top: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      padding: 16px;
+      box-shadow: 0 8px 24px rgba(31, 42, 54, 0.06);
+    }
+
+    .toc strong {
+      display: block;
+      margin-bottom: 9px;
+      color: var(--muted);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+    }
+
+    .toc a {
+      display: block;
+      padding: 5px 8px;
+      border-left: 2px solid transparent;
+      color: #3f4d5a;
+      font-size: 0.89rem;
+      text-decoration: none;
+    }
+
+    .toc a:hover,
+    .toc a:focus-visible {
+      border-left-color: var(--teal);
+      color: var(--teal);
+      background: var(--teal-soft);
+    }
+
+    main {
+      min-width: 0;
+    }
+
+    .section {
+      scroll-margin-top: 20px;
+      margin-bottom: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      padding: 28px;
+      box-shadow: 0 10px 28px rgba(31, 42, 54, 0.055);
+    }
+
+    .section-heading {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 18px;
+    }
+
+    .section-index {
+      display: grid;
+      width: 36px;
+      height: 36px;
+      place-items: center;
+      border-radius: 6px;
+      color: #fff;
+      background: var(--ink);
+      font-weight: 850;
+    }
+
+    .section-heading p {
+      margin: 5px 0 0;
+      color: var(--muted);
+    }
+
+    .takeaway {
+      margin: 0 0 18px;
+      border-left: 4px solid var(--teal);
+      background: var(--teal-soft);
+      padding: 12px 15px;
+    }
+
+    .takeaway strong {
+      color: var(--teal);
+    }
+
+    .note {
+      margin: 12px 0;
+      border-left: 3px solid var(--blue);
+      background: var(--blue-soft);
+      padding: 10px 13px;
+    }
+
+    .warning {
+      margin: 12px 0;
+      border-left: 3px solid var(--coral);
+      background: var(--coral-soft);
+      padding: 10px 13px;
+    }
+
+    .grid-2,
+    .grid-3 {
+      display: grid;
+      gap: 14px;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .mini-card {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 15px;
+      background: #fbfcfd;
+    }
+
+    .mini-card.blue {
+      border-top: 4px solid var(--blue);
+    }
+
+    .mini-card.coral {
+      border-top: 4px solid var(--coral);
+    }
+
+    .mini-card.teal {
+      border-top: 4px solid var(--teal);
+    }
+
+    .mini-card.amber {
+      border-top: 4px solid var(--amber);
+    }
+
+    .mini-card.violet {
+      border-top: 4px solid var(--violet);
+    }
+
+    .mini-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .equation-card {
+      margin: 14px 0;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      overflow: hidden;
+      background: var(--surface);
+    }
+
+    .equation-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 42px;
+      padding: 9px 13px;
+      border-bottom: 1px solid var(--line);
+      background: #f5f7f9;
+    }
+
+    .equation-title strong {
+      line-height: 1.3;
+    }
+
+    .tag {
+      flex: 0 0 auto;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      padding: 2px 8px;
+      color: var(--blue);
+      font-size: 0.74rem;
+      font-weight: 800;
+    }
+
+    .equation {
+      padding: 11px 16px 5px;
+      overflow-x: auto;
+      color: #142536;
+    }
+
+    .equation mjx-container[display="true"] {
+      margin: 0.55em 0;
+    }
+
+    .intuition {
+      margin: 8px 12px 12px;
+      border-left: 3px solid var(--amber);
+      background: var(--amber-soft);
+      padding: 10px 12px;
+      color: #3b3528;
+    }
+
+    .intuition strong {
+      color: var(--amber);
+    }
+
+    .symbol-table,
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.93rem;
+    }
+
+    .symbol-table th,
+    .symbol-table td,
+    .comparison-table th,
+    .comparison-table td {
+      padding: 10px 11px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .symbol-table th,
+    .comparison-table th {
+      color: #34424f;
+      background: #f1f4f7;
+      font-size: 0.85rem;
+    }
+
+    .symbol-table tr:last-child td,
+    .comparison-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      margin: 15px 0;
+    }
+
+    .pipe-step {
+      position: relative;
+      min-height: 112px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 13px;
+      background: #fbfcfd;
+    }
+
+    .pipe-step:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      top: 42px;
+      right: -12px;
+      z-index: 2;
+      display: grid;
+      width: 22px;
+      height: 22px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      color: var(--muted);
+      background: var(--surface);
+      font-weight: 800;
+    }
+
+    .pipe-step span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .method-map {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(74px, 1fr));
+      gap: 8px;
+      align-items: stretch;
+      margin: 18px 0;
+    }
+
+    .method-node,
+    .method-arrow {
+      display: grid;
+      place-items: center;
+      min-height: 78px;
+      text-align: center;
+    }
+
+    .method-node {
+      border: 1px solid var(--line);
+      border-top: 4px solid var(--blue);
+      border-radius: 6px;
+      padding: 10px 8px;
+      background: #fbfcfd;
+      font-size: 0.9rem;
+      line-height: 1.35;
+    }
+
+    .method-node.coral {
+      border-top-color: var(--coral);
+    }
+
+    .method-node.teal {
+      border-top-color: var(--teal);
+    }
+
+    .method-node.amber {
+      border-top-color: var(--amber);
+    }
+
+    .method-arrow {
+      min-width: 24px;
+      color: var(--muted);
+      font-size: 1.45rem;
+      font-weight: 800;
+    }
+
+    .pseudo {
+      margin: 15px 0;
+      border: 1px solid #243442;
+      border-radius: 6px;
+      background: #17232d;
+      color: #e7eef5;
+      padding: 16px 18px;
+      overflow-x: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.88rem;
+      line-height: 1.7;
+      white-space: pre;
+    }
+
+    .pseudo .first {
+      color: #8cc8ff;
+    }
+
+    .pseudo .second {
+      color: #ffaaa2;
+    }
+
+    .pseudo .output {
+      color: #8fe0d8;
+    }
+
+    details {
+      margin: 12px 0;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fbfcfd;
+    }
+
+    summary {
+      cursor: pointer;
+      padding: 11px 13px;
+      font-weight: 800;
+    }
+
+    details > div {
+      padding: 0 13px 13px;
+    }
+
+    .clean-list {
+      margin: 8px 0 0;
+      padding-left: 20px;
+    }
+
+    .clean-list li {
+      margin-bottom: 6px;
+    }
+
+    .source {
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .back-top {
+      display: inline-block;
+      margin-top: 6px;
+      font-size: 0.88rem;
+    }
+
+    @media (max-width: 1040px) {
+      .masthead {
+        grid-template-columns: 1fr;
+      }
+
+      .masthead-copy {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .masthead-map {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: auto;
+      }
+
+      .layer {
+        border-right: 1px solid var(--line);
+        border-bottom: 0;
+      }
+
+      .layer:last-child {
+        border-right: 0;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .toc {
+        position: static;
+        columns: 2;
+      }
+
+      .toc strong {
+        column-span: all;
+      }
+
+      .pipeline {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .pipe-step:not(:last-child)::after {
+        display: none;
+      }
+
+      .method-map {
+        grid-template-columns: 1fr;
+      }
+
+      .method-arrow {
+        min-height: 22px;
+        transform: rotate(90deg);
+      }
+    }
+
+    @media (max-width: 720px) {
+      .shell {
+        padding: 12px;
+      }
+
+      .masthead-copy,
+      .section {
+        padding: 21px;
+      }
+
+      .masthead-map,
+      .grid-2,
+      .grid-3,
+      .pipeline {
+        grid-template-columns: 1fr;
+      }
+
+      .layer {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .toc {
+        columns: 1;
+      }
+
+      .section-heading {
+        grid-template-columns: 34px minmax(0, 1fr);
+      }
+
+      .section-index {
+        width: 32px;
+        height: 32px;
+      }
+
+      .equation-title {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .symbol-table,
+      .comparison-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      .shell {
+        width: 100%;
+        padding: 0;
+      }
+
+      .toc {
+        display: none;
+      }
+
+      .layout {
+        display: block;
+      }
+
+      .masthead,
+      .section {
+        box-shadow: none;
+      }
+
+      a {
+        color: inherit;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell" id="top">
+    <header class="masthead">
+      <div class="masthead-copy">
+        <p class="eyebrow">Robert A. Miller · DSE at Michigan · August 2026</p>
+        <h1>Dynamic Discrete Choice：Identification 與 CCP Estimation</h1>
+        <p class="lead">
+          這份導讀的主角是 Hotz-Miller inversion：只要 shock distribution 已知，
+          observed conditional choice probabilities 就能反推出 relative choice values。
+          接著利用 conditional value correction 與 transition laws，把動態最佳化改寫成不含 recursive maximization
+          的估計方程。
+        </p>
+      </div>
+      <div class="masthead-map" aria-label="CCP estimation three layers">
+        <div class="layer">
+          <span class="layer-number">1</span>
+          <div><strong>Invert CCPs</strong><span>\(p(x)\rightarrow\Delta v(x)\)</span></div>
+        </div>
+        <div class="layer">
+          <span class="layer-number">2</span>
+          <div><strong>Represent values</strong><span>用 \(\psi(p)\) 與 transitions 展開未來</span></div>
+        </div>
+        <div class="layer">
+          <span class="layer-number">3</span>
+          <div><strong>Estimate primitives</strong><span>加入 normalization 或 parametric restrictions</span></div>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <nav class="toc" aria-label="目錄">
+        <strong>目錄</strong>
+        <a href="#overview">1. CCP 方法的核心</a>
+        <a href="#model">2. 模型、timing 與 CI</a>
+        <a href="#inversion">3. Hotz-Miller inversion</a>
+        <a href="#correction">4. Value correction \(\psi\)</a>
+        <a href="#representation">5. 不做 recursive max 的表示</a>
+        <a href="#identification">6. Primitives 如何識別</a>
+        <a href="#first-stage">7. Unrestricted first stage</a>
+        <a href="#qml">8. CCP-QML estimator</a>
+        <a href="#estimators">9. QML、MD 與 MSM</a>
+        <a href="#finite-dependence">10. Finite dependence</a>
+        <a href="#hidden-types">11. Hidden types 與 EM</a>
+        <a href="#entry-exit">12. Entry-exit application</a>
+        <a href="#checklist">13. 實作檢查表</a>
+      </nav>
+
+      <main>
+        <section class="section" id="overview">
+          <div class="section-heading">
+            <span class="section-index">1</span>
+            <div>
+              <h2>CCP 方法的核心：把最佳化結果讀回來</h2>
+              <p>觀察 choice frequencies，不只是描述行為，也是在觀察 relative value indices。</p>
+            </div>
+          </div>
+
+          <div class="note">
+            <strong>CCP = Conditional Choice Probability。</strong>
+            \(p_j(x)=\Pr(d=j\mid x)\) 是 agent 處於 observed state \(x\) 時選 action \(j\) 的機率；
+            同一 state cell 裡的選擇比例是它的 sample analogue。BLP 的 market share 也有這種
+            「比例估機率」的意義，但它是條件於 market、choice set 與產品屬性，並把消費者
+            random coefficients 積分掉的 market-level probability。
+          </div>
+
+          <div class="takeaway">
+            <strong>一句話：</strong>
+            NFXP 對每個 trial parameter 解 Bellman equation；CCP estimator
+            先從資料估 \(p\) 與 \(f\)，再利用 inversion 和 value representation
+            把已解出的 optimal behavior 嵌入第二階段。
+          </div>
+
+          <div class="grid-3">
+            <article class="mini-card blue">
+              <h3>Population inversion</h3>
+              <p>已知 shock distribution \(g\) 時，CCP vector 與 relative conditional values 一一對應。</p>
+            </article>
+            <article class="mini-card coral">
+              <h3>Dynamic correction</h3>
+              <p>\(\psi_j(p)=V-v_j\) 把等待 shocks、保留最適選擇權的價值轉成 CCP 的函數。</p>
+            </article>
+            <article class="mini-card teal">
+              <h3>Primitive recovery</h3>
+              <p>Relative values 加上 transitions 仍不等於 flow utilities；還需要一個 benchmark payoff 或參數限制。</p>
+            </article>
+          </div>
+
+          <table class="comparison-table">
+            <thead>
+              <tr><th></th><th>NFXP</th><th>CCP estimation</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>動態問題</td><td>每次試算參數都重新解 fixed point</td><td>先估 CCP，再用 representation 取代 recursive maximization</td></tr>
+              <tr><td>主要計算成本</td><td>Repeated DP solution</td><td>High-dimensional first-stage \(p,f\) estimation</td></tr>
+              <tr><td>主要脆弱點</td><td>Inner-loop tolerance 與 gradients</td><td>Sparse cells、zero CCPs、generated-regressor uncertainty</td></tr>
+              <tr><td>最適場合</td><td>State space 可控、結構緊密</td><td>CCPs/transitions 容易估、finite dependence 或 terminal/renewal structure</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="section" id="model">
+          <div class="section-heading">
+            <span class="section-index">2</span>
+            <div>
+              <h2>模型、timing 與 conditional independence</h2>
+              <p>Agent 看得到 \((x_t,\epsilon_t)\)，econometrician 通常只看到 \(x_t,d_t\)。</p>
+            </div>
+          </div>
+
+          <table class="symbol-table">
+            <thead>
+              <tr><th>符號</th><th>定義</th><th>角色</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>\(x_t\)</td><td>有限 observed state</td><td>資料中可見，影響 utility 與 transitions</td></tr>
+              <tr><td>\(\epsilon_{jt}\)</td><td>Choice-specific private shock</td><td>Agent 看得到，研究者積分掉</td></tr>
+              <tr><td>\(d_{jt}\)</td><td>選 \(j\) 時等於 1</td><td>Mutually exclusive discrete action</td></tr>
+              <tr><td>\(u_{jt}(x)\)</td><td>Deterministic flow utility</td><td>最終希望識別的 primitive</td></tr>
+              <tr><td>\(f_{jt}(x'|x)\)</td><td>選 \(j\) 後 observed-state transition</td><td>由 panel transitions 估計</td></tr>
+              <tr><td>\(g_t(\epsilon|x)\)</td><td>Shock distribution</td><td>Inversion 的已知 mapping</td></tr>
+            </tbody>
+          </table>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>Sequential objective</strong><span class="tag">dynamic choice</span></div>
+            <div class="equation">
+              \[
+                \E\!\left[
+                  \sum_{\tau=t}^{T}\sum_{j=1}^{J}
+                  \beta^{\tau-t}d_{j\tau}
+                  \{u_{j\tau}(x_\tau)+\epsilon_{j\tau}\}
+                  \,\middle|\,x_t,\epsilon_t
+                \right].
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              每一期選一個 action，得到 deterministic payoff 加上私人 shock，
+              並透過 action-specific transition 影響未來 states。因為 agent 已看見本期 \(\epsilon_t\)，
+              當期 choice 對研究者而言是隨機，對 agent 而言則是 deterministic argmax。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>Conditional independence</strong><span class="tag">state reduction</span></div>
+            <div class="equation">
+              \[
+                \Pr(x_{t+1},\epsilon_{t+1}\mid x_t,\epsilon_t,d_t=j)
+                =
+                f_{jt}(x_{t+1}\mid x_t)\,
+                g_{t+1}(\epsilon_{t+1}\mid x_{t+1}).
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              給定下一期 observed state 後，未來 shock 不再記得本期 shock；
+              本期 \(\epsilon_t\) 也不直接改變 \(x_{t+1}\)。因此 continuation value
+              可以只寫成 \(V_{t+1}(x_{t+1})\)，不必把整個 shock history 放進 state。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>Choice-specific value 與 CCP</strong><span class="tag">objects</span></div>
+            <div class="equation">
+              \[
+              \begin{aligned}
+                v_{jt}(x)
+                  &=u_{jt}(x)
+                    +\beta\sum_{x'=1}^{X}
+                    V_{t+1}(x')f_{jt}(x'\mid x),\\
+                p_{jt}(x)
+                  &=\E[d^o_{jt}(x,\epsilon)\mid x]
+                    =\int d^o_{jt}(x,\epsilon)g_t(\epsilon\mid x)d\epsilon.
+              \end{aligned}
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              \(v_{jt}\) 是承諾選 \(j\) 後、尚未加入本期 \(\epsilon_j\) 的 lifetime value。
+              CCP 則是在相同 \(x\) 下，多少 shock draws 會讓 \(j\) 成為最大值。
+              所以 CCP 其實是一個把 relative values 映射成機率的 static random-utility map。
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="inversion">
+          <div class="section-heading">
+            <span class="section-index">3</span>
+            <div>
+              <h2>Hotz-Miller inversion：由 CCP 反推 relative values</h2>
+              <p>選擇機率不能告訴我們 value level，但可以告訴我們所有 value differences。</p>
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>以 action \(J\) 為基準</strong><span class="tag">normalization</span></div>
+            <div class="equation">
+              \[
+                \Delta v_{jt}(x)=v_{jt}(x)-v_{Jt}(x),
+                \qquad j=1,\ldots,J-1.
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              所有 action values 同時加上一個常數不會改變 choice。
+              因此 \(J\) 個 CCP 中只有 \(J-1\) 個獨立資訊，恰好對應 \(J-1\) 個 relative values。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>General random-utility mapping</strong><span class="tag">Hotz-Miller</span></div>
+            <div class="equation">
+              \[
+                p_{-J,t}(x)
+                =
+                Q_t(\Delta v_t(x),x),
+                \qquad
+                \Delta v_t(x)
+                =
+                Q_t^{-1}(p_{-J,t}(x),x).
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              \(Q_t\) 問的是：給定 payoff differences 與 shock distribution，
+              哪一部分 shock space 會讓各 action 勝出？Hotz-Miller theorem 說，
+              在連續 full-support shocks 下，這個 map 對 \(\Delta v\) 可逆。
+              已知 \(g\) 並觀察 \(p\)，就能反推使這些 choice frequencies 合理的 relative values。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>p.7：inverse 是一個 indifference shock difference</strong><span class="tag">compensation</span></div>
+            <div class="equation">
+              \[
+              \begin{aligned}
+                v_{jt}(x)+\epsilon'_j
+                  &=v_{Jt}(x)+\epsilon'_J\\
+                \Longrightarrow\qquad
+                \Delta v_{jt}(x)
+                  &=\epsilon'_J-\epsilon'_j
+                   =Q^{-1}_{jt}[p_t(x),x].
+              \end{aligned}
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              \(\epsilon'\) 是位於 choice-region boundary 上的假想 shock，不是平均或實際觀察到的 shock。
+              若 \(\Delta v_j>0\)，action \(j\) 的 systematic lifetime value 較高；
+              benchmark \(J\) 必須得到比 \(j\) 高 \(\Delta v_j\) 的 taste shock，兩者才會打平。
+              所以 inverse CCP 是以 shock-scale 單位表示的 compensating value difference。
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="mini-card blue">
+              <h3>Binary choice：就是一個 quantile</h3>
+              <p>
+                \(d=j\iff\epsilon_J-\epsilon_j\leq\Delta v_j\)，因此
+                \[
+                  p_j(x)
+                  =F_{\epsilon_J-\epsilon_j\mid x}(\Delta v_j),
+                  \qquad
+                  \Delta v_j
+                  =F^{-1}_{\epsilon_J-\epsilon_j\mid x}(p_j).
+                \]
+                已知 shock-difference distribution 後，choice frequency 直接指出 value difference
+                位於哪個 quantile。
+              </p>
+            </article>
+            <article class="mini-card teal">
+              <h3>多項選擇：要反轉整個 vector</h3>
+              <p>
+                當 \(J>2\)，\(p_j\) 同時受所有 \(\Delta v_k\) 影響，單一 \(p_j\) 不足以反推
+                \(\Delta v_j\)。講義的 \(Q^{-1}_{jt}\) 是 vector inverse \(Q_t^{-1}\) 的第 \(j\)
+                個 component，而不是只對 scalar \(Q_{jt}\) 單獨取 inverse。
+              </p>
+            </article>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>讓所有 choices 同時無差異</strong><span class="tag">location free</span></div>
+            <div class="equation">
+              \[
+              \begin{aligned}
+                v_{1t}(x)+\epsilon'_1
+                  &=\cdots
+                   =v_{Jt}(x)+\epsilon'_J
+                   =c,\\
+                \epsilon'_J-\epsilon'_j
+                  &=v_{jt}(x)-v_{Jt}(x)
+                   =\Delta v_{jt}(x).
+              \end{aligned}
+              \]
+            </div>
+            <div class="intuition">
+              <strong>Normalization：</strong>
+              \(c\) 可以任意平移，因此 \(\epsilon'\) 的 absolute levels 不唯一；被識別的是
+              \(J-1\) 個 shock differences。若設 \(\epsilon'_J=0\)，則
+              \(\epsilon'_j=-\Delta v_j\)。這和所有 choice values 同加一個常數不影響選擇是同一件事。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>T1EV 的熟悉版本：log odds</strong><span class="tag">closed form</span></div>
+            <div class="equation">
+              \[
+                p_{jt}(x)
+                =
+                \frac{\exp(v_{jt}(x)/\sigma)}
+                {\sum_{k=1}^{J}\exp(v_{kt}(x)/\sigma)}
+                \quad\Longrightarrow\quad
+                v_{jt}(x)-v_{Jt}(x)
+                =
+                \sigma\log\frac{p_{jt}(x)}{p_{Jt}(x)}.
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              一個 action 比 benchmark 多被選多少，直接揭露它高出多少 lifetime value。
+              \(\sigma\) 是 utility scale；若 normalize \(\sigma=1\)，relative value 就是 log CCP odds。
+            </div>
+          </div>
+
+          <h3>與 market-share／BLP inversion 的精確對應</h3>
+          <p>
+            若市場 \(m\) 有 \(M_m\) 位潛在消費者，
+            \(\widehat s_{jm}=M_m^{-1}\sum_i1\{d_{im}=j\}\) 在大市場下收斂到
+            \(\Pr(d_i=j\mid m)\)。所以 market share 確實是 market-level choice probability；
+            但若分母只含實際購買者，它是 conditional-on-purchase share，並不是標準 BLP
+            包含 outside option 的 market share。
+          </p>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>共同的 convex-surplus 骨架</strong><span class="tag">same principle</span></div>
+            <div class="equation">
+              \[
+                \mathcal S(a)
+                  =\E\!\left[\max_j\{a_j+\epsilon_j\}\right],
+                \qquad
+                m_j
+                  =\frac{\partial\mathcal S(a)}{\partial a_j},
+                \qquad
+                a
+                  =(\nabla\mathcal S)^{-1}(m).
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              Expected maximum 對某個 value index 的邊際效果，正是該 choice 勝出的機率。
+              Hotz-Miller 與 BLP 都把 observed probability/share 反轉成 latent utility indices；
+              差別在 \(a\)、被積分的 heterogeneity，以及 inversion 後要接回的結構。
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="mini-card blue">
+              <h3>DDC / Hotz-Miller</h3>
+              <p>
+                \[
+                  p(x)=Q(\Delta v(x);G_\epsilon)
+                  \quad\Longrightarrow\quad
+                  \Delta v(x)=Q^{-1}(p(x);G_\epsilon).
+                \]
+                給定 observed dynamic state \(x\)，通常只積分本期 transitory shocks；
+                反推出的是包含 continuation value 的 lifetime-value differences。
+              </p>
+            </article>
+            <article class="mini-card coral">
+              <h3>Random-coefficient BLP</h3>
+              <p>
+                \[
+                \begin{aligned}
+                  u_{ijm}
+                    &=\delta_{jm}+\mu_{ijm}(\nu_i;\theta_2)+\epsilon_{ijm},\\
+                  s_{jm}(\delta_m;\theta_2)
+                    &=\int P_{ijm}(\nu;\delta_m,\theta_2)dF(\nu).
+                \end{aligned}
+                \]
+                給定 \(\theta_2\)，反轉 \(s_m(\delta_m;\theta_2)=S_m^{obs}\) 得到 product-market
+                mean utilities \(\delta_m\)。
+              </p>
+            </article>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>兩個 probability maps 的 Jacobian</strong><span class="tag">local invertibility</span></div>
+            <div class="equation">
+              \[
+              \begin{aligned}
+                \frac{\partial p_j}{\partial v_k}
+                  &=
+                  \frac{1}{\sigma}p_j
+                  \left(1\{j=k\}-p_k\right)
+                  &&\text{(T1EV CCP)},\\
+                \frac{\partial s_j}{\partial\delta_k}
+                  &=
+                  \int P_{ij}(\nu)
+                  \left(1\{j=k\}-P_{ik}(\nu)\right)dF(\nu)
+                  &&\text{(BLP)}.
+              \end{aligned}
+              \]
+            </div>
+            <div class="intuition">
+              <strong>數學對應：</strong>
+              兩者的 diagonal 都為正、cross effects 都為負。BLP Jacobian 是 individual-logit
+              Jacobians 對 \(\nu\) 的平均；outside-good normalization 移除共同 location 後，
+              這個 curvature 提供 inversion 的局部識別。Random coefficients 也使 inverse
+              不再等於逐產品的單純 log-share difference。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>BLP 沒有 closed form 時的 Berry contraction</strong><span class="tag">inner inversion</span></div>
+            <div class="equation">
+              \[
+                \delta_m^{(r+1)}
+                  =
+                \delta_m^{(r)}
+                  +\log S_m^{obs}
+                  -\log s_m(\delta_m^{(r)};\theta_2).
+              \]
+            </div>
+            <div class="intuition">
+              <strong>計算差異：</strong>
+              Simple logit BLP 的 \(\delta_{jm}=\log S_{jm}-\log S_{0m}\) 與 T1EV CCP log odds
+              是同一公式。加入 random coefficients 後，shares 已對 \(\nu_i\) 積分，inverse
+              通常沒有 closed form，而且每個 trial \(\theta_2\) 都要重新求 \(\delta\)。
+              基本 CCP inversion 在 \(G_\epsilon\) 固定後通常只做一次 first stage。
+            </div>
+          </div>
+
+          <table class="comparison-table">
+            <thead>
+              <tr><th></th><th>Hotz-Miller CCP</th><th>BLP share inversion</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>條件事件</td><td>Individual dynamic state \(x\)</td><td>Market、choice set 與產品屬性</td></tr>
+              <tr><td>積分掉的東西</td><td>通常是當期 \(\epsilon_t\)</td><td>\(\epsilon_i\) 與 random coefficients \(\nu_i\)</td></tr>
+              <tr><td>Inverse object</td><td>\(v_j(x)-v_J(x)\)</td><td>Mean utility \(\delta_{jm}\)</td></tr>
+              <tr><td>Inversion 之後</td><td>用 transitions、\(\beta\)、correction 恢復 flow utility</td><td>用 IV moments 處理 price 與 demand shock \(\xi\) 的內生性</td></tr>
+            </tbody>
+          </table>
+
+          <div class="warning">
+            <strong>Inversion 不等於已經識別 \(u_j(x)\)。</strong>
+            它識別的是 \(v_j-v_J\)，其中混合了 current utility 與未來 state distributions。
+            要恢復 flow utility，還要使用 transition laws、value correction，以及一個 benchmark payoff normalization。
+          </div>
+        </section>
+
+        <section class="section" id="correction">
+          <div class="section-heading">
+            <span class="section-index">4</span>
+            <div>
+              <h2>Conditional value correction \(\psi\)</h2>
+              <p>它衡量「等 shocks 出現後再選」相對於事前承諾某個 action 的 option value。</p>
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>從 realized maximum 到 correction</strong><span class="tag">option value</span></div>
+            <div class="equation">
+              \[
+              \begin{aligned}
+                W_t(x,\epsilon)
+                  &=\max_k\{v_{kt}(x)+\epsilon_{kt}\},\\
+                V_t(x)
+                  &=\E[W_t(x,\epsilon)\mid x],\\
+                \psi_{jt}(x)
+                  &=V_t(x)-v_{jt}(x).
+              \end{aligned}
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              \(V_t(x)\) 允許 agent 看完所有 shocks 再挑最佳 action；
+              \(v_{jt}(x)\) 則固定 deterministic part 為 action \(j\)。
+              若事前承諾 \(j\)，期望 lifetime utility 是 \(v_{jt}(x)+\E[\epsilon_{jt}|x]\)，
+              所失去的最適選擇權價值為
+              \(\psi_{jt}(x)-\E[\epsilon_{jt}|x]\)。
+            </div>
+          </div>
+
+          <div class="note">
+            <strong>這不是統計上的 bias correction。</strong>
+            它補的是 choice flexibility。真正的 commitment loss 是
+            \(V_t-[v_{jt}+\E(\epsilon_{jt}\mid x)]
+            =\psi_{jt}-\E(\epsilon_{jt}\mid x)\geq0\)；
+            只有在 \(\E(\epsilon_{jt}\mid x)=0\) 的 normalization 下，loss 才直接等於 \(\psi_{jt}\)。
+          </div>
+
+          <div class="warning">
+            <strong>不能寫成 \(V_t(x)=\sum_jp_{jt}(x)v_{jt}(x)\)。</strong>
+            Agent 正是因為某個 \(\epsilon_j\) 相對高才選 \(j\)，所以
+            \(\E[\epsilon_j\mid d=j,x]\neq\E[\epsilon_j\mid x]\)。
+            單純用 CCP 加權 deterministic values，會漏掉「被選中 shock 特別有利」的 selection term。
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>Why CCPs identify \(\psi\)</strong><span class="tag">identified correction</span></div>
+            <div class="equation">
+              \[
+              \begin{aligned}
+                V_t(x)-v_{it}(x)
+                ={}&
+                \sum_{j=1}^{J}p_{jt}(x)
+                [v_{jt}(x)-v_{it}(x)]\\
+                &+
+                \sum_{j=1}^{J}
+                \int \epsilon_{jt}d^o_{jt}(x,\epsilon)
+                g_t(\epsilon\mid x)d\epsilon.
+              \end{aligned}
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              第一部分的 value differences 由 CCP inversion 給出；
+              第二部分是「在 \(j\) 勝出的 shock region 裡，被選中 shock 的期望」，
+              只要 \(g\) 已知也能計算。因此 \(\psi_i\) 是 \(p\) 與 \(g\) 的已知函數。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>i.i.d. T1EV correction</strong><span class="tag">logit</span></div>
+            <div class="equation">
+              \[
+                \psi_j(p)=\gamma-\sigma\log p_j,
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              \(p_j\) 越小，承諾選 \(j\) 的機會成本越高，所以 correction 越大。
+              \(\gamma\) 是由 EV1 location/scale normalization 決定的常數；標準 unit-scale
+              參數化下是 Euler constant，scale 為 \(\sigma\) 的另一常見寫法則是
+              \(\sigma\gamma_E-\sigma\log p_j\)。這個共同常數通常會被 utility normalization 吸收。
+              這條式子是 CCP estimator 能把 expected future maxima 換成 observed probabilities 的關鍵。
+            </div>
+          </div>
+
+          <details>
+            <summary>Extended nested logit correction</summary>
+            <div>
+              <div class="equation">
+                \[
+                  \psi_j(p)
+                  =
+                  \gamma-\sigma\log p_j
+                  -(1-\sigma)\log\!\left(\sum_{k\in\mathcal J(j)}p_k\right).
+                \]
+              </div>
+              <p>
+                \(\mathcal J(j)\) 是包含 \(j\) 的 nest。Correction 只需要同一 nest 裡的 CCPs；
+                nest 外有多少 choices 或它們如何相關，都不進入這一項。當 \(\sigma=1\) 時，
+                回到 independent EV1 的 \(\gamma-\log p_j\)。
+              </p>
+            </div>
+          </details>
+        </section>
+
+        <section class="section" id="representation">
+          <div class="section-heading">
+            <span class="section-index">5</span>
+            <div>
+              <h2>Value representation：不做 recursive maximization</h2>
+              <p>選一個 baseline action 1，沿著它向前 telescoping；最適行為已包含在 CCP corrections。</p>
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>先向前展開一期</strong><span class="tag">telescoping</span></div>
+            <div class="equation">
+              \[
+              \begin{aligned}
+                v_{jt}(x)
+                  &=
+                  u_{jt}(x)
+                  +\beta\sum_{x'}V_{t+1}(x')f_{jt}(x'|x)\\
+                  &=
+                  u_{jt}(x)
+                  +\beta\sum_{x'}
+                  \left[v_{1,t+1}(x')+\psi_{1,t+1}(x')\right]
+                  f_{jt}(x'|x).
+              \end{aligned}
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              任何 ex ante value 都可寫成「承諾 baseline action 1 的 conditional value」
+              加上等待 shocks 後再最佳化的 correction。重複代入 \(v_1\)，就能把 Bellman recursion
+              展開成 discounted future flows。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>Representation theorem</strong><span class="tag">Arcidiacono-Miller</span></div>
+            <div class="equation">
+              \[
+              \begin{aligned}
+                v_{jt}(x)
+                ={}&u_{jt}(x)\\
+                &+
+                \sum_{\tau=t+1}^{T}\sum_{x_\tau=1}^{X}
+                \beta^{\tau-t}
+                \left\{
+                  u_{1\tau}(x_\tau)
+                  +\psi_1[p_\tau(x_\tau)]
+                \right\}
+                \kappa_{\tau-1}(x_\tau\mid x,j).
+              \end{aligned}
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              \(\kappa_{\tau-1}(x_\tau|x,j)\) 是本期先選 \(j\)，之後沿 baseline action 1
+              前進時抵達 \(x_\tau\) 的機率。這條 path 不必是 optimal；
+              每一期的 \(\psi_1(p)\) 會補回「沒有等 shocks 再選」的損失。
+              因此 recursive maximization 消失，但 optimal solution 仍透過 observed CCPs 留在式子裡。
+            </div>
+          </div>
+
+          <div class="note">
+            <strong>沒有 Bellman solve，不代表沒有 dynamics。</strong>
+            Estimator 仍要知道 \(\beta\)、transition \(f\)、未來 CCPs 與 horizon。
+            CCP approach 只是把「反覆最大化」換成「先估 reduced forms，再做 discounted integration」。
+          </div>
+        </section>
+
+        <section class="section" id="identification">
+          <div class="section-heading">
+            <span class="section-index">6</span>
+            <div>
+              <h2>Flow utility primitives 到底如何識別？</h2>
+              <p>講義先假設 \((T,\beta,f,g)\) 已知，再問 panel \((x_t,d_t)\) 能否識別 \(u\)。</p>
+            </div>
+          </div>
+
+          <div class="takeaway">
+            <strong>答案：</strong>
+            只靠 behavior 無法識別每個 state-time 的 absolute utility level。
+            若每個 \((x,t)\) 有一個 benchmark action payoff 已知，其餘 flow utilities
+            就能由 CCP corrections 與不同 initial choices 所造成的 future-state differences 恢復。
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>Identification formula</strong><span class="tag">known benchmark</span></div>
+            <div class="equation">
+              \[
+              \begin{aligned}
+                u_{jt}(x)
+                ={}&
+                u_{1t}(x)
+                +\psi_{1t}(x)-\psi_{jt}(x)\\
+                &+
+                \sum_{\tau=t+1}^{T}\sum_{x_\tau=1}^{X}
+                \beta^{\tau-t}
+                \left[u_{1\tau}(x_\tau)+\psi_{1\tau}(x_\tau)\right]\\
+                &\qquad\qquad\times
+                \left[
+                  \kappa_{\tau-1}(x_\tau|x,1)
+                  -\kappa_{\tau-1}(x_\tau|x,j)
+                \right].
+              \end{aligned}
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              Action \(j\) 相對於 benchmark 1 的 current utility，由兩塊決定：
+              當期等待 shocks 的 correction gap，以及兩個 initial choices 對未來 state distributions
+              的差異。若 \(u_{1t}(x)\) 已知，右邊其餘物件都由 \(p,f,g,\beta\) 決定。
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <article class="mini-card coral">
+              <h3>Utility level</h3>
+              <p>同一 \((x,t)\) 的所有 payoffs 可以被重新標定並搭配 future adjustments，choices 仍不變。</p>
+            </article>
+            <article class="mini-card amber">
+              <h3>Shock scale</h3>
+              <p>通常 normalize \(g\) 的 scale，例如 T1EV 的 \(\sigma=1\)，否則只識別 utility/scale ratios。</p>
+            </article>
+            <article class="mini-card violet">
+              <h3>Discount factor</h3>
+              <p>本講義把 \(\beta\) 當已知；只靠 choices 和 transitions 通常不能無條件地識別 \(\beta\)。</p>
+            </article>
+          </div>
+
+          <div class="warning">
+            <strong>Setting \(u_1(x)=0\) 是 normalization，不是資料發現。</strong>
+            它選出 observational-equivalence class 的一個代表。若要識別 \(\beta\)、shock scale
+            或有直接 welfare 意義的 utility levels，通常需要額外 exclusion restrictions、
+            payoff information 或 functional-form restrictions。
+          </div>
+        </section>
+
+        <section class="section" id="first-stage">
+          <div class="section-heading">
+            <span class="section-index">7</span>
+            <div>
+              <h2>Unrestricted first stage：直接估 \(p\) 與 \(f\)</h2>
+              <p>有限 state space 下，最自然的是 cell-frequency MLE。</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="equation-card">
+              <div class="equation-title"><strong>CCP cell estimator</strong><span class="tag">choice frequency</span></div>
+              <div class="equation">
+                \[
+                  \widehat p_{jt}(x)
+                  =
+                  \frac{\sum_n 1\{x_{nt}=x,d_{nt}=j\}}
+                  {\sum_n 1\{x_{nt}=x\}}.
+                \]
+              </div>
+              <div class="intuition">
+                <strong>經濟直覺：</strong>
+                在同一 state-time cell 裡，選 \(j\) 的樣本比例就是 CCP 的 unrestricted MLE。
+              </div>
+            </div>
+
+            <div class="equation-card">
+              <div class="equation-title"><strong>Transition cell estimator</strong><span class="tag">state law</span></div>
+              <div class="equation">
+                \[
+                  \widehat f_{jt}(x'|x)
+                  =
+                  \frac{\sum_n1\{x_{nt}=x,d_{nt}=j,x_{n,t+1}=x'\}}
+                  {\sum_n1\{x_{nt}=x,d_{nt}=j\}}.
+                \]
+              </div>
+              <div class="intuition">
+                <strong>經濟直覺：</strong>
+                只看在 \(x\) 選 \(j\) 的 observations，下一期落到 \(x'\) 的比例就是 action-specific transition。
+              </div>
+            </div>
+          </div>
+
+          <div class="note">
+            在 unrestricted finite-cell model 中，\(\widehat p,\widehat f\) 都是 MLE，
+            具有標準的 \(\sqrt N\) asymptotic normality。若 flow utilities exactly identified，
+            plug-in estimator 也可藉 invariance principle 達到相應 efficiency bound。
+            額外效率只能來自對 \(u\) 或 \(f\) 加入 functional-form restrictions。
+          </div>
+
+          <div class="grid-3">
+            <article class="mini-card coral">
+              <h3>Sparse cells</h3>
+              <p>State、time、choice 維度一大，很多 cells 沒資料，\(\widehat p\) 與 \(\widehat f\) 會非常不穩。</p>
+            </article>
+            <article class="mini-card amber">
+              <h3>Zero CCPs</h3>
+              <p>T1EV inversion 需要 \(\log p_j\)；sample zero 會產生 \(-\infty\)，通常需 smoothing 或 parametric first stage。</p>
+            </article>
+            <article class="mini-card blue">
+              <h3>Generated regressors</h3>
+              <p>第二階段把 \(\widehat p,\widehat f\) 當輸入，standard errors 必須包含 first-stage estimation error。</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="qml">
+          <div class="section-heading">
+            <span class="section-index">8</span>
+            <div>
+              <h2>Hotz-Miller CCP-QML estimator</h2>
+              <p>先估 reduced forms，再只對 utility parameters 做一個 smooth likelihood optimization。</p>
+            </div>
+          </div>
+
+          <div class="pipeline" aria-label="CCP QML estimation stages">
+            <div class="pipe-step"><span>step 1</span><strong>估 transition</strong><p>\(\widehat\theta^{(2)},\widehat f\)</p></div>
+            <div class="pipe-step"><span>step 2</span><strong>建 \(\widehat\kappa\)</strong><p>未來 state distributions</p></div>
+            <div class="pipe-step"><span>step 3</span><strong>估 CCPs</strong><p>\(\widehat p\rightarrow\widehat\psi\)</p></div>
+            <div class="pipe-step"><span>step 4</span><strong>算 correction</strong><p>\(\widehat h_{jt}(x)\)</p></div>
+            <div class="pipe-step"><span>step 5</span><strong>QML</strong><p>估 \(\theta^{(1)}\)</p></div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>Numerical dynamic correction</strong><span class="tag">precomputed</span></div>
+            <div class="equation">
+              \[
+                \widehat h_{jt}(x)
+                =
+                \sum_{\tau=t+1}^{T}\sum_{x_\tau=1}^{X}
+                \beta^{\tau-t}
+                \widehat\psi_{1\tau}(x_\tau)
+                \widehat\kappa_{\tau-1}(x_\tau|t,x,j).
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              \(\widehat h\) 把由 future shock option values 所造成的 dynamic component 先算好。
+              在第二階段改變 \(\theta^{(1)}\) 時，不需要重新解 Bellman equation。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>T1EV quasi-choice probability</strong><span class="tag">second stage</span></div>
+            <div class="equation">
+              \[
+                \widehat p_{jt}(x;\theta^{(1)})
+                =
+                \frac{
+                  \exp[u_{jt}(x;\theta^{(1)})+\widehat h_{jt}(x)]
+                }{
+                  \sum_{k=1}^{J}
+                  \exp[u_{kt}(x;\theta^{(1)})+\widehat h_{kt}(x)]
+                }.
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              第二階段看起來像 static multinomial logit，但 index 已包含由第一階段 CCPs
+              與 transitions 算出的 dynamic correction。稱為 QML，是因為 likelihood
+              使用估計出的 generated objects，而不是每個 \(\theta\) 下重新求 exact equilibrium policy。
+            </div>
+          </div>
+
+          <div class="pseudo" aria-label="CCP QML pseudocode"><span class="first">first stage:</span>
+    estimate transition parameters and CCPs
+    construct future transition weights κ
+    transform CCPs into corrections ψ
+
+<span class="second">second stage:</span>
+    precompute dynamic corrections h
+    maximize quasi-likelihood over utility parameters
+
+<span class="output">output:</span>
+    structural utility estimates with first-stage uncertainty accounted for</div>
+        </section>
+
+        <section class="section" id="estimators">
+          <div class="section-heading">
+            <span class="section-index">9</span>
+            <div>
+              <h2>QML、Minimum Distance 與 Simulated Moments</h2>
+              <p>三者使用相同的 inversion/representation 邏輯，只是第二階段如何對結構模型施加限制不同。</p>
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>Minimum distance</strong><span class="tag">match utilities</span></div>
+            <div class="equation">
+              \[
+                \widehat\theta_{\mathrm{MD}}
+                =
+                \argmin_{\theta}
+                \left[
+                  u(\theta)-\Psi(\widehat p,\widehat f)
+                \right]'
+                W
+                \left[
+                  u(\theta)-\Psi(\widehat p,\widehat f)
+                \right].
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              \(\Psi(\widehat p,\widehat f)\) 是不受限模型由 CCPs/transitions implied 的 flow utilities；
+              \(u(\theta)\) 是結構模型允許的低維曲面。MD 找到離 unrestricted estimates 最近的
+              structural parameter。若 \(u\) 對 \(\theta\) 線性，常有 closed form。
+            </div>
+          </div>
+
+          <table class="comparison-table">
+            <thead>
+              <tr><th>方法</th><th>第二階段做什麼</th><th>優點</th><th>代價</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>QML</td><td>把 \(u(\theta)+\widehat h\) 放進 quasi likelihood</td><td>熟悉、平滑、適合 T1EV</td><td>需要正 CCPs，variance 要處理 first stage</td></tr>
+              <tr><td>MD</td><td>讓 parametric utility 貼近 inversion implied utility</td><td>線性 utility 時簡單，weighting 清楚</td><td>結果依賴 \(W\)，高維 moments 可能不穩</td></tr>
+              <tr><td>MSM</td><td>模擬各 initial choice 的 lifetime path，再匹配 value differences</td><td>適合複雜 transition 或難以解析積分</td><td>Simulation noise、instruments 與 weighting choice</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="section" id="finite-dependence">
+          <div class="section-heading">
+            <span class="section-index">10</span>
+            <div>
+              <h2>Finite dependence：讓遠期 continuation values 抵消</h2>
+              <p>不是假設 agent 只看幾期，而是構造 paths，使不同 initial choices 的 state distributions 在有限期後相同。</p>
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>\(\rho\)-period dependence</strong><span class="tag">distribution matching</span></div>
+            <div class="equation">
+              \[
+                \kappa^{(\omega^i)}_{t+\rho+1}
+                (x_{t+\rho+1}\mid i,t,x)
+                =
+                \kappa^{(\omega^j)}_{t+\rho+1}
+                (x_{t+\rho+1}\mid j,t,x)
+                \quad\forall x_{t+\rho+1}.
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              本期分別從 \(i\) 與 \(j\) 出發，之後使用兩組加權 choice sequences。
+              如果 \(\rho+1\) 期後抵達每個 state 的機率完全一樣，
+              那麼從該期開始的 \(V_{t+\rho+1}\) 在 value difference 中整塊抵消。
+              Estimator 只需估到有限期的 CCP corrections。
+            </div>
+          </div>
+
+          <div class="warning">
+            <strong>\(\omega\) 不一定是可執行 policy probabilities。</strong>
+            講義的 search example 中，某些 weights 可以大於 1 或為負；它們是用來匹配 transition distributions
+            的 algebraic weights，只要求對 choices 加總為 1，不必都落在 \([0,1]\)。
+          </div>
+
+          <div class="grid-2">
+            <article class="mini-card coral">
+              <h3>Terminal choice</h3>
+              <p>選了就結束問題，continuation value 為零。Exit、退休、死亡或採用不可逆技術常具有這種結構。</p>
+            </article>
+            <article class="mini-card teal">
+              <h3>Renewal choice</h3>
+              <p>下一期 state distribution 不依賴目前 state，例如更換引擎後 mileage reset。初始差異很快被洗掉。</p>
+            </article>
+          </div>
+
+          <div class="note">
+            在 CI 下，finite dependence 只涉及 transition matrices，因此在不指定 flow utilities 的情況下也具有可檢驗內容。
+            它可以只對某些 action pairs 或 states 成立；不需要整個模型 everywhere 都有同一個 \(\rho\)。
+          </div>
+        </section>
+
+        <section class="section" id="hidden-types">
+          <div class="section-heading">
+            <span class="section-index">11</span>
+            <div>
+              <h2>Relaxing CI：hidden types 與 EM</h2>
+              <p>Persistent unobserved heterogeneity 讓目前 choice shock 帶有未來資訊；conditional on type 後可恢復 CCP 邏輯。</p>
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>E-step：個體屬於 type \(s\) 的 posterior</strong><span class="tag">responsibility</span></div>
+            <div class="equation">
+              \[
+                q_{ns}^{(m+1)}
+                =
+                \frac{
+                  \pi_s^{(m)}
+                  \prod_{t=1}^{T}
+                  \ell(d_{nt}\mid x_{nt},s,p^{(m)},\theta^{(m)})
+                }{
+                  \sum_{s'=1}^{S}
+                  \pi_{s'}^{(m)}
+                  \prod_{t=1}^{T}
+                  \ell(d_{nt}\mid x_{nt},s',p^{(m)},\theta^{(m)})
+                }.
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              如果個體 \(n\) 的整段 choice history 在 type \(s\) 下更可能，
+              posterior weight \(q_{ns}\) 就更高。Long panel 幫助模型從反覆行為中學到 persistent type。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>M-step：更新 type shares 與 type-specific CCPs</strong><span class="tag">weighted cells</span></div>
+            <div class="equation">
+              \[
+              \begin{aligned}
+                \pi_s^{(m+1)}
+                  &=
+                  \frac{1}{N}\sum_{n=1}^{N}q_{ns}^{(m+1)},\\
+                p_j^{(m+1)}(x,s)
+                  &=
+                  \frac{
+                    \sum_n\sum_t
+                    d_{jnt}q_{ns}^{(m+1)}1\{x_{nt}=x\}
+                  }{
+                    \sum_n\sum_t
+                    q_{ns}^{(m+1)}1\{x_{nt}=x\}
+                  }.
+              \end{aligned}
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              每筆 observation 不再硬分到某個 type，而是按 posterior fractional membership
+              加權。接著用同樣 weights 最大化 quasi likelihood 更新 \(\theta\)，反覆迭代到收斂。
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <article class="mini-card amber">
+              <h3>Initial values</h3>
+              <p>Mixture likelihood 常有 local maxima，應使用多組起始值並比較 objective。</p>
+            </article>
+            <article class="mini-card violet">
+              <h3>Label switching</h3>
+              <p>Type labels 本身沒有意義，需要排序 normalization 或以 economically meaningful statistic 命名。</p>
+            </article>
+            <article class="mini-card coral">
+              <h3>Short panels</h3>
+              <p>每個人觀察期太短時，很難分辨 persistent type 和一連串 temporary shocks。</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="entry-exit">
+          <div class="section-heading">
+            <span class="section-index">12</span>
+            <div>
+              <h2>Entry-exit game：terminal choice 的應用</h2>
+              <p>企業面對競爭、persistent demand shock 與 startup cost；exit 是 payoff normalized to zero 的 terminal action。</p>
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>Price/revenue equation</strong><span class="tag">observed outcome</span></div>
+            <div class="equation">
+              \[
+                y_t
+                =
+                \alpha_0+\alpha_1x_1+\alpha_2s_t
+                +\alpha_3\sum_{i=1}^{I}d_{2t}^{(i)}
+                +\eta_t.
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              Revenue 由 permanent market type、Markov demand state 與 active competitors 決定。
+              \(s_t\) 對研究者不可見，會同時影響 prices 和 entry/exit choices；
+              忽略它容易把 persistent demand 誤認成競爭效果。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>Expected active profit</strong><span class="tag">strategic CCPs</span></div>
+            <div class="equation">
+              \[
+                u_2^{(i)}(x_t,s_t)
+                =
+                \theta_0+\theta_1x_1+\theta_2s_t
+                +\theta_3\sum_{i'\ne i}p_2^{(i')}(x_t,s_t)
+                +\theta_4\,1\{\text{entrant }i\}.
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              Firm \(i\) 不知道 competitors 的 private shocks，但知道它們進入或留下的 equilibrium CCPs，
+              所以 expected competition 用 \(\sum p_2^{(i')}\) 表示。Entrant 額外支付 startup cost \(\theta_4\)。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title"><strong>Exit-terminal representation</strong><span class="tag">finite dependence</span></div>
+            <div class="equation">
+              \[
+                v_2^{(i)}(x_t,s_t)
+                =
+                u_2^{(i)}(x_t,s_t)
+                -\beta\sum_{x,s}
+                \log p_1^{(i)}(x,s)\,
+                f_2^{(i)}(x,s\mid x_t,s_t).
+              \]
+            </div>
+            <div class="intuition">
+              <strong>經濟直覺：</strong>
+              Exit action 1 結束 firm 的問題並把 payoff normalize 為零。
+              在 T1EV 下，baseline correction 是 \(-\log p_1\) 加共同常數；
+              因此 active value 只需 current profit、下一期 transition 和 future exit CCP，
+              不必解完整 game 的 value fixed point。
+            </div>
+          </div>
+
+          <div class="note">
+            Monte Carlo 比較的重點不是某一欄數字，而是 information assumptions：
+            demand state 是否 observed、CCPs 是由 data cells 還是 model 更新、prices 是否可見，
+            都會改變 bias、precision 與 runtime。忽略 persistent hidden state 尤其容易污染 competition 與 state coefficients。
+          </div>
+        </section>
+
+        <section class="section" id="checklist">
+          <div class="section-heading">
+            <span class="section-index">13</span>
+            <div>
+              <h2>實作與閱讀檢查表</h2>
+              <p>CCP estimator 快不快是第二順位；先確認 inversion 所需的資訊真的存在。</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="mini-card blue">
+              <h3>Shock distribution 是否可信？</h3>
+              <p>\(Q^{-1}\) 完全依賴 \(g\)。錯誤的 correlation 或 scale specification 會直接扭曲 recovered values。</p>
+            </article>
+            <article class="mini-card coral">
+              <h3>CCP support 是否足夠？</h3>
+              <p>每個 relevant state-choice cell 都需要正且可精確估計的 CCP；zero cells 不是小數值問題。</p>
+            </article>
+            <article class="mini-card teal">
+              <h3>Normalization 說清楚了嗎？</h3>
+              <p>Benchmark payoff、shock scale 與 discount factor 哪些已知、哪些估計，決定 identification claim 的範圍。</p>
+            </article>
+            <article class="mini-card amber">
+              <h3>Finite dependence 真的成立嗎？</h3>
+              <p>應從 estimated transition laws 驗證 distribution matching，而不是只因模型看起來像 renewal 就假設成立。</p>
+            </article>
+            <article class="mini-card violet">
+              <h3>Persistent heterogeneity 處理了嗎？</h3>
+              <p>若 hidden type 同時影響 choices 與未來，直接 pooled CCPs 會破壞 conditional independence。</p>
+            </article>
+            <article class="mini-card coral">
+              <h3>Inference 包含 first stage 嗎？</h3>
+              <p>第二階段的 \(\widehat\psi,\widehat h\) 都是 generated regressors；bootstrap 或 analytical variance 必須反映它們的估計誤差。</p>
+            </article>
+          </div>
+
+          <details>
+            <summary>最短的 mental model</summary>
+            <div>
+              <ol class="clean-list">
+                <li>Observed CCPs 加上已知 \(g\)，給 relative conditional values。</li>
+                <li>CCPs 也給等待 shocks 再選的 correction \(\psi\)。</li>
+                <li>Transitions 把 corrections 和 benchmark flows 沿未來 states 加總。</li>
+                <li>一個 benchmark payoff 或 parametric restriction 把 flow utility level 固定下來。</li>
+                <li>Finite dependence、terminal 或 renewal structure 讓遠期 continuation values 更快抵消。</li>
+              </ol>
+            </div>
+          </details>
+
+          <div class="takeaway">
+            <strong>最後的判斷：</strong>
+            CCP estimation 不是免費避開動態模型，而是把 computational burden
+            從 repeated optimization 移到 first-stage behavior、transition estimation 與 identification assumptions。
+            當 CCPs 好估、state transitions 有結構時非常漂亮；當 state space 稀疏或 hidden heterogeneity 很強時，
+            它也會把問題放大得很誠實。
+          </div>
+
+          <p class="source">
+            依據 Robert A. Miller, “Identification and CCP Estimation,” DSE at Michigan, August 2026。
+            核心對應投影片：2-18（inversion、correction、identification）、19-23（estimators）、
+            24-32（finite dependence）、33-41（hidden types 與 entry-exit game）。
+          </p>
+          <a class="back-top" href="#top">回到頁首 ↑</a>
+        </section>
+      </main>
+    </div>
+  </div>
+</body>
+</html>
