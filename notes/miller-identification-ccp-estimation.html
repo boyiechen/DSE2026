@@ -1355,7 +1355,7 @@
                 \qquad
                 u^*_{l(x,t),t}(x)=c_t(x),
                 \qquad
-                \sup_t|c_t(x)|<\infty.
+                \sup_t|c_t(x)|\lt\infty.
               \]
             </div>
             <div class="intuition">
@@ -1513,7 +1513,7 @@
                 <td>只識別一整族 \(u\)，不能 point identify unrestricted primitives</td>
               </tr>
               <tr>
-                <td>Infinite horizon 時 \(\beta<1\) 且 payoffs bounded</td>
+                <td>Infinite horizon 時 \(\beta\lt1\) 且 payoffs bounded</td>
                 <td>確保 discounted representation 收斂且 value functions 有限</td>
                 <td>Backward／infinite-sum representation 可能不存在</td>
               </tr>
@@ -1844,6 +1844,58 @@
             因而更遠期的 \(V\) 雖然存在，卻在 choice-value difference 中精確相消。
           </div>
 
+          <h3>和 stationarity 相像在哪裡？</h3>
+          <p>
+            兩者都有「久遠歷史變得不重要」的寬鬆精神，但 finite dependence 更接近
+            mixing／forgetting initial conditions 或 regeneration，而不是 stationarity 本身。
+            Stationarity 問 distribution 是否隨 calendar time 改變；finite dependence 問不同
+            initial choices 對未來 state distribution 的影響能否在某個有限日期精確消失。
+          </p>
+
+          <table class="comparison-table">
+            <thead>
+              <tr><th></th><th>Stationarity／mixing</th><th>Finite dependence</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>比較對象</td><td>不同 calendar times 或 initial states</td><td>不同 initial choices 與後續加權 paths</td></tr>
+              <tr><td>消失方式</td><td>常是 \(h\to\infty\) 時漸近忘記</td><td>在 \(t+\rho+1\) 精確配平</td></tr>
+              <tr><td>Time homogeneity</td><td>Stationarity 通常需要</td><td>不需要，可在 nonstationary model 成立</td></tr>
+              <tr><td>控制變數</td><td>通常研究既定 time-series law</td><td>核心是 action-specific transitions</td></tr>
+              <tr><td>估計用途</td><td>讓所有未來期重複使用同一套 law</td><td>讓足夠遠的未來期退出 value difference</td></tr>
+            </tbody>
+          </table>
+
+          <div class="grid-2">
+            <article class="mini-card coral">
+              <h3>Stationary 但沒有 finite dependence</h3>
+              <p>
+                對 stationary AR(1)，
+                \[
+                  x_{t+1}=\phi x_t+\eta_{t+1},
+                  \qquad
+                  \E[x_{t+h}\mid x_t]=\phi^hx_t.
+                \]
+                若 \(0\lt|\phi|\lt1\)，initial condition 的影響雖然趨近零，卻在任何有限 \(h\)
+                都不精確為零。因此 stationarity／geometric mixing 不足以推出 finite dependence。
+              </p>
+            </article>
+            <article class="mini-card teal">
+              <h3>Nonstationary 但有 finite dependence</h3>
+              <p>
+                Job-arrival rate \(\lambda_t\) 可以隨時間改變，renewal distribution 也可以
+                time-varying；只要兩個 controlled paths 在同一日期經過相同 reset，之後的
+                state distributions 仍可完全相同。Finite dependence 因而不推出 stationarity。
+              </p>
+            </article>
+          </div>
+
+          <div class="note">
+            <strong>最接近的 time-series 類比是 regeneration。</strong>
+            Renewal choice 像一個 reset point：例如換引擎後
+            \(f_{\mathrm{replace}}(x'|x)=f_{\mathrm{replace}}(x')\)，
+            replacement 前的 mileage history 不再影響下一期 distribution。
+          </div>
+
           <div class="equation-card">
             <div class="equation-title"><strong>Future choice weights 與 induced transitions</strong><span class="tag">weighted paths</span></div>
             <div class="equation">
@@ -1852,7 +1904,7 @@
                 \sum_{k=1}^{J}\omega^a_{k\tau}(x_\tau)
                   &=1,
                   \qquad
-                  |\omega^a_{k\tau}(x_\tau)|<\infty,
+                  |\omega^a_{k\tau}(x_\tau)|\lt\infty,
                   \qquad a\in\{i,j\},\\
                 \kappa_{\tau+1}^{(\omega^a)}(x_{\tau+1}|a,t,x)
                   &=
@@ -1928,6 +1980,24 @@
             </div>
           </div>
 
+          <div class="equation-card">
+            <div class="equation-title"><strong>Stationarity 能幫忙，但不是同一種消除</strong><span class="tag">implicit infinite tail</span></div>
+            <div class="equation">
+              \[
+                \sum_{h=0}^{\infty}\beta^h(F^\omega)^h
+                =
+                (I-\beta F^\omega)^{-1}.
+              \]
+            </div>
+            <div class="intuition">
+              <strong>差異：</strong>
+              在 stationary finite-state model 中，可以用 matrix resolvent 一次加總所有未來期，
+              不必逐期展開；但 inverse matrix 仍隱含完整 infinite horizon。
+              Finite dependence 則讓 initial-choice distribution difference 在有限 \(\rho\) 後等於零，
+              所以 tail 根本不進入 value difference，而不只是被方便地加總。
+            </div>
+          </div>
+
           <div class="grid-3">
             <article class="mini-card blue">
               <h3>計算</h3>
@@ -1941,6 +2011,38 @@
               <h3>可檢驗性</h3>
               <p>在 CI 下，matching condition 只涉及 estimated transition matrices，不必先指定 flow utilities。</p>
             </article>
+          </div>
+
+          <h3>如果沒有 finite dependence</h3>
+          <div class="grid-3">
+            <article class="mini-card blue">
+              <h3>Future tail 留下來</h3>
+              <p>
+                必須展開到 terminal date、求 infinite sum／linear value system，或用 simulation
+                與 truncation。CCP inversion 消除了當期 max，卻沒有自動消除 Bellman continuation。
+              </p>
+            </article>
+            <article class="mini-card coral">
+              <h3>First stage 變得更重</h3>
+              <p>
+                需要更多 future CCPs 與 transition cells；\(\widehat p,\widehat f\) 的誤差沿多期
+                transition powers 傳播，short panel、zero CCP 與 sparse-state 問題都會放大。
+              </p>
+            </article>
+            <article class="mini-card violet">
+              <h3>結構限制重新回來</h3>
+              <p>
+                為處理未抵消的 \(V\)，可能需要更多 future benchmark payoffs、parametric continuation
+                assumptions，甚至重新解 fixed point；dynamic games 還會帶回 opponents' equilibrium feedback。
+              </p>
+            </article>
+          </div>
+
+          <div class="warning">
+            <strong>Finite dependence 是好用的結構，不是 CCP consistency 的必要條件。</strong>
+            沒有它仍可做一般 Hotz-Miller representation、stationary matrix inversion、QML 或 forward simulation；
+            只是計算、資料需求與 first-stage uncertainty 都更高。若只因 \(\beta^h\) 很小就截掉 tail，
+            得到的是 approximation，必須另外評估 truncation bias，不能稱為 exact finite dependence。
           </div>
 
           <div class="warning">
@@ -1972,7 +2074,7 @@
             在 CI 下，finite dependence 只涉及 transition matrices，因此在不指定 flow utilities 的情況下也具有可檢驗內容。
             它可以只對某些 action pairs 或 states 成立，\(\rho\) 也可隨 \((i,j,t,x)\) 改變；
             不需要整個模型 everywhere 都有同一個 \(\rho\)。有限 horizon 下取
-            \(\rho=T-t\) 當然永遠成立，但只有 \(\rho<T-t\) 或 infinite horizon 中的小 \(\rho\)
+            \(\rho=T-t\) 當然永遠成立，但只有 \(\rho\lt T-t\) 或 infinite horizon 中的小 \(\rho\)
             才帶來實際計算利益。
           </div>
 
