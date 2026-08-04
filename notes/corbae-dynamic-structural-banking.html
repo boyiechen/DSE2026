@@ -1,0 +1,1421 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dynamic Structural Banking：逐頁導讀筆記</title>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]],
+        macros: {
+          E: "\\operatorname{E}",
+          Pr: "\\operatorname{Pr}",
+          Var: "\\operatorname{Var}",
+          Cov: "\\operatorname{Cov}",
+          argmax: "\\operatorname*{arg\\,max}",
+          argmin: "\\operatorname*{arg\\,min}"
+        }
+      },
+      svg: { fontCache: "global" }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    :root {
+      --paper: #eef1f2;
+      --surface: #ffffff;
+      --surface-2: #f7f9f9;
+      --ink: #17252d;
+      --muted: #5d6c73;
+      --line: #d4dcdf;
+      --blue: #245676;
+      --blue-soft: #e5eef4;
+      --green: #17705b;
+      --green-soft: #e2f1ec;
+      --red: #b4473e;
+      --red-soft: #f7e7e4;
+      --gold: #86620d;
+      --gold-soft: #f5edd7;
+      --plum: #73536f;
+      --plum-soft: #f1e9ef;
+      --shadow: 0 10px 28px rgba(23, 37, 45, 0.07);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.68;
+      letter-spacing: 0;
+    }
+    a {
+      color: var(--blue);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+    h1, h2, h3, h4 { letter-spacing: 0; }
+    h1 {
+      max-width: 960px;
+      margin: 0 0 12px;
+      font-size: clamp(2rem, 4vw, 3.15rem);
+      line-height: 1.08;
+      overflow-wrap: anywhere;
+    }
+    h2 { margin: 0; font-size: 1.55rem; line-height: 1.25; }
+    h3 { margin: 0; font-size: 1.08rem; line-height: 1.35; }
+    h4 { margin: 0 0 6px; font-size: 0.92rem; }
+    p { margin: 0 0 12px; }
+    ul, ol { margin: 8px 0 13px; padding-left: 1.35rem; }
+    li { margin: 5px 0; }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.9em;
+    }
+    .shell {
+      width: min(1420px, 100%);
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .masthead {
+      overflow: hidden;
+      margin-bottom: 22px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .masthead-copy {
+      padding: 32px 36px 27px;
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow {
+      margin: 0 0 7px;
+      color: var(--green);
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .lead {
+      max-width: 1030px;
+      margin: 0;
+      color: #34474f;
+      font-size: 1.04rem;
+    }
+    .thesis-map {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      background: var(--surface-2);
+    }
+    .thesis-step {
+      min-width: 0;
+      min-height: 120px;
+      padding: 17px 19px;
+      border-right: 1px solid var(--line);
+    }
+    .thesis-step:last-child { border-right: 0; }
+    .thesis-step span {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .thesis-step strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--blue);
+    }
+    .thesis-step:nth-child(2) strong { color: var(--red); }
+    .thesis-step:nth-child(3) strong { color: var(--green); }
+    .thesis-step:nth-child(4) strong { color: var(--plum); }
+    .thesis-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.87rem;
+      line-height: 1.5;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 250px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+    .toc {
+      position: sticky;
+      top: 18px;
+      max-height: calc(100vh - 36px);
+      overflow-y: auto;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      box-shadow: 0 8px 24px rgba(23, 37, 45, 0.055);
+    }
+    .toc strong {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+    }
+    .toc a {
+      display: block;
+      padding: 5px 8px;
+      border-left: 2px solid transparent;
+      color: #40525b;
+      font-size: 0.86rem;
+      text-decoration: none;
+    }
+    .toc a:hover, .toc a:focus-visible {
+      border-left-color: var(--green);
+      color: var(--green);
+      background: var(--green-soft);
+    }
+    main {
+      min-width: 0;
+      padding: 2px 30px 30px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .chapter {
+      scroll-margin-top: 18px;
+      padding: 31px 0 34px;
+      border-bottom: 1px solid var(--line);
+    }
+    .chapter:last-child { border-bottom: 0; }
+    .chapter-heading {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 20px;
+    }
+    .chapter-number {
+      display: grid;
+      width: 40px;
+      height: 40px;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--blue);
+      font-size: 0.88rem;
+      font-weight: 850;
+    }
+    .chapter:nth-child(3n + 2) .chapter-number { background: var(--green); }
+    .chapter:nth-child(3n) .chapter-number { background: var(--red); }
+    .chapter-heading p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 0.93rem;
+    }
+    .callout {
+      margin: 15px 0;
+      padding: 15px 18px;
+      border-left: 4px solid var(--blue);
+      background: var(--blue-soft);
+    }
+    .callout.green { border-left-color: var(--green); background: var(--green-soft); }
+    .callout.red { border-left-color: var(--red); background: var(--red-soft); }
+    .callout.gold { border-left-color: var(--gold); background: var(--gold-soft); }
+    .callout.plum { border-left-color: var(--plum); background: var(--plum-soft); }
+    .callout p:last-child { margin-bottom: 0; }
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 19px;
+      margin: 17px 0;
+    }
+    .flow-item {
+      position: relative;
+      min-width: 0;
+      padding: 13px 10px;
+      border: 1px solid var(--line);
+      border-top: 3px solid var(--blue);
+      border-radius: 7px;
+      background: var(--surface-2);
+      text-align: center;
+    }
+    .flow-item::after {
+      position: absolute;
+      top: 50%;
+      right: -17px;
+      color: var(--muted);
+      content: "→";
+      font-weight: 800;
+      transform: translateY(-50%);
+    }
+    .flow-item:last-child::after { content: ""; }
+    .flow-item:nth-child(2) { border-top-color: var(--red); }
+    .flow-item:nth-child(3) { border-top-color: var(--gold); }
+    .flow-item:nth-child(4) { border-top-color: var(--green); }
+    .flow-item:nth-child(5) { border-top-color: var(--plum); }
+    .flow-item strong, .flow-item span { display: block; }
+    .flow-item strong { margin-bottom: 3px; font-size: 0.9rem; }
+    .flow-item span { color: var(--muted); font-size: 0.78rem; line-height: 1.4; }
+    .slide-note {
+      scroll-margin-top: 18px;
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr);
+      margin: 14px 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface-2);
+    }
+    .slide-rail {
+      padding: 15px 10px;
+      color: #fff;
+      background: var(--blue);
+      text-align: center;
+    }
+    .slide-note:nth-of-type(4n + 2) .slide-rail { background: var(--green); }
+    .slide-note:nth-of-type(4n + 3) .slide-rail { background: var(--red); }
+    .slide-note:nth-of-type(4n) .slide-rail { background: var(--plum); }
+    .pdf-page {
+      display: block;
+      font-size: 1.18rem;
+      font-weight: 850;
+      line-height: 1.15;
+    }
+    .deck-page {
+      display: block;
+      margin-top: 5px;
+      color: rgba(255,255,255,0.82);
+      font-size: 0.72rem;
+      line-height: 1.35;
+    }
+    .overlay {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 2px 5px;
+      border: 1px solid rgba(255,255,255,0.55);
+      border-radius: 4px;
+      font-size: 0.68rem;
+      font-weight: 750;
+    }
+    .slide-content { min-width: 0; padding: 16px 18px 17px; }
+    .slide-title {
+      margin-bottom: 11px;
+      padding-bottom: 9px;
+      border-bottom: 1px solid var(--line);
+    }
+    .slide-title p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+    .reading-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .reading-grid > div { min-width: 0; }
+    .reading-grid > div + div {
+      padding-left: 16px;
+      border-left: 1px solid var(--line);
+    }
+    .reading-label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--blue);
+      font-size: 0.76rem;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+    .intuition .reading-label { color: var(--green); }
+    .reading-grid p:last-child { margin-bottom: 0; }
+    .equation {
+      max-width: 100%;
+      margin: 13px 0;
+      padding: 14px 16px;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--green);
+      background: #fff;
+    }
+    .equation-note {
+      margin: -6px 0 14px;
+      padding: 9px 13px;
+      color: var(--muted);
+      background: var(--green-soft);
+      font-size: 0.89rem;
+    }
+    .tag {
+      display: inline-block;
+      margin: 0 4px 4px 0;
+      padding: 2px 7px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      color: #42545d;
+      background: #fff;
+      font-size: 0.74rem;
+      font-weight: 700;
+    }
+    .table-wrap {
+      margin: 14px 0;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      font-size: 0.89rem;
+    }
+    th, td {
+      padding: 10px 11px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    th { color: #33464f; background: #edf2f3; font-size: 0.8rem; }
+    tr:last-child td { border-bottom: 0; }
+    .term { color: var(--blue); font-weight: 800; white-space: nowrap; }
+    .source {
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.87rem;
+    }
+    mjx-container[jax="SVG"][display="true"] {
+      max-width: 100%;
+      margin: 0.5em 0 !important;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+    @media (max-width: 1080px) {
+      .thesis-map { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .thesis-step:nth-child(2) { border-right: 0; }
+      .thesis-step:nth-child(-n + 2) { border-bottom: 1px solid var(--line); }
+      .layout { grid-template-columns: 210px minmax(0, 1fr); }
+      .flow { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .flow-item:nth-child(3)::after { content: ""; }
+      .flow-item:nth-child(4) { grid-column: 1; }
+    }
+    @media (max-width: 790px) {
+      .shell { padding: 12px; }
+      .masthead-copy { padding: 24px 20px; }
+      .layout { display: block; }
+      .toc { position: static; max-height: none; margin-bottom: 14px; }
+      .toc a {
+        display: inline-block;
+        margin: 2px 2px 2px 0;
+        border: 1px solid var(--line);
+        border-radius: 4px;
+      }
+      main { padding: 0 18px 20px; }
+      .reading-grid { grid-template-columns: 1fr; gap: 12px; }
+      .reading-grid > div + div { padding: 12px 0 0; border-top: 1px solid var(--line); border-left: 0; }
+      .flow { grid-template-columns: 1fr; gap: 12px; }
+      .flow-item:nth-child(4) { grid-column: auto; }
+      .flow-item::after {
+        top: auto;
+        right: 50%;
+        bottom: -15px;
+        content: "↓";
+        transform: translateX(50%);
+      }
+      .flow-item:nth-child(3)::after { content: "↓"; }
+      .flow-item:last-child::after { content: ""; }
+    }
+    @media (max-width: 540px) {
+      body { font-size: 15px; }
+      h1 { font-size: 2rem; }
+      .thesis-map { grid-template-columns: 1fr; }
+      .thesis-step, .thesis-step:nth-child(2) {
+        min-height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .thesis-step:last-child { border-bottom: 0; }
+      .slide-note { grid-template-columns: 1fr; }
+      .slide-rail {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        padding: 8px 12px;
+        text-align: left;
+      }
+      .pdf-page, .deck-page { display: inline; margin: 0; }
+      .overlay { margin: 0 0 0 auto; }
+    }
+    @media print {
+      body { background: #fff; font-size: 9.8pt; }
+      .shell { width: 100%; padding: 0; }
+      .masthead, main, .toc { box-shadow: none; }
+      .toc { display: none; }
+      .layout { display: block; }
+      main { padding: 0 20px; border: 0; }
+      .flow {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 10px;
+        break-inside: avoid;
+      }
+      .flow-item:nth-child(4) { grid-column: auto; }
+      .flow-item::after {
+        top: 50%;
+        right: -9px;
+        bottom: auto;
+        content: "→";
+        transform: translateY(-50%);
+      }
+      .flow-item:nth-child(3)::after { content: "→"; }
+      .flow-item:last-child::after { content: ""; }
+      .chapter { padding: 24px 0 26px; }
+      .slide-note { margin: 10px 0; }
+      .slide-content { padding: 12px 14px 13px; }
+      .slide-title { margin-bottom: 8px; padding-bottom: 7px; }
+      .reading-grid { gap: 12px; }
+      .reading-grid > div + div { padding-left: 12px; }
+      .slide-note, .callout, .equation, .table-wrap { break-inside: avoid; }
+      .back-top { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell" id="top">
+    <header class="masthead">
+      <div class="masthead-copy">
+        <p class="eyebrow">04. Corbae · DSE Summer School · August 4, 2026</p>
+        <h1>Dynamic Structural Banking</h1>
+        <p class="lead">
+          逐頁導讀 55 個實際 PDF pages。核心問題是政策與銀行市場結構彼此內生：regulation
+          改變 entry、exit、mergers、funding 與 risk taking；形成的新 concentration 又改變金融穩定、
+          allocative efficiency、monetary transmission 與下一輪政策設計。
+        </p>
+      </div>
+      <div class="thesis-map" aria-label="課程核心主線">
+        <div class="thesis-step">
+          <span>Regulation</span>
+          <strong>修正 friction，也創造新 wedge</strong>
+          <p>Deposit insurance、capital rules 與 branching reform 都有 intended effect 與 behavioral response。</p>
+        </div>
+        <div class="thesis-step">
+          <span>Market structure</span>
+          <strong>從 atomless 到 granular banks</strong>
+          <p>少數大型銀行使 idiosyncratic shocks 不再被 law of large numbers 消掉。</p>
+        </div>
+        <div class="thesis-step">
+          <span>Two channels</span>
+          <strong>Deposits 與 loans 同時競爭</strong>
+          <p>Funding cost、market power、monitoring 與 borrower choice 共同決定 credit supply。</p>
+        </div>
+        <div class="thesis-step">
+          <span>Dynamic equilibrium</span>
+          <strong>Value、distribution、market clearing</strong>
+          <p>政策短期改變行為，長期更透過 entry/exit/mergers 重塑銀行分布。</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <nav class="toc" aria-label="目錄">
+        <strong>逐頁導讀</strong>
+        <a href="#map">0. 全課地圖</a>
+        <a href="#intro">1. 動機與研究問題 · PDF 1-7</a>
+        <a href="#reg-data">2. 監管、資料與基礎理論 · PDF 8-14</a>
+        <a href="#simple">3. 對稱動態模型 · PDF 15-25</a>
+        <a href="#deposits">4. 異質銀行與 bank runs · PDF 26-30</a>
+        <a href="#mergers">5. Mergers · PDF 31-34</a>
+        <a href="#loans">6. Lending channel · PDF 35-42</a>
+        <a href="#synergies">7. Deposit-loan synergies · PDF 43-45</a>
+        <a href="#computation">8. Computation · PDF 46-47</a>
+        <a href="#future">9. Future 與 appendix · PDF 48-55</a>
+      </nav>
+
+      <main>
+        <section class="chapter" id="map">
+          <div class="chapter-heading">
+            <span class="chapter-number">0</span>
+            <div>
+              <h2>先抓住全課的 fixed point</h2>
+              <p>讀每張 slide 時，都問它位於下列哪一段回饋。</p>
+            </div>
+          </div>
+          <div class="flow" aria-label="政策與市場結構的回饋">
+            <div class="flow-item"><strong>Financial friction</strong><span>runs、moral hazard、monitoring、market power</span></div>
+            <div class="flow-item"><strong>Regulation</strong><span>insurance、capital、branching、resolution</span></div>
+            <div class="flow-item"><strong>Bank behavior</strong><span>rates、risk、lending、mergers、entry/exit</span></div>
+            <div class="flow-item"><strong>Market structure</strong><span>concentration、granularity、bank/nonbank shares</span></div>
+            <div class="flow-item"><strong>Welfare & stability</strong><span>efficiency、failures、spillovers、optimal policy</span></div>
+          </div>
+          <div class="callout green">
+            <strong>短期與長期一定要分開。</strong>
+            <p>
+              短期通常固定銀行數量與 size distribution，只看 incumbents 如何調整 rates、risk 與 lending；
+              長期則讓 charter values 改變 entry、exit 與 mergers。政策可能短期收縮信用、長期卻提高效率，
+              也可能短期降低個別銀行風險、長期卻因 concentration 或 shadow-bank substitution 產生新風險。
+            </p>
+          </div>
+          <p>
+            原檔共有 55 個 PDF pages，但頁腳只編到 43/43；差額來自 Beamer overlays。
+            以下以 PDF page 為主索引，overlay 頁只解釋相較上一頁新增的論點。
+          </p>
+        </section>
+
+        <section class="chapter" id="intro">
+          <div class="chapter-heading">
+            <span class="chapter-number">1</span>
+            <div>
+              <h2>動機與研究問題</h2>
+              <p>PDF 1-7：從 concentration 與 granularity 出發，界定動態 structural banking 的研究對象。</p>
+            </div>
+          </div>
+
+          <article class="slide-note" id="p1">
+            <div class="slide-rail"><span class="pdf-page">PDF 1</span><span class="deck-page">slide 1/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Title：Dynamic Structural Banking</h3><p>這不是單一模型，而是一個把 macro-finance、banking IO 與 firm dynamics 接起來的研究議程。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">這頁怎麼讀</span><p><em>Dynamic</em> 指 bank choices 會改變 charter value 與未來 market structure；<em>structural</em> 指用明確 primitives、equilibrium 與 policy rules 做反事實。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>銀行不是一般企業：它同時創造 liquidity、篩選 borrowers，又以高 leverage 與 limited liability 運作，所以個別策略會連到 aggregate credit 與 systemic risk。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p2">
+            <div class="slide-rail"><span class="pdf-page">PDF 2</span><span class="deck-page">slide 2/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Motivation：Growing Concentration</h3><p>圖中銀行數量持續下降，Top 4 deposit share 明顯上升，Top 35 share 也在改革後擴張。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">圖怎麼讀</span><p>紅線是銀行數量，綠線是 Top 4 deposit share，藍線是 Top 35 share。1994 年 Riegle-Neal 前後是制度斷點：跨州 branching 與 mergers 的限制被鬆綁。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>改革降低 geographic expansion cost，讓有效率銀行吸收小銀行並跨州分散存款風險；同一過程也提高 market power 與 too-big-to-fail concern。Concentration 是政策的 endogenous outcome。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p3">
+            <div class="slide-rail"><span class="pdf-page">PDF 3</span><span class="deck-page">slide 3/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Granularity in the Size Distribution</h3><p>1989 與 2013 的 deposit rank-size 圖顯示右尾變得極厚，少數銀行與其餘銀行之間出現巨大斷層。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">圖怎麼讀</span><p>橫軸是 real deposits、縱軸是 size rank；紅色標示後來成為 Top 4 的 lineage。2013 年最大幾家遠離其餘分布，表示 Zipf-like smooth tail 被 granular giants 打破。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>若所有銀行都 infinitesimal，個別 shock 會互相抵銷；若一間銀行占據巨大 share，其 deposit、capital 或 solvency shock 能直接移動 aggregate loans 與 GDP。TBTF 的核心不只是「大」，而是 private shock 具有 aggregate loading。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p4">
+            <div class="slide-rail"><span class="pdf-page">PDF 4</span><span class="deck-page">slide 4/43</span><span class="overlay">overlay 1</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Questions：政策與市場結構的 fixed point</h3><p>第一組研究問題聚焦 regulation、granularity 與 stability。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">這頁怎麼讀</span><p>問題 1a 問監管改革如何造成 granular size distribution；1b 問 concentration 究竟吸收風險，還是把風險集中到 systemically important institutions。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>大型銀行可能靠 geographic diversification 更穩定，但一旦失敗，externality 更大。平均 failure probability 與 tail systemic loss 可能往相反方向走，不能只看單一 risk statistic。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p5">
+            <div class="slide-rail"><span class="pdf-page">PDF 5</span><span class="deck-page">slide 4/43</span><span class="overlay">overlay 2</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Questions：加入 methodological challenge</h3><p>這頁新增 atomless heterogeneity 與 granular strategic banks 的計算差別。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">新增內容</span><p>標準 heterogeneous-agent model 中，單一 agent measure zero，所以 stationary cross-sectional distribution 常可當 aggregate state；granular bank 的 idiosyncratic shock 卻會改變 aggregate prices 與下一期整個 distribution。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>今天 JPMorgan 的 shock 會改變其他銀行的最佳反應，明天的 bank-size distribution 也因此不同。狀態不再只是「某個 stationary μ」，而是沿 shock history 演化的 μ<sub>t</sub> sequence。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p6">
+            <div class="slide-rail"><span class="pdf-page">PDF 6</span><span class="deck-page">slide 5/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Outline</h3><p>課程從制度與 data facts，逐步疊上 static theory、dynamic model、heterogeneity 與 computation。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">結構怎麼讀</span><p>Deposit channel 對應 liquidity services；lending channel 對應 delegated monitoring；competition/stability 與 spatial competition 提供 IO building blocks；最後用 entry、exit、mergers 讓 market structure endogenous。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>模型 feature 不是為複雜而複雜。每一層都由 data fact 或政策問題驅動：先問哪個 friction 必須存在，才知道哪個 state、choice 與 equilibrium condition 必須加入。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p7">
+            <div class="slide-rail"><span class="pdf-page">PDF 7</span><span class="deck-page">slide 6/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Today's Literature Review</h3><p>文獻依 deposit market、loan market 與兩側整合定位。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">文獻地圖</span><p>Egan-Hortaçsu-Matvos 強調 insured/uninsured deposit competition；Corbae-D'Erasmo 強調 heterogeneous lending；Wang-Whited-Wu-Xiao 與 Aguirregabiria-Clark-Wang 同時處理兩側。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>銀行 balance sheet 的兩側不能永遠分開：deposit market power 決定 marginal funding cost，loan market power 決定 marginal revenue；monetary policy 與 nonbank competition 會同時穿過兩側。</p></div>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="chapter" id="reg-data">
+          <div class="chapter-heading">
+            <span class="chapter-number">2</span>
+            <div>
+              <h2>監管、資料與基礎理論</h2>
+              <p>PDF 8-14：政策 wedges 如何對應金融 frictions，以及 data 如何約束模型選擇。</p>
+            </div>
+          </div>
+
+          <article class="slide-note" id="p8">
+            <div class="slide-rail"><span class="pdf-page">PDF 8</span><span class="deck-page">slide 7/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Regulatory Policy：修正一個 friction，可能創造另一個</h3><p>政策評估必須包含 behavioral response 與 regulatory arbitrage。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">這頁怎麼讀</span><p>Deposit insurance 消除 non-fundamental runs，卻因 insured creditors 不再監督而鼓勵 risk taking；capital requirements 增加 skin in the game，卻可能把資產移出 balance sheet 或推向 shadow banks。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>政策不能只把銀行 choice 固定後比較 mechanical effect。真正 counterfactual 要讓 portfolio、funding source、legal form、entry 與 market share 全部重新最佳化。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p9">
+            <div class="slide-rail"><span class="pdf-page">PDF 9</span><span class="deck-page">slide 8/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Some Regulatory History</h3><p>每次重大改革都對應一種模型 friction，也常成為 empirical variation。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">時間線</span><p>1913 Fed 對 liquidity panic；1933 Glass-Steagall 與 deposit insurance；1994 Riegle-Neal 放寬跨州 branching；1999 Gramm-Leach-Bliley 放寬業務範圍；2000s governance/opacity；2010 Dodd-Frank 加強 capital、liquidity、stress tests 與 resolution。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>制度不是背景常數，而是改變 feasible set、prices 與 continuation value 的 structural parameter。歷史改革也讓研究者觀察 market structure 如何內生調整。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p10">
+            <div class="slide-rail"><span class="pdf-page">PDF 10</span><span class="deck-page">slide 9/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Some Banking Data Facts</h3><p>九項 facts 是後面模型 features 與 moments 的 selection guide。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">資料訊息</span><p>需要 imperfect competition、fat right tail、跨州擴張、deposit-shock diversification、scale/scope economies、cyclical entry/exit，以及 size-dependent risk dispersion。平均 rates 跨 size 未必不同，但 markups 隨 size 上升。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>大型銀行未必支付更低 deposit rate 或收更高 loan rate；它們可以因 diversification、成本或 product mix 取得更高 markup。只用 observed rates 衡量 market power 會混入 marginal cost differences。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p11">
+            <div class="slide-rail"><span class="pdf-page">PDF 11</span><span class="deck-page">slide 10/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Data Facts continued：granularity、mergers 與 nonbanks</h3><p>這頁把 concentration trend 連到 aggregate spillovers 與 credit-market outside option。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">資料訊息</span><p>G-SIB deposit shocks 影響 loans、total credit 與 GDP；mergers 多是大吃小且 procyclical；transition 中 Tobin's Q 上升；local HHI 上升；銀行占 total private credit 的比重由 45% 降至 33%。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>銀行業內 concentration 上升，不等於 borrowers 的總競爭一定下降，因 nonbanks 形成 outside option。模型若只看 bank market，可能高估 bank mergers 對 total-credit markups 的影響。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p12">
+            <div class="slide-rail"><span class="pdf-page">PDF 12</span><span class="deck-page">slide 11/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Data：A Simple Balance Sheet</h3><p>模型用少數資產負債項目涵蓋超過 95% 的實際 balance sheet。</p></div>
+              <div class="equation">
+                \[
+                  a^+ + \ell + \Upsilon = d + a^- + e.
+                \]
+              </div>
+              <div class="reading-grid">
+                <div><span class="reading-label">表怎麼讀</span><p>資產包括 liquid securities (a^+)、loans \(\ell\)、fixed/intangible assets \(\Upsilon\)；負債端是 deposits \(d\)、other borrowing \(a^-\)、equity \(e\)。Top banks 的 loans 與 wholesale borrowing shares 較高、deposit share 較低。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>小銀行更依賴 insured deposits，因 wholesale external funding 對它們較貴；大型銀行有更多 funding margins 可以調整。因此相同 monetary tightening 或 deposit shock 對不同 size banks 的 lending effect 不同。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p13">
+            <div class="slide-rail"><span class="pdf-page">PDF 13</span><span class="deck-page">slide 12/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Building Block：Why Do Banks Exist?</h3><p>兩個經典答案分別來自 liquidity 與 information。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">理論怎麼讀</span><p>Diamond-Dybvig：banks 用 illiquid assets 支持 liquid claims，創造 maturity transformation，也因此脆弱於 runs。Diamond delegated monitoring：集中監督避免眾多小 lenders 重複支付 fixed monitoring cost。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>銀行的社會價值與脆弱性來自同一結構。Liquidity creation 需要 short-term claims，delegated monitoring 需要 balance-sheet concentration；完全移除風險可能也移除銀行提供的服務。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p14">
+            <div class="slide-rail"><span class="pdf-page">PDF 14</span><span class="deck-page">slide 13/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Building Block：The IO of Banking</h3><p>Competition 對 stability 沒有單調答案，空間競爭也可能造成 excessive entry。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">兩組 mechanism</span><p>Allen-Gale：競爭壓低 margins 與 charter value，limited liability 下 banks reach for yield。Boyd-De Nicoló：競爭壓低 loan rates，改善 borrower selection。Salop spatial model：fixed entry cost 下 private banks 忽略 business stealing，可能進入太多。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>Competition 同時改變銀行端 risk incentive 與 borrower pool，兩者符號相反。社會 planner 還會 internalize duplicated fixed costs；所以「更多銀行一定更好」不是 welfare theorem。</p></div>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="chapter" id="simple">
+          <div class="chapter-heading">
+            <span class="chapter-number">3</span>
+            <div>
+              <h2>對稱動態模型：competition、risk 與 entry</h2>
+              <p>PDF 15-25：用稀疏模型看清短期行為與長期市場結構的政策回饋。</p>
+            </div>
+          </div>
+
+          <article class="slide-note" id="p15">
+            <div class="slide-rail"><span class="pdf-page">PDF 15</span><span class="deck-page">slide 14/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>A Simple Dynamic Model with Endogenous Bank Market Shares</h3><p>Corbae-Levine 的目的不是複製所有銀行細節，而是隔離 competition-stability tradeoff。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">模型放入什麼</span><p>Deposit insurance 與 limited liability 造成 moral hazard；deposit market power 影響 funding price；manager-shareholder discount-rate wedge 造成 agency problem；entry 讓銀行數 (N) endogenous。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>更多 competition 提高 quantity efficiency，卻壓低 charter value。當 downside 由 deposit insurer 或 creditors 承擔時，低 charter value 使股東與 manager 更願意賭高報酬低成功率的 portfolio。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p16">
+            <div class="slide-rail"><span class="pdf-page">PDF 16</span><span class="deck-page">slide 15/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Model Environment</h3><p>銀行同時選 portfolio risk (S_i) 與 deposit-funded scale (D_i)。</p></div>
+              <div class="equation">
+                \[
+                  p(S_i)=1-S_i^\eta,\qquad
+                  r_D(Z)=b+\gamma Z,\qquad
+                  Z=\sum_{i=1}^{N}D_i,
+                \]
+                \[
+                  \frac{D_i}{E_i}\leq\lambda,qquad \beta\leq\delta.
+                \]
+              </div>
+              <div class="reading-grid">
+                <div><span class="reading-label">符號怎麼讀</span><p>每單位資金成功時回收 (AS_i)，失敗時為零；較高 (S_i) 是高 yield、低 success。\(\eta\) 越高，在給定 \(S\) 下成功率越高。Deposit supply 向上傾斜，aggregate deposits 越多就要付越高 rate。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>銀行把「portfolio risk-return frontier」與「搶 deposits 時推高全市場 funding cost」一起考慮。\(\beta<\delta\) 表示 managers 比 shareholders 更短視；\(\lambda\) 控制 leverage，\(\kappa\) 則控制 entry cost。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p17">
+            <div class="slide-rail"><span class="pdf-page">PDF 17</span><span class="deck-page">slide 16/43</span><span class="overlay">overlay 1</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Decision Problems：static profit</h3><p>第一層先寫 limited-liability 下的當期 expected profit。</p></div>
+              <div class="equation">
+                \[
+                  \pi_i(S_i,D_i;N)
+                  =p(S_i)\underbrace{\left[AS_i-\big(r_D(Z)+\alpha\big)\right]}_{R_i\;\text{interest margin}}D_i.
+                \]
+              </div>
+              <div class="reading-grid">
+                <div><span class="reading-label">公式怎麼讀</span><p>成功機率乘以「每單位 loan return 減 funding cost」再乘 scale。\(\alpha\) 是 external borrowing/monetary-policy cost；銀行的 (D_i) 也透過 (Z) 推高所有人的 deposit rate。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>Limited liability 使失敗 state 的負值不完整落在 equity holders 身上，因此提高 (S) 的 upside 被保留，downside 部分外部化。這是 risk shifting 的基本來源。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p18">
+            <div class="slide-rail"><span class="pdf-page">PDF 18</span><span class="deck-page">slide 16/43</span><span class="overlay">overlay 2</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Decision Problems：manager's dynamic value</h3><p>這個 overlay 加入 continuation value 與 leverage constraint。</p></div>
+              <div class="equation">
+                \[
+                  V_i(N)=\max_{S_i,D_i}
+                  \left\{\pi_i(S_i,D_i;N)+\beta p(S_i)V_i(N')\right\},
+                  \qquad \frac{D_i}{E_i}\leq\lambda.
+                \]
+              </div>
+              <div class="reading-grid">
+                <div><span class="reading-label">新增內容</span><p>Continuation value 只有 bank survives 時才保留，所以乘上 (p(S_i))。Manager 用 β 折現未來；(N') 允許未來 market structure 改變。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>Charter value 是賭博的機會成本。銀行越重視未來，失敗會失去的 franchise 越多，因此選擇更安全。Leverage cap 則限制用很少 equity 放大 insured funding 的能力。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p19">
+            <div class="slide-rail"><span class="pdf-page">PDF 19</span><span class="deck-page">slide 16/43</span><span class="overlay">overlay 3</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Decision Problems：shareholder entry condition</h3><p>第三個 overlay 封閉銀行數量 (N)。</p></div>
+              <div class="equation">
+                \[
+                  \mathcal E_i(N)
+                  \equiv \frac{\pi_i(N)}{1-\delta p(S_i)}
+                  \geq \kappa.
+                \]
+              </div>
+              <div class="reading-grid">
+                <div><span class="reading-label">公式怎麼讀</span><p>\(\mathcal E_i(N)\) 是 shareholders 用較長期 discount factor \(\delta\) 評價的 charter value。只有其至少支付 fixed entry cost \(\kappa\) 時才進入；free-entry steady state 通常令等號成立。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>Policy 先改變 profit 與 survival，再改變 charter value，最後改變 entry 與 (N)。這正是「短期固定 (N)」和「長期 (N) endogenous」結果可能不同的原因。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p20">
+            <div class="slide-rail"><span class="pdf-page">PDF 20</span><span class="deck-page">slide 17/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Equilibrium Risk Taking and Lending</h3><p>兩條 FOC 分別決定 success probability 與 interest margin。</p></div>
+              <div class="equation">
+                \[
+                  p(S)=-\frac{p'(S)}{A}
+                  \left[R+\beta\frac{\mathcal E(N)}{D}w(S)\right],
+                \]
+                \[
+                  R\equiv AS-\big(r_D(Z)+\alpha\big)
+                  =\frac{r_D'(Z)}{N}Z,
+                  \qquad
+                  w(S)=\frac{1-\delta p(S)}{1-\beta p(S)}\leq1.
+                \]
+              </div>
+              <div class="reading-grid">
+                <div><span class="reading-label">公式怎麼讀</span><p>Risk FOC 比較高 (S) 的 return gain 與較低 survival 的 current-margin、continuation-value loss。Deposit FOC 顯示 Cournot markup 等於 quantity 對 inverse supply 的影響；(D=Z/N)，所以更多 (N) 壓低 margin。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>高 margin 與高 charter value 讓 bank 更珍惜生存，故 (p(S)) 較高。高 leverage 使 ℰ/D 較小，短視 manager 使 agency wedge 更嚴重，兩者都削弱 continuation discipline；這也產生 leverage × governance interaction。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p21">
+            <div class="slide-rail"><span class="pdf-page">PDF 21</span><span class="deck-page">slide 18/43</span><span class="overlay">overlay 1</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Cournot Equilibrium：三條方程、三個 unknowns</h3><p>給定政策 Θ = (κ,β,α,λ)，steady state 由 (S,D,N) 決定。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">Equilibrium closure</span><p>Risk FOC 決定 (S) 或 (p(S))；deposit-funding FOC 決定 (D) 與 (Z=ND)；free-entry condition 決定 (N) 與 concentration (1/N)。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>這個模型簡單之處是 market structure 不需追蹤完整 size distribution；但它已足以讓 regulation 同時改變 risk、quantity 與 entry，產生 policy fixed point。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p22">
+            <div class="slide-rail"><span class="pdf-page">PDF 22</span><span class="deck-page">slide 18/43</span><span class="overlay">overlay 2</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Cournot Equilibrium：short-run transition versus long run</h3><p>這頁新增 unanticipated policy shock Θ' 的過渡。</p></div>
+              <div class="equation">
+                \[
+                  V_{\Theta'}(N)=\max_{S,D}
+                  \left\{\pi_{\Theta'}(N)+\beta p(S^{\Theta'})
+                  \left[(1-\zeta)V_{\Theta'}(N)+\zeta V_{\Theta'}(N')\right]\right\},
+                \]
+                \[
+                  \zeta=0.05\quad\Rightarrow\quad \E[\text{transition duration}]=1/\zeta=20\text{ years}.
+                \]
+              </div>
+              <div class="reading-grid">
+                <div><span class="reading-label">怎麼讀</span><p>短期先固定舊的 (N)，banks 調整 (S,D)，但知道 market structure 以 hazard ζ 轉向 (N')。長期 free entry 重新成立，(N') 由新 policy 下的 charter value 決定。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>同一政策可能短期提高 incumbents profits，長期吸引 entry 而把 rents 競爭掉。只比較兩個 steady states 會漏掉 transition 中 market value 與 risk incentives。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p23">
+            <div class="slide-rail"><span class="pdf-page">PDF 23</span><span class="deck-page">slide 19/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Competition, Stability, and Efficiency</h3><p>四個 panels 把 (N) 對 risk、lending、margin 與 entry value 的作用放在一起。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">圖怎麼讀</span><p>隨 (N) 上升，margin (R) 下降、aggregate lending 增加，但 private risk choice 偏離 planner。右下 charter value 與 entry cost 的交點決定 decentralized (N)；planner 的最適 (N) 另由 quantity gains、risk externality 與 fixed costs共同決定。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>太少 competition 時 lending 太少、銀行可能過度保守；太多 competition 時 margin 與 charter value 太低，risk shifting 過強。模型得到 interior optimum，例中提高 κ 使 (N\approx2.5)，接近 duopoly。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p24">
+            <div class="slide-rail"><span class="pdf-page">PDF 24</span><span class="deck-page">slide 20/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Governance & Regulatory Counterfactuals</h3><p>圖比較 policy shock 從 short run 過渡到 long run 時，risk、lending、margin、market value 與 (N) 的反應。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">兩種 experiment</span><p>Better governance 是讓 β 更接近 δ，直接提高 managers 對 charter value 的重視；tighter leverage 是降低 λ，直接限制 scale 與 skin-in-the-game。Panels 顯示直接效果和 entry-induced long-run effect。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>Governance 改善降低 risk 且提升 market efficiency；leverage tightening 也降低 risk，卻收縮 lending。兩者短期提高 franchise value，長期吸引更多 banks，部分抵銷最初的 margins 與 risk effect。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p25">
+            <div class="slide-rail"><span class="pdf-page">PDF 25</span><span class="deck-page">slide 21/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Empirical Results：Agency and Leverage</h3><p>用 stock-return volatility 檢查模型的 comparative statics，而非把 regression 當作完整 structural estimate。</p></div>
+              <div class="equation">
+                \[
+                  \sigma_{ist}=\gamma_C C_{ist}+\gamma_L L_{i,t-1}
+                  +\gamma_A A_{i,t-1}+\gamma_G G_{ist}
+                  +\gamma_I(G_{ist}L_{i,t-1})+\theta_i+\theta_{st}+\varepsilon_{ist}.
+                \]
+              </div>
+              <div class="reading-grid">
+                <div><span class="reading-label">表怎麼讀</span><p>Competition 與 lagged leverage 提高 risk；bank size 與 institutional ownership 降低 risk；governance × leverage 為正。Bank FE 與 state-year FE 吸收 time-invariant bank heterogeneity 與 local common shocks。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>Institutional ownership 代表較佳 governance，但高 leverage 會削弱它的 disciplining effect，因此 γ<sub>G</sub>&lt;0、γ<sub>I</sub>&gt;0。這正是 dynamic continuation value 產生、static model 缺少的 interaction。</p></div>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="chapter" id="deposits">
+          <div class="chapter-heading">
+            <span class="chapter-number">4</span>
+            <div>
+              <h2>異質銀行與 deposit-side bank runs</h2>
+              <p>PDF 26-30：從 symmetric (N) banks 轉向具有名稱、規模與 strategic interaction 的 granular banks。</p>
+            </div>
+          </div>
+
+          <article class="slide-note" id="p26">
+            <div class="slide-rail"><span class="pdf-page">PDF 26</span><span class="deck-page">slide 22/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Heterogeneity in the Banking Sector</h3><p>Representative-bank 或 symmetric equilibrium 無法處理右尾 giants 與 idiosyncratic aggregate spillovers。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">方法上的轉折</span><p>標準 firm dynamics 加 idiosyncratic shocks 產生 endogenous size distribution；banking model 也可用 deposit shocks、cost types 與 entry/exit 生成異質性。這裡關心的是 market interaction，而非只靠 interbank claims 傳染的 network channel。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>Granular bank 的 shock 會改變它的 rate 或 quantity，競爭者必須最佳回應；這種 price-mediated contagion 即使沒有直接 balance-sheet exposure 也存在。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p27">
+            <div class="slide-rail"><span class="pdf-page">PDF 27</span><span class="deck-page">slide 23/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>A Quantitative Model of Bank Runs</h3><p>Egan-Hortaçsu-Matvos 將 Diamond-Dybvig 與 differentiated-product deposit demand 結合。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">模型元件</span><p>Consumers 在 insured 與 uninsured deposits 間 discrete choice；(K) 家 granular banks 以 Bertrand rates 競爭；loan return 隨機；negative cash flow 時 equity holders 決定 recapitalize 或 default；depositors 將 default probability 放入 bank choice。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>Uninsured demand 取決於 survival belief，但 survival 又取決於能否留住 uninsured funding。這個 feedback 可支持多重 equilibria：相同 fundamentals 下，悲觀 belief 本身就能提高 funding cost 與 default probability。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p28">
+            <div class="slide-rail"><span class="pdf-page">PDF 28</span><span class="deck-page">slide 24/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>EHM Bank Bellman Equation</h3><p>Bank 選 insured/uninsured deposit rates，因為 rates 同時改變 market shares 與 funding costs。</p></div>
+              <div class="equation">
+                \[
+                  E_k=\max_{i_k^I,i_k^N}
+                  \int_{\bar R_k}^{\infty}
+                  \left\{
+                  \begin{aligned}
+                  &M^I s_k^I(i_k^I,i_{-k}^I)(R_k-c_k-i_k^I)\\
+                  &+M^N s_k^N(i_k^N,i_{-k}^N,\rho_k,\rho_{-k})(R_k-i_k^N)
+                  -b_k+\frac{1}{1+r}E_k'
+                  \end{aligned}
+                  \right\}dF(R_k),
+                \]
+                \[
+                  \pi_{k,t}-b_k+\frac{1}{1+r}E_k'\leq0
+                  \quad\text{at the default threshold }\bar R_k.
+                \]
+              </div>
+              <div class="reading-grid">
+                <div><span class="reading-label">公式怎麼讀</span><p>(M^I,M^N) 是兩類 deposit market size，(s_k^I,s_k^N) 是 endogenous shares，ρ 是 survival belief。積分只涵蓋不 default 的 return states；threshold 使 current profit、debt 與 continuation value 恰好等於退出價值。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>提高 rate 可搶到 deposits，卻降低每單位 margin；更高 continuation value 讓 bank 願意 recapitalize。Stationarity 與 timing assumptions 把 (E_k'=E_k)，使原本 dynamic game 化成一連串 static rate-setting problems。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p29">
+            <div class="slide-rail"><span class="pdf-page">PDF 29</span><span class="deck-page">slide 25/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Bank Run Experiment</h3><p>不是改變 fundamentals，而是外生降低對某銀行 survival 的 beliefs，再求 rational-expectations equilibrium。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">實驗步驟</span><p>悲觀 belief 使 uninsured demand 流出；銀行為留住 funding 提高 uninsured 與 insured rates；其他 granular banks 為避免 deposits 被搶也調高 rates；所有 banks 的 margins 與 solvency 因此改變。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>Contagion 不需要 A 對 B 有直接 loan exposure。只要它們爭同一批 deposits，A 的 run 會提高整個 market 的 funding price，將 B 推近 default threshold。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p30">
+            <div class="slide-rail"><span class="pdf-page">PDF 30</span><span class="deck-page">slide 26/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Granular Bank Run Spillover：2008 multiple equilibrium</h3><p>Table 4 比較 calibrated fundamental equilibrium 與 Wachovia pessimistic-belief equilibrium。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">表怎麼讀</span><p>Wachovia default probability 由約 3% 升至 52%，uninsured rate 由約 2.2% 升至 14%，insured rate 接近 9%；其他大銀行也提高 rates，default probabilities 普遍上升。Wachovia insured share 大增而 uninsured share接近零。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>Deposit insurance 把 run 從 uninsured funding 轉向 insured funding，而非完全阻止 balance-sheet expansion。競爭性 rate response 將單一 belief shock 變成 system-wide margin compression。</p></div>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="chapter" id="mergers">
+          <div class="chapter-heading">
+            <span class="chapter-number">5</span>
+            <div>
+              <h2>Mergers 與 concentration transition</h2>
+              <p>PDF 31-34：用 dominant-fringe model 內生重建 Riegle-Neal 後的 merger wave。</p>
+            </div>
+          </div>
+
+          <article class="slide-note" id="p31">
+            <div class="slide-rail"><span class="pdf-page">PDF 31</span><span class="deck-page">slide 27/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>How did we get here?</h3><p>重新呈現 concentration 圖，但問題從「事實是什麼」轉成「transition mechanism 是什麼」。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">這頁怎麼讀</span><p>Pre-Riegle-Neal 與 post-crisis 可視為兩個近似 steady states，中間不是瞬間跳躍，而是 merger wave 驅動的長期 transition。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>只比較改革前後 steady states 無法回答 merger timing、Tobin's Q 暫時上升或 fringe charter values 如何變化。Transition path 本身含有 identification 與 welfare 資訊。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p32">
+            <div class="slide-rail"><span class="pdf-page">PDF 32</span><span class="deck-page">slide 28/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>A Quantitative Model of Bank Mergers</h3><p>政策問題是放寬跨州 branching 的 markup cost 與 scale-economy benefit 如何權衡。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">模型目的</span><p>Corbae-D'Erasmo-Smith 延伸 dominant-fringe framework，使模型匹配 concentration transition。Merger wave 在 marginal deposit-growth gain 低於收購 fringe 的 charter-value cost 時結束。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>一開始 fringe banks 多、收購便宜且跨州 expansion gain 大；隨 fringe 數量下降，剩餘 banks 的 scarcity 與 continuation value 上升，acquisition price 內生提高，最終自行停止整併。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p33">
+            <div class="slide-rail"><span class="pdf-page">PDF 33</span><span class="deck-page">slide 29/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Merger Environment</h3><p>Merger stage、portfolio stage、loan competition 與 entry/exit 共同決定 industry dynamics。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">Game timing</span><p>Granular dominant bank 對 atomless fringe 做 take-it-or-leave-it offer，價格等於 fringe charter value；收購後 dominant 先選 loans/securities，fringe 再最佳反應，形成 Stackelberg-Cournot loan market，並與 nonbank sector 競爭。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>Dominant bank 購買的不只是當期 assets，而是消除一個 competitor 並取得未來 rents。Nonbank outside option 限制其 loan markup；entry/exit 則讓 stability 與 size distribution 回應 mergers。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p34">
+            <div class="slide-rail"><span class="pdf-page">PDF 34</span><span class="deck-page">slide 30/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Merger Policy Experiment</h3><p>Counterfactual 問：若 Riegle-Neal 沒有解除 branching restrictions，銀行業會如何演化？</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">結果怎麼讀</span><p>無 mergers 時 dominant bank 較小、fringe competition 較強、NIM 與 markups 較低；但 fringe failure rate 由約 0.11% 升至 0.49%，Tobin's Q 明顯較低。改革後 mergers 也利用 fixed-cost-driven scale economies，提高 Olley-Pakes allocative efficiency。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>禁止 mergers 改善 static competition，卻保留許多高平均成本、低 charter-value 的小銀行，使 system 更脆弱。Merger policy 的 welfare 不是 markup 單一維度，而是 competition、scale、selection 與 failure externality 的總和。</p></div>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="chapter" id="loans">
+          <div class="chapter-heading">
+            <span class="chapter-number">6</span>
+            <div>
+              <h2>The Bank Lending Channel</h2>
+              <p>PDF 35-42：異質 funding constraints 如何把 monetary/capital policy 傳到 loan supply、entry 與 nonbank substitution。</p>
+            </div>
+          </div>
+
+          <article class="slide-note" id="p35">
+            <div class="slide-rail"><span class="pdf-page">PDF 35</span><span class="deck-page">slide 31/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>The Bank Lending Channel</h3><p>Credit channel 要分 borrower balance-sheet channel 與 bank lending channel。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">兩條 channel</span><p>Balance-sheet channel：monetary tightening 使 liquidity-constrained firms 更難借款投資。Bank lending channel：tightening 使 liquidity-constrained banks 更難取得 funding，因而縮減 loan supply。後者需要 bank heterogeneity 才有有意義的 cross-section。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>觀察 firms 少借，可能是 demand 因 net worth 下降，也可能是 banks supply 收縮。Structural banking model 的作用是同時追蹤 funding shock、bank constraints 與 borrower substitution，分離兩條機制。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p36">
+            <div class="slide-rail"><span class="pdf-page">PDF 36</span><span class="deck-page">slide 32/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>The Crisis and Basel III Capital Regulation</h3><p>四個 panels 顯示 capital ratios 的 size heterogeneity、危機前分布與危機後重建。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">圖怎麼讀</span><p>Top 10 與其餘 banks 的 risk-weighted Tier 1 ratios 水準與路徑不同；2005 distribution 有大量 banks 靠近 minimum requirement；危機期間 failures 激增；2010 distribution 與平均 ratios 往較高 capital 移動。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>同一 capital rule 對 bank types 的 shadow cost 不同。靠近 constraint、equity issuance 昂貴的小銀行可能縮貸或退出；大型銀行較能發 equity、減 dividends 或調整 portfolio，所以 policy 會改變 market shares。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p37">
+            <div class="slide-rail"><span class="pdf-page">PDF 37</span><span class="deck-page">slide 33/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Essentials of the Lending Environment</h3><p>每個 feature 都對應一項 data fact 或 counterfactual margin。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">模型選擇</span><p>Small-bank deposit shocks variance 較大；dominant-fringe 允許 granular strategic spillovers；borrowers 在 bank/nonbank 間 discrete choice，並選 project risk-return；monitoring cost 產生 increasing returns；entry/exit 內生 size distribution。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>Geographic diversification 讓大銀行 funding 較穩；monitoring fixed costs 讓規模有成本優勢；nonbanks 提供 outside option。三者共同決定 capital policy 是單純縮減 credit，還是把 credit 從 small banks 移向 big banks 或 shadow sector。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p38">
+            <div class="slide-rail"><span class="pdf-page">PDF 38</span><span class="deck-page">slide 34/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>CD Bank Bellman Equation</h3><p>一個 bank 的 value problem、loan market clearing 與 distribution law 必須一起 fixed point。</p></div>
+              <div class="equation">
+                \[
+                  \Sigma\equiv(s,S),\qquad \Sigma'\equiv(s',S'),
+                \]
+                \[
+                  \begin{aligned}
+                  (Tv_\tau)(\Sigma)
+                  &=\max_{a_\tau\in A_\tau(\Sigma)}
+                    \E_{\Sigma'|\Sigma}\Bigg[
+                    \max_{x_\tau'\in\{0,1\}}(1-x_\tau')\\
+                  &\qquad\times
+                    \left(
+                      D_\tau(a_\tau;a_{-\tau},\Sigma,\Sigma')
+                      +\beta v_\tau(\Sigma')
+                    \right)\Bigg].
+                  \end{aligned}
+                \]
+                \[
+                  \int \ell_R^d(s,S)\,\mu^d(ds,S)
+                  +\int \ell_R^f(\cdot)\,\mu^f(ds,S)
+                  =L_B^D(S,r_B^L,r_N^L),
+                \]
+                \[
+                  \mu_\tau'=T^*\mu_\tau
+                  =\text{surviving incumbents transitioned by }G
+                  +\text{new entrants}.
+                \]
+              </div>
+              <div class="reading-grid">
+                <div><span class="reading-label">三個 blocks</span><p>(T) 決定 action (a_τ) 與 exit/default (x')；loan clearing 令 dominant 與 fringe supply 等於面對 bank/nonbank rates 的 borrower demand；(T^*) 用 policies 推進 cross-sectional distribution μ。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>Granular dominant bank 知道自己的 loan choice 會改變 (r_B^L)、fringe response，甚至未來 μ；fringe bank 對 aggregate objects 近似 price taker。Markov-perfect equilibrium 要讓 values、policies、distribution 與 prices彼此一致。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p39">
+            <div class="slide-rail"><span class="pdf-page">PDF 39</span><span class="deck-page">slide 35/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>The Marginal Propensity to Lend</h3><p>複雜 FOC 的目的，是分解多一單位 funding 何時轉成一單位 loan。</p></div>
+              <div class="equation">
+                \[
+                  \theta_\tau(\Sigma)
+                  =\underbrace{\text{expected net loan payoff}}_{\text{direct return}}
+                  +\underbrace{\text{loan-rate/market-size effect}}_{\text{market power}}
+                  +\underbrace{\text{future-state effect}}_{\text{dynamic strategic effect}}
+                  -\underbrace{\text{distress and equity-finance cost}}_{\text{funding friction}}
+                  -r_A-C_\tau'(\ell_\tau).
+                \]
+              </div>
+              <div class="reading-grid">
+                <div><span class="reading-label">FOC 怎麼讀</span><p>θ<sub>τ</sub> 是 beginning-of-period external-finance constraint 的 multiplier。Constrained states 中多一元 deposits 幾乎全變 loans，MPL 接近 1；unconstrained states 中可停在 securities/cash，MPL 接近 0。第二、三個 strategic terms 只由 dominant banks internalize。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>Funding shock 對 lending 的效果不是固定 elasticity，而取決於 bank 當下 constraint。小銀行更常像 hand-to-mouth consumers；equity issuance cost 與 monitoring cost 的 type differences 使 bank lending channel 呈現 size heterogeneity。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p40">
+            <div class="slide-rail"><span class="pdf-page">PDF 40</span><span class="deck-page">slide 36/43</span><span class="overlay">overlay 1</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Putting the Model to Work：estimation and validation</h3><p>SMM estimate Markov-perfect Cournot equilibrium 後，先檢查 untargeted mechanisms。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">Validation targets</span><p>模型要重現 small banks 對 funding-cost shock 縮貸更多；concentration 與 crisis/default 的 empirical relationships；以及 dominant-bank deposit shocks 對 bank output 與 total output 的 granular contribution。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>能 fit estimation moments 不足以證明 counterfactual channel 正確。這三組 validations 分別測 funding constraint、competition-stability mechanism 與 granularity，正好對應政策分析依賴的核心機制。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p41">
+            <div class="slide-rail"><span class="pdf-page">PDF 41</span><span class="deck-page">slide 36/43</span><span class="overlay">overlay 2</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Putting the Model to Work：policy uses</h3><p>Overlay 新增兩個正式 counterfactual applications。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">新增內容</span><p>Corbae-D'Erasmo (2021) 分析 capital regulation 對 markups、allocative efficiency 與 stability；2025 paper 分析 TBTF 對 risk taking 與 aggregate lending。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>同一 estimated model 能把政策拆成 intensive margin（每家 bank 的 lending/risk）與 extensive margin（entry/exit、market shares），再計算 aggregate 與 welfare effect。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p42">
+            <div class="slide-rail"><span class="pdf-page">PDF 42</span><span class="deck-page">slide 37/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Capital Regulation Counterfactual</h3><p>Basel III 的效果因 bank size、horizon 與 bank/nonbank substitution 而異。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">結果怎麼讀</span><p>Big banks 發 equity、減 dividends 維持 lending；small banks 縮貸，低利潤者退出。短期 exit 上升、長期下降；entry 兩期都下降，banking 更集中、markups 上升，nonbank credit share 增加。Olley-Pakes allocative efficiency 上升；welfare 短期降、長期升。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>Capital rule 淘汰高成本 banks 並把 lending 重配到有效率 banks，帶來長期 efficiency gain；但過渡期 equity 調整昂貴、credit 收縮，造成短期 loss。規範銀行也會把部分 activity 推往監管較少的 nonbanks。</p></div>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="chapter" id="synergies">
+          <div class="chapter-heading">
+            <span class="chapter-number">7</span>
+            <div>
+              <h2>Putting deposit and loan sides together</h2>
+              <p>PDF 43-45：三個 overlays 依序定位 EHM/CD、WWWX 與 ACW 的模型邊界。</p>
+            </div>
+          </div>
+
+          <article class="slide-note" id="p43">
+            <div class="slide-rail"><span class="pdf-page">PDF 43</span><span class="deck-page">slide 38/43</span><span class="overlay">overlay 1</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Putting the two sides together：what remains exogenous?</h3><p>先比較 deposit-side EHM、loan-side CD 與 merger model CDS。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">模型邊界</span><p>EHM endogenizes deposit competition，但 loan returns exogenous；CD endogenizes loan competition，但 deposit inflows 是 exogenous shocks；CDS 讓 mergers、entry/exit 同時改變兩側 market structure，但把 deposit rate (r_D) 當 given。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>每篇 paper 選擇 endogenize 與研究問題最相關的一側，才能控制 state space。比較結果時要知道哪一個 price 是 equilibrium outcome、哪一個只是外生 funding/return process。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p44">
+            <div class="slide-rail"><span class="pdf-page">PDF 44</span><span class="deck-page">slide 38/43</span><span class="overlay">overlay 2</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Adding Wang-Whited-Wu-Xiao</h3><p>第二個 overlay 加入兩側 imperfect competition 與 monetary transmission。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">新增內容</span><p>WWWX 同時 endogenize deposit 與 loan rates，評估 monetary-policy shock 如何穿過 bank balance sheet。他們發現 bank market power 對 borrower transmission 的量級可與 capital regulation 相比。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>Policy rate 改變 marginal funding cost，不代表 deposit 或 loan rates one-for-one passthrough。Bank 在兩側的 markups 決定 shock 被吸收到 profits，還是轉嫁給 depositors 與 borrowers。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p45">
+            <div class="slide-rail"><span class="pdf-page">PDF 45</span><span class="deck-page">slide 38/43</span><span class="overlay">overlay 3</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Adding Aguirregabiria-Clark-Wang</h3><p>第三個 overlay 加入多地理市場、bank/nonbank competition 與 deposit-loan economies of scope。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">新增內容</span><p>ACW 估計 static bank oligopoly，在多個 local markets 同時處理 deposits 與 loans，研究 geographic credit-flow imbalances。Nonbanks 能做 loans 卻沒有 banks「收 deposits + 放 loans」的 scope economies。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>Nonbank loan competition 壓低 bank loan profitability，可能使銀行連 deposit gathering 都減少。這是跨 balance-sheet sides 的 spillover：一側競爭改變另一側的最適規模。</p></div>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="chapter" id="computation">
+          <div class="chapter-heading">
+            <span class="chapter-number">8</span>
+            <div>
+              <h2>Computational Challenges</h2>
+              <p>PDF 46-47：Bellman contraction 只是第一層，distribution law 與 granular strategic equilibrium 才是主要瓶頸。</p>
+            </div>
+          </div>
+
+          <article class="slide-note" id="p46">
+            <div class="slide-rail"><span class="pdf-page">PDF 46</span><span class="deck-page">slide 39/43</span><span class="overlay">overlay 1</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Two operators：(T) and (T^*)</h3><p>Heterogeneous-bank equilibrium 是 nested fixed point，不只是 value-function iteration。</p></div>
+              <div class="equation">
+                \[
+                  v\xrightarrow{\;T\;}v'
+                  \quad\text{and policies},
+                  \qquad
+                  \mu\xrightarrow{\;T^*(\text{policies})\;}\mu'.
+                \]
+              </div>
+              <div class="reading-grid">
+                <div><span class="reading-label">Operators 怎麼讀</span><p>(T) 在 bounded continuous value-function space 上通常可由 Blackwell conditions 證明 contraction；(T^*) 則把 policies、transition shocks、exit 與 entry 作用到 measure μ 上。Market clearing 又要求 prices 使 aggregate choices 一致。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>Individual optimization 給定 market structure；但 market structure 又由所有 individuals 的 optimal policies 生成。解法必須在「相信一個 μ、解 banks、推進 μ、更新 prices」之間反覆迭代。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p47">
+            <div class="slide-rail"><span class="pdf-page">PDF 47</span><span class="deck-page">slide 39/43</span><span class="overlay">overlay 2</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Granularity and the curse of dimensionality</h3><p>Overlay 新增為何 atomless approximation 在大銀行存在時失效。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">計算問題</span><p>Ex-post idiosyncratic shocks 讓 granular banks 改變 aggregate outcomes，因此產生 μ<sub>0</sub>,μ<sub>1</sub>,... 的 history-dependent sequence。完整 distribution 是 infinite-dimensional state，strategic banks 還要預測其 action 對未來 μ 的影響。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>近似方法用少數 distribution moments，例如 dominant shares、fringe mass、mean capital 或 variance，作為可管理的 aggregate state。這類 Ifrach-Weintraub approximation 的賭注是：被捨棄的 distribution details 對最佳反應影響很小。</p></div>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="chapter" id="future">
+          <div class="chapter-heading">
+            <span class="chapter-number">9</span>
+            <div>
+              <h2>Directions for Future Research and Appendix</h2>
+              <p>PDF 48-55：從 scale 走向 scope、complexity、global banking 與 endogenous optimal regulation。</p>
+            </div>
+          </div>
+
+          <article class="slide-note" id="p48">
+            <div class="slide-rail"><span class="pdf-page">PDF 48</span><span class="deck-page">slide 40/43</span><span class="overlay">overlay 1</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Future Research：Economies of Scope</h3><p>前面主要解釋 Riegle-Neal 帶來的 geographic scale；這頁轉向 1999 Gramm-Leach-Bliley 後的 product scope。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">研究問題</span><p>為什麼 banks 選擇不同 business models？Commercial banking、investment banking、payments、asset management 與 insurance 的共同生產，究竟來自 shared information、customer relationships、funding synergies 還是 regulation。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>Scale economy 是同一活動做大後平均成本下降；scope economy 是多種活動一起做比拆開更便宜。Scope 也可能使 shocks 跨 divisions 傳染，形成 diversification benefit 與 complexity cost 的新 tradeoff。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p49">
+            <div class="slide-rail"><span class="pdf-page">PDF 49</span><span class="deck-page">slide 40/43</span><span class="overlay">overlay 2</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Future Research：Complexity and opacity</h3><p>Overlay 加入 geographic/product expansion 對 supervision 與 systemic risk 的成本。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">新增內容</span><p>Empirical work 建立 complexity measures 並測試 risk taking；quantitative agenda 要把 opacity、governance、supervision 與 information design 放進 dynamic model。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>複雜組織可能更 diversified，也可能讓 outsiders、boards 與 regulators 更難看清 asset quality。資訊不透明有時能避免 inefficient runs，有時卻掩蓋 risk shifting；最適 transparency 並非必然最大。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p50">
+            <div class="slide-rail"><span class="pdf-page">PDF 50</span><span class="deck-page">slide 41/43</span><span class="overlay">overlay 1</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Future Research：Global Banking</h3><p>Buch-Goldberg 的摘要列出跨國銀行 shock transmission 的 heterogeneity。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">怎麼讀引用</span><p>Shock response 取決於 capital、internal liquidity management、parent business model、foreign-market importance、geographic/organizational complexity 與 host-country policy。這些是 bank-specific state 與 country-specific aggregate state 的互動。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>Global bank 可用 internal capital market 把 liquidity 跨國移動，吸收某地 shock，也可能把 shock 傳到其他 subsidiaries。Macro conditions 與 micro balance sheets 必須共同決定跨境 lending。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p51">
+            <div class="slide-rail"><span class="pdf-page">PDF 51</span><span class="deck-page">slide 41/43</span><span class="overlay">overlay 2</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Future Research：Optimal Regulation</h3><p>Overlay 將全課的 fixed-point 問題帶回 policy design。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">新增問題</span><p>許多 optimal-policy exercises 固定 market structure，但 regulation 長期會改變 entry、exit、mergers、nonbank share 與 size distribution。應比較 decentralized equilibrium 與在 runs、moral hazard、monitoring、market power 下的 constrained-efficient allocation。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>對今天的 concentration 設計最適 capital rule，會改變明天的 concentration；明天的 market power 與 granularity 又改變最適 rule。真正 optimal regulation 是對整條 transition path 的承諾或 Markov policy，而非一次性的 wedge。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p52">
+            <div class="slide-rail"><span class="pdf-page">PDF 52</span><span class="deck-page">slide 42/43</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Appendix divider</h3><p>這頁沒有新模型內容，而是由主課程轉入 concentration 的歷史補充。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">這頁功能</span><p>它標示接下來不是額外 equilibrium condition，而是用 Top 4 merger lineage 回答前面的「How did we get here?」。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>Structural transition 需要 institutional narrative 約束：size distribution 的右尾不是抽象 stochastic growth 恰好產生，而是具名 merger sequence 與 regulatory change 的結果。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p53">
+            <div class="slide-rail"><span class="pdf-page">PDF 53</span><span class="deck-page">slide 43/43</span><span class="overlay">overlay 1</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Cross-Section of Rising Bank Concentration：identify the Top 4</h3><p>2018 的 Top 4 BHC 是 JPMorgan Chase、Bank of America、Wells Fargo、Citigroup。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">這頁怎麼讀</span><p>以 1984 dollars 比較避免 inflation 把 nominal growth 誤認為 real concentration。BHC 層級把同一 holding company 下的 banks 合併，與 merger/control 問題一致。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>Top 4 identities 是歷史 merger trees 的終點。Granular banks 不是固定 types；它們由 acquisitions 累積 branches、deposits、relationships 與 geographic diversification。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p54">
+            <div class="slide-rail"><span class="pdf-page">PDF 54</span><span class="deck-page">slide 43/43</span><span class="overlay">overlay 2</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Cross-Section：How did they get there?</h3><p>第二個 overlay 只加入問題，要求把 cross-section 讀成 dynamic histories。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">新增內容</span><p>同樣看到 2018 size ranking，不足以判斷是 organic growth、efficiency selection、geographic shocks 或 mergers。問題本身是在要求 transition model。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>不同 growth mechanism 對 counterfactual 完全不同：若 giants 源自高 productivity，限制 size 可能很昂貴；若源自 merger-created market power，antitrust benefit 可能較大。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="slide-note" id="p55">
+            <div class="slide-rail"><span class="pdf-page">PDF 55</span><span class="deck-page">slide 43/43</span><span class="overlay">overlay 3</span></div>
+            <div class="slide-content">
+              <div class="slide-title"><h3>Cross-Section：the merger lineage</h3><p>最後 overlay 列出 NationsBank/BoA、Chemical/Chase、Norwest/Wells 與 Chase/J.P. Morgan 的路徑。</p></div>
+              <div class="reading-grid">
+                <div><span class="reading-label">歷史怎麼讀</span><p>NCNB 在 1989-92 收購逾 200 家小銀行後改名 NationsBank；Chemical 買 Chase 並保留 Chase 名稱；Norwest 買 Wells Fargo、NationsBank 買 BoA 並採 target 名稱；Chase 再買 J.P. Morgan。</p></div>
+                <div class="intuition"><span class="reading-label">經濟直覺</span><p>今日 brand name 會掩蓋 acquirer identity 與累積 acquisition strategy。這也說明 merger data 必須追 ownership lineage，否則會把 discontinuous acquisition growth 誤當作單一 bank 的 organic productivity growth。</p></div>
+              </div>
+            </div>
+          </article>
+
+          <div class="callout plum">
+            <strong>全課一句話總結</strong>
+            <p>
+              Bank regulation 的 welfare effect 不能在固定市場結構下判斷。Deposit insurance、capital rules、
+              branching 與 merger policy 先改變 bank rates、risk、lending 和 survival，再透過 entry、exit、
+              mergers 與 nonbank substitution 重塑 size distribution；granular banks 又使新的 distribution
+              直接成為 aggregate dynamics 與下一輪 optimal policy 的 state variable。
+            </p>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>讀完後應能回答</th><th>對應頁面</th><th>關鍵 object</th></tr></thead>
+              <tbody>
+                <tr><td>Concentration 為何上升，granularity 為何重要？</td><td>PDF 2-5, 31-34, 53-55</td><td class="term">size distribution, mergers</td></tr>
+                <tr><td>Competition 為何可能提高也可能降低 stability？</td><td>PDF 13-25</td><td class="term">margin, charter value, selection</td></tr>
+                <tr><td>一間大銀行的 shock 如何傳給其他銀行？</td><td>PDF 26-30, 37-39</td><td class="term">deposit rates, loan prices, μ</td></tr>
+                <tr><td>Capital regulation 為何有短期 loss、長期 gain？</td><td>PDF 35-42</td><td class="term">equity, exit, reallocation</td></tr>
+                <tr><td>為何計算不能只做 ordinary VFI？</td><td>PDF 38, 46-47</td><td class="term">(T), (T^*), market clearing</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p class="source">
+            依據：Dean Corbae, “Dynamic Structural Banking,” Econometric Society Summer School in
+            Dynamic Structural Econometrics, August 4, 2026。原檔 55 個 PDF pages；Beamer 頁腳標示
+            1/43 至 43/43，重複編號來自 overlays。
+          </p>
+          <p class="back-top"><a href="#top">回到頁首</a></p>
+        </section>
+      </main>
+    </div>
+  </div>
+</body>
+</html>
