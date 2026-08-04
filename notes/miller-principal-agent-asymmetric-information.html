@@ -1470,6 +1470,21 @@
             </div>
           </div>
 
+          <div class="takeaway">
+            <strong>先分清三個層次：</strong>
+            p.12 真正加入跨期 consumption、borrowing 與 saving；p.13 說明外生 bond-price
+            variation 如何縮小 observational equivalence；p.14 則證明這個環境中的 optimal
+            long-term allocation 可由 repeated short-term contracts 實作。後兩者分別是
+            identification payoff 與 implementation theorem，不是另外兩套偏好模型。
+          </div>
+
+          <p>
+            靜態模型隱含 agent 收到 \(w(x)\) 後立即消費，所以當期 wage risk 就是 consumption risk。
+            動態模型把 compensation timing 與 consumption timing分開：period \(t\) 決定 effort，
+            \(x_{t+1}\) realization 後領取 \(w_t(x_{t+1})\)，agent 再透過 assets
+            把這筆收入分散到整個 lifetime consumption path。
+          </p>
+
           <div class="equation-card">
             <div class="equation-title">
               <strong>Lifetime utility 與轉換後的 compensation value</strong>
@@ -1502,19 +1517,95 @@
             </div>
           </div>
 
+          <h3>為什麼轉換後又像一個 static contract problem？</h3>
+          <p>
+            先在給定 compensation path 下解 agent 的 consumption-saving problem，
+            wage 對 lifetime utility 的影響就可以壓縮進 \(v_t(x)\)。Principal 接著選
+            \(v_t(\cdot)\) 最大化
+          </p>
+
+          <div class="equation-card">
+            <div class="equation-title">
+              <strong>Transformed principal problem</strong>
+              <span class="tag">annuitized utility</span>
+            </div>
+            <div class="equation">
+              \[
+                \max_{v_t(\cdot)}
+                \int \ln v_t(x)f(x)\,dx
+                \quad
+                \text{s.t. transformed participation and IC.}
+              \]
+            </div>
+            <div class="intuition">
+              CARA 與可自由 borrowing / saving 讓 wealth allocation 和 incentive design
+              可以先後處理。相對於 static model，有效 risk-aversion term 變成
+              \(\gamma/b_{t+1}\)，而 work / shirk utility shifters 以
+              \(\alpha^{1/(b_t-1)}\)、\(\beta^{1/(b_t-1)}\) 進入 constraints。
+            </div>
+          </div>
+
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>面向</th>
+                <th>Static model</th>
+                <th>Dynamic saving model</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Consumption</td>
+                <td>Wage 幾乎等同當期 consumption</td>
+                <td>Agent 跨期平滑 consumption</td>
+              </tr>
+              <tr>
+                <td>Risk term</td>
+                <td>\(\gamma\)</td>
+                <td>\(\gamma/b_{t+1}\)</td>
+              </tr>
+              <tr>
+                <td>Effort costs</td>
+                <td>\(\alpha,\beta\)</td>
+                <td>由 \(b_t\) 調整後的 power transformations</td>
+              </tr>
+              <tr>
+                <td>Identification</td>
+                <td>一條 \(w(x)\) 可能對應許多 primitives</td>
+                <td>同一組 primitives 必須解釋不同 \(b_t\) 下的 contracts</td>
+              </tr>
+            </tbody>
+          </table>
+
           <div class="grid-3">
             <article class="mini-card navy">
               <h3>Consumption smoothing</h3>
-              <p>有效的 risk-aversion term 由 \(\gamma\) 轉成 \(\gamma/b_{t+1}\)。</p>
+              <p>
+                Idiosyncratic wage shocks 不必一比一變成當期 consumption shocks；
+                agent 以 borrowing / saving 分散到 lifetime。
+              </p>
             </article>
             <article class="mini-card green">
               <h3>Identification</h3>
-              <p>外生 \(b_t\) 移動 constraints，讓 observational equivalence 變少。</p>
+              <p>
+                外生 \(b_t\) 以已知方式非平行移動 participation 與 IC，
+                讓原本互相補償的 \(\gamma,\alpha,\beta,g\) 更難繼續 observationally equivalent。
+              </p>
             </article>
             <article class="mini-card red">
               <h3>Implementation</h3>
-              <p>最適 long-term contract 可由每期重複 optimal short-term contract 實現。</p>
+              <p>
+                若 \(t+1\) 已包含 period \(t\) effort 的全部資訊，
+                最適 long-term allocation 可由每期重複 optimal short-term contract 實現。
+              </p>
             </article>
+          </div>
+
+          <div class="note">
+            <strong>\(b_t\) 何時真的是 instrument？</strong>
+            它必須在 period \(t\) 已知、對 agent 與 firm 外生，而且只改變跨期一美元的價值，
+            不直接改變 \(f,g,\alpha,\beta,\gamma\)。若 interest rate 反映未觀察到的 firm quality、
+            agent productivity 或其他 hidden state，這個 exclusion restriction 就不成立。
           </div>
 
           <div class="takeaway">
@@ -1522,6 +1613,53 @@
             關於 period \(t\) shirking 的資訊在 \(t+1\) 已經到齊；更晚才發 bonus 或 punishment
             不會增加訊號，只會扭曲 consumption smoothing。動態模型的功能主要是跨期分配 wealth risk，
             不是把已知的 incentive signal 無限延後。
+          </div>
+
+          <h3>Short-term equivalence 不是一般定理</h3>
+          <p>
+            p.14 的結論依賴一個很乾淨的資訊結構：period \(t\) effort 只影響
+            \(x_{t+1}\)，之後不再收到新訊號；沒有 persistent private type 或 human-capital effect，
+            而且 agent 可自由調整 assets。若任一條件失敗，延後支付可能同時承擔 incentive、
+            learning、retention 或 commitment 的功能。
+          </p>
+
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>建模方式</th>
+                <th>適合的經濟環境</th>
+                <th>何時不夠</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Static moral hazard</td>
+                <td>單期 outcome、compensation timing 與 wealth effects 不重要</td>
+                <td>Agent 會 saving、interest rates 變動或薪酬延後發放</td>
+              </tr>
+              <tr>
+                <td>Dynamic saving extension</td>
+                <td>要研究 wage timing、consumption smoothing 與利率 variation</td>
+                <td>Effort 會持續改變 future state，或 capital markets 不完整</td>
+              </tr>
+              <tr>
+                <td>Repeated short-term implementation</td>
+                <td>下一期訊號已完全揭露當期 effort，之後沒有新資訊</td>
+                <td>Signals 延遲到達、private information persistent 或有 renegotiation</td>
+              </tr>
+              <tr>
+                <td>Genuine long-term contract</td>
+                <td>R&amp;D、human capital、retention、deferred signals、limited borrowing</td>
+                <td>若下一期資訊已充分，額外延遲只會降低 consumption smoothing</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="warning">
+            因此「short-term contracts are optimal」不能被解讀為現實中 deferred compensation
+            沒有作用。它是由特定資訊到達時間與 complete capital markets 推出的 equivalence result；
+            後半部加入 human capital 後，今日 work 會改變 future career value，正是超出這個簡單 theorem
+            的動態來源。
           </div>
           <a class="back-top" href="#top">回到頁首</a>
         </section>
@@ -1535,6 +1673,14 @@
             </div>
           </div>
 
+          <div class="takeaway">
+            <strong>為什麼從 set identification 走向 fully parametric？</strong>
+            p.9–11 把 \(g(x)\) 視為未知函數，unknown \(\gamma\) 時只能得到 identified set。
+            p.15 用 truncated normal、common variance 與 CARA 把問題壓成有限維
+            \((\psi,\mu_w,\sigma,\mu_s,\gamma,\alpha,\beta)\)，因此可以直接估計。
+            好處是可計算；代價是唯一答案更依賴 functional-form restrictions。
+          </div>
+
           <div class="equation-card">
             <div class="equation-title">
               <strong>Lower-truncated normal</strong>
@@ -1542,12 +1688,14 @@
             </div>
             <div class="equation">
               \[
-                f_w(x)=
+                f_a(x)=
                 \frac{
-                  \phi((x-\mu_w)/\sigma)
+                  \phi((x-\mu_a)/\sigma)
                 }{
-                  \sigma\Phi((\mu_w-\psi)/\sigma)
+                  \sigma\Phi((\mu_a-\psi)/\sigma)
                 }\mathbf{1}\{x\ge\psi\},
+                \qquad
+                a\in\{w,s\},
               \]
               \[
                 \ln g(x)
@@ -1560,11 +1708,77 @@
                 +
                 \frac{\mu_s-\mu_w}{\sigma^2}x.
               \]
+              \[
+                \mu_w\gt\mu_s
+                \quad\Longrightarrow\quad
+                \frac{\partial\ln g(x)}{\partial x}
+                =
+                \frac{\mu_s-\mu_w}{\sigma^2}
+                \lt0.
+              \]
             </div>
             <div class="intuition">
               \(\psi\) 是 bankruptcy / limited-liability lower bound；
               \(\mu_w,\mu_s\) 控制 work 與 shirk 的 location，\(\sigma\) 控制 noise。
-              Equal variance 使 log likelihood ratio 對 \(x\) 線性，讓 wage equation 容易估計。
+              Equal variance 使 log likelihood ratio 對 \(x\) 線性。若 \(\mu_w\gt\mu_s\)，
+              高 revenue 的 \(g(x)\) 較低，表示它相對更可能由 work 產生，因此最適契約應給較高薪酬。
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <article class="mini-card navy">
+              <h3>Productivity gap</h3>
+              <p>
+                \(\mu_w-\mu_s\) 是 effort 對 latent expected revenue 的效果。
+                Gap 越大，work 與 shirk 越容易由 output 區分。
+              </p>
+            </article>
+            <article class="mini-card gold">
+              <h3>Signal noise</h3>
+              <p>
+                \(\sigma^2\) 越大，兩個 densities 重疊越多，\(g(x)\) 越平；
+                output 對 effort 的資訊較差，IC 通常需要更高 risk premium。
+              </p>
+            </article>
+            <article class="mini-card red">
+              <h3>Lower support</h3>
+              <p>
+                \(\psi\) 把 bankruptcy、limited liability 或制度性 revenue floor
+                寫入 support，並透過 truncation normalizer 影響 likelihood ratio。
+              </p>
+            </article>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title">
+              <strong>Signal quality 如何進入 performance pay</strong>
+              <span class="tag">likelihood-ratio principle</span>
+            </div>
+            <div class="equation">
+              \[
+                \frac{d w^o(x)}{dx}
+                =
+                -\frac{
+                  \eta g'(x)
+                }{
+                  \gamma
+                  \left[
+                    1+\eta\left(\alpha/\beta-g(x)\right)
+                  \right]
+                }.
+              \]
+              \[
+                \mu_w\gt\mu_s
+                \quad\Longrightarrow\quad
+                g'(x)\lt0
+                \quad\Longrightarrow\quad
+                \frac{d w^o(x)}{dx}\gt0.
+              \]
+            </div>
+            <div class="intuition">
+              高 revenue 被獎勵，不是因為 principal 單純偏好 revenue level，
+              而是它是 work 相對於 shirk 的有利證據。當 \(\sigma\) 很大或
+              \(\mu_w-\mu_s\) 很小時，signal 變弱；要提供同樣 IC，契約必須在保險與誘因間付出更高成本。
             </div>
           </div>
 
@@ -1573,6 +1787,60 @@
             normalizing-constant 應是上式的
             \(\ln\Phi_w-\ln\Phi_s\)。投影片 p.15 顯示相反順序，與其自身的 \(g\) 定義不一致；
             這裡採 density ratio 所推出的方向。
+          </div>
+
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>經濟含義</th>
+                <th>主要從哪裡識別</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>\(\psi\)</td>
+                <td>Bankruptcy / limited-liability lower support</td>
+                <td>Observed \(x\) 的 sample boundary</td>
+              </tr>
+              <tr>
+                <td>\(\mu_w\)</td>
+                <td>Agent work 時的 latent mean productivity</td>
+                <td>Equilibrium working-output distribution</td>
+              </tr>
+              <tr>
+                <td>\(\mu_s\)</td>
+                <td>Counterfactual shirk 時的 latent mean productivity</td>
+                <td>Wage schedule 對 \(x\) 的形狀所透露的 \(g(x)\)</td>
+              </tr>
+              <tr>
+                <td>\(\sigma\)</td>
+                <td>Luck / output noise；effort signal 的精確度</td>
+                <td>Working-output dispersion</td>
+              </tr>
+              <tr>
+                <td>\(\gamma\)</td>
+                <td>Agent absolute risk aversion</td>
+                <td>Wage variation 的 utility curvature</td>
+              </tr>
+              <tr>
+                <td>\(\alpha,\beta\)</td>
+                <td>Work / shirk 相對 outside option 的 utility costs</td>
+                <td>Wage level、participation 與 IC restrictions</td>
+              </tr>
+              <tr>
+                <td>\(\eta\)</td>
+                <td>IC constraint 的 shadow price，不是自由 reduced-form coefficient</td>
+                <td>每組 structural parameters 下由 binding constraints 解出</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="note">
+            \(\gamma\)、\(\alpha/\beta\) 與 \(\sigma\) 都可能讓 incentive contract 變昂貴，
+            但原因不同：\(\gamma\) 高是 agent 厭惡 wage risk；\(\alpha/\beta\) 高是 agent
+            更想 shirk；\(\sigma\) 高則是 output 難以辨認 effort。Structural specification
+            的目的就是利用 wage level、shape 與 output distribution 把三者拆開。
           </div>
 
           <div class="pipeline" aria-label="four-step estimator">
@@ -1596,6 +1864,44 @@
               <strong>4. Inference</strong>
               <span>修正 generated first-stage estimates 造成的標準誤</span>
             </div>
+          </div>
+
+          <h3>四個 estimation steps 各自在做什麼？</h3>
+          <div class="grid-2">
+            <article class="mini-card red">
+              <h3>Step 1：support parameter</h3>
+              <p>
+                \(\widehat\psi=\min_n x_n\)。Support boundary 讓 sample minimum
+                通常比 \(\sqrt N\) 更快逼近 \(\psi\)，所以是 super-consistent；
+                但一筆被錯誤記得過低的 \(x\) 就可能嚴重拉低估計值。
+              </p>
+            </article>
+            <article class="mini-card navy">
+              <h3>Step 2：observed work technology</h3>
+              <p>
+                因 equilibrium contract induces work，observed \(x_n\) 被視為來自
+                \(f_w(x;\psi,\mu_w,\sigma)\)。用 truncated-normal likelihood
+                估 \((\mu_w,\sigma)\)；\(\widehat\psi\) 的超快收斂使其誤差通常不進入
+                first-order correction。
+              </p>
+            </article>
+            <article class="mini-card green">
+              <h3>Step 3：hidden technology 與 preferences</h3>
+              <p>
+                給定 \((\widehat\psi,\widehat\mu_w,\widehat\sigma)\)，用整條 wage schedule
+                的 level、slope 與 curvature 估 \((\mu_s,\gamma,\alpha,\beta)\)。
+                Contract 是 principal 對 hidden likelihood ratio 的 revealed assessment，
+                因而提供未觀察 shirk density 的資訊。
+              </p>
+            </article>
+            <article class="mini-card gold">
+              <h3>Step 4：two-step inference</h3>
+              <p>
+                Step 3 使用 generated estimates \(\widehat\mu_w,\widehat\sigma\)，
+                所以 structural standard errors 必須包含 first-stage uncertainty；
+                不能把它們當成已知 constants。
+              </p>
+            </article>
           </div>
 
           <div class="equation-card">
@@ -1622,6 +1928,49 @@
               外層 NLS 搜尋 structural parameters；內層用 binding constraints 解 \(\eta\)。
               這個 nesting 不是 NFXP 的 Bellman fixed point，而是每組 parameters 下的一維 IC shadow-price root。
             </div>
+          </div>
+
+          <div class="grid-3">
+            <article class="mini-card navy">
+              <h3>Output distribution</h3>
+              <p>
+                \[
+                  x_n
+                  \Longrightarrow
+                  (\psi,\mu_w,\sigma).
+                \]
+                提供 observed work technology 與 signal noise。
+              </p>
+            </article>
+            <article class="mini-card green">
+              <h3>Wage level</h3>
+              <p>
+                \[
+                  \E[w\mid x]
+                  \Longrightarrow
+                  (\alpha,\beta).
+                \]
+                配合 participation / IC 解 effort compensation。
+              </p>
+            </article>
+            <article class="mini-card gold">
+              <h3>Wage shape</h3>
+              <p>
+                \[
+                  w'(x),w''(x)
+                  \Longrightarrow
+                  (\mu_s,\gamma).
+                \]
+                揭露 counterfactual signal technology 與 risk compensation。
+              </p>
+            </article>
+          </div>
+
+          <div class="warning">
+            得到唯一 NLS optimum 不等於已證明 global point identification。
+            Fully parametric model 可能依靠 truncated normal、common variance、CARA 與 optimal-contract
+            restrictions 排除 observational equivalence。實證上仍應搜尋 alternative roots，
+            檢查 Jacobian / weak identification，並對 distributional assumptions 做 sensitivity analysis。
           </div>
 
           <div class="note">
