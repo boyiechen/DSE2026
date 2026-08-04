@@ -1990,10 +1990,38 @@
             </div>
           </div>
 
+          <div class="takeaway">
+            <strong>p.25 的 empirical puzzle：</strong>
+            Large-firm executives 為何領得更多？Observed pay premium 可能來自較高 talent、
+            on-the-job human capital 或更高 marginal productivity；也可能是因 large firms
+            的 individual effort 更難監督，必須以股票、options 與其他 firm-denominated securities
+            支付更高 moral-hazard risk premium。
+          </div>
+
+          <div class="grid-2">
+            <article class="mini-card navy">
+              <h3>Human-capital explanation</h3>
+              <p>
+                Large firms 可能選到更有教育、經驗或能力的 executives；在不同 firms
+                累積的 executive experience 也可能提高高階職位 productivity。
+              </p>
+            </article>
+            <article class="mini-card red">
+              <h3>Moral-hazard explanation</h3>
+              <p>
+                股票與 options 占 total compensation 的比例很高，而且 security mix
+                隨 firm size、rank 與 lifecycle 改變，暗示 effort-signal quality 與 incentive cost
+                可能是 pay gap 的重要來源。
+              </p>
+            </article>
+          </div>
+
           <p>
             後半部是 dynamic generalized Roy model：每期 executive 選擇 retire、
             firm type / sector / mobility \(j\)、job rank \(k\)、consumption \(c_t\)，
-            再 privately 選 effort \(l_t\)。Employment choice 滿足
+            再 privately 選 effort \(l_t\)。它同時是 job-sorting model、dynamic discrete-choice
+            model 與 principal-agent model；因此 compensation 與 job choice 都是 endogenous。
+            Employment choice 滿足
           </p>
 
           <div class="equation-card">
@@ -2008,7 +2036,9 @@
             </div>
             <div class="intuition">
               \(d_{0t}=1\) 表示退休；\(d_{jkt}=1\) 表示在 firm category \(j\) 擔任 rank \(k\)。
-              這使 observed career histories 可以轉成 conditional choice probabilities。
+              \(j\) 同時編碼 firm size、sector 與是否換 firm，\(k\) 是 hierarchy rank。
+              Observed career histories 可以轉成 CCPs，用來揭露 executives 對 compensation、
+              job amenities 與 career investment 的取捨。
             </div>
           </div>
 
@@ -2090,6 +2120,45 @@
             </div>
           </div>
 
+          <div class="grid-2">
+            <article class="mini-card gold">
+              <h3>Public insurance versus future labor income</h3>
+              <p>
+                Agent 可交易 publicly disclosed risks，但不能以 future executive compensation
+                借款。公開風險可被保險，尚未實現的人力資本與 future labor income
+                卻不能完全提前變現，因此 career investment 仍會改變今日選擇。
+              </p>
+            </article>
+            <article class="mini-card green">
+              <h3>Why abnormal returns?</h3>
+              <p>
+                \(f_j(\pi)\) 是所有 executives work 時的 abnormal-return density；
+                \(f_j(\pi)g_{jk}(\pi\mid h)\) 是只有 \(k\) shirk 時的 density。
+                控制 market-wide luck 後的 \(\pi\) 才是 individual effort 的較乾淨 signal。
+              </p>
+            </article>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title">
+              <strong>Shareholders 確實偏好 work</strong>
+              <span class="tag">technology ordering</span>
+            </div>
+            <div class="equation">
+              \[
+                \int \pi f_j(\pi)\,d\pi
+                \gt
+                \int \pi f_j(\pi)
+                g_{jk}(\pi\mid h_t)\,d\pi.
+              \]
+            </div>
+            <div class="intuition">
+              這個 ordering 建立 principal 與 agent 的利益衝突：
+              shareholders 因 expected firm return 較高而要 work；agent 因
+              \(\alpha_{jk}(h)\gt\beta_{jk}(h)\) 而在其他條件相同時偏好 shirk。
+            </div>
+          </div>
+
           <details>
             <summary>Equilibrium timing 的十個步驟</summary>
             <div>
@@ -2107,6 +2176,14 @@
               </ol>
             </div>
           </details>
+
+          <div class="note">
+            <strong>Timing 同時處理兩種 asymmetric information：</strong>
+            executive 知道 true \(h_t\)，shareholders 只有 belief \(h_t'\)，所以 compensation proposal
+            也具有 hidden-type / signaling 問題；契約通過後 effort \(l_t\) 私下決定，則是 hidden action。
+            Off-path proposal 觸發 worst belief 與公開 rejection，用來支撐 equilibrium sorting 與
+            truthful on-path compensation demands。
+          </div>
           <a class="back-top" href="#top">回到頁首</a>
         </section>
 
@@ -2142,6 +2219,25 @@
             </div>
           </div>
 
+          <div class="grid-2">
+            <article class="mini-card navy">
+              <h3>Why aggregate into \(B_t\)?</h3>
+              <p>
+                原始 state 要追蹤 retirement、所有 firm-rank choices、taste shocks、
+                compensation 與 future human capital。\(B_t\) 把這些 future option values
+                壓成一個 recursive sufficient index，使 career problem 可計算。
+              </p>
+            </article>
+            <article class="mini-card red">
+              <h3>Why does \(V_{jkt}\) take a minimum?</h3>
+              <p>
+                Negative-exponential representation 把較高 utility 寫成較低的 disutility index。
+                Agent 在 work branch \((\alpha,\bar H)\) 與 shirk branch \((\beta,H,g)\)
+                之間選擇較低者；optimal contract 的 IC 要讓 work branch 成為 minimum。
+              </p>
+            </article>
+          </div>
+
           <p>
             Value function 分兩步解：先在給定 career path 下選最適 consumption，
             再沿 equilibrium path \(h=h'\) 選 career。定義
@@ -2173,6 +2269,8 @@
               當期的 systematic / idiosyncratic nonpecuniary utility、
               工作對 future human capital 的 investment value、
               以及 compensation 的 expected utility。
+              這正是 dynamic generalized Roy model：不同 executives 因 comparative advantage
+              與 privately observed tastes，自我排序到不同 firm-rank combinations。
             </div>
           </div>
 
@@ -2201,6 +2299,13 @@
             </div>
           </div>
 
+          <div class="note">
+            <strong>CCP inversion 不是對 choices 取平均。</strong>
+            給定 taste-shock distribution，它將 observed choice shares 反解成 deterministic
+            choice-value differences。Reference choice 是 retirement，所以 \(q_{jk}[p]\)
+            恢復的是 job \((j,k)\) 相對 retirement 的總 utility value，而不是單獨的 wage value。
+          </div>
+
           <div class="equation-card">
             <div class="equation-title">
               <strong>CCP 所隱含的 certainty-equivalent wage</strong>
@@ -2223,6 +2328,21 @@
               它先用 CCP inversion recover job 相對於 retirement 的總價值，
               再扣除 nonpecuniary 與 human-capital value，剩餘部分才是使 agent 願意加入的 monetary compensation。
             </div>
+          </div>
+
+          <div class="grid-3">
+            <article class="mini-card gold">
+              <h3>Observed CCP</h3>
+              <p>揭露 job 相對 retirement 的 total value。</p>
+            </article>
+            <article class="mini-card green">
+              <h3>Subtract career value</h3>
+              <p>扣除 \(A_{t+1}(h)\) 所代表的 future human-capital return。</p>
+            </article>
+            <article class="mini-card navy">
+              <h3>Monetary residual</h3>
+              <p>剩餘部分成為 participation 所要求的 certainty-equivalent wage \(w^*\)。</p>
+            </article>
           </div>
           <a class="back-top" href="#top">回到頁首</a>
         </section>
@@ -2265,6 +2385,7 @@
               右邊把兩種 incentive 合在一起：
               \(v'g\) 是 explicit compensation 對 performance signal 的反應；
               \(B_{t+1}[\bar H]\) 與 \(B_{t+1}[H]\) 的差是 work 與 shirk 帶來的 career-value gap。
+              可以將它讀成「explicit performance incentive \(\times\) career-value incentive」。
               只要合計回報足以抵銷 \(\alpha/\beta\) 的 effort disutility，agent 就會 work。
             </div>
           </div>
@@ -2284,6 +2405,13 @@
                 因 \(\alpha\gt\beta\)，agent 會 shirk，必須加入 explicit performance pay。
               </p>
             </article>
+          </div>
+
+          <div class="note">
+            <strong>Lifecycle intuition：</strong>
+            Career concerns 對年輕、升遷空間大或人力資本仍快速累積的 executive 通常較強，
+            firm 可以少用 risky bonus；接近退休或 future opportunities 已不太受 effort 影響時，
+            explicit performance pay 的角色會提高。這也是為什麼 security mix 可能隨 rank 與 lifecycle 改變。
           </div>
 
           <div class="equation-card">
@@ -2331,10 +2459,44 @@
             </div>
           </div>
 
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Component</th>
+                <th>經濟來源</th>
+                <th>對 observed pay 的含義</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>\(\Delta^\alpha\)</td>
+                <td>Systematic job amenity / disamenity</td>
+                <td>工作越不受歡迎通常需要較高 compensating adjustment</td>
+              </tr>
+              <tr>
+                <td>\(\Delta^A\)</td>
+                <td>Future human-capital investment value</td>
+                <td>若 job 提供高 future return，executive 可能接受較低 current cash pay</td>
+              </tr>
+              <tr>
+                <td>\(\Delta^q\)</td>
+                <td>CCP revealed idiosyncratic tastes與 sorting</td>
+                <td>把 observed job shares 所隱含的 selection value 轉成 wage adjustment</td>
+              </tr>
+              <tr>
+                <td>\(r(h,\pi)\)</td>
+                <td>Performance-contingent incentive</td>
+                <td>讓 agent 承擔 signal risk；其平均 \(\E[r]=\Delta^r\) 是 risk premium</td>
+              </tr>
+            </tbody>
+          </table>
+
           <div class="note">
             這個 decomposition 的價值在於：兩位 executives 的 observed pay 即使相同，
             結構意義也可能完全不同。一位可能因工作本身不受歡迎而拿 compensating differential；
             另一位可能因 effort signal 很差而拿高 risk premium。
+            各 \(\Delta\) 是薪資調整的 economic label，代數上的正負仍取決於
+            \(b_t\)、preferences 與 continuation values。
           </div>
           <a class="back-top" href="#top">回到頁首</a>
         </section>
@@ -2384,6 +2546,13 @@
             </div>
           </div>
 
+          <div class="note">
+            這裡的大寫 \(\Gamma(\cdot)\) 是 complete gamma function，
+            來自對 T1EV shock 的 transformed expectation；它不是 CARA risk-aversion coefficient
+            \(\gamma\)。T1EV assumption 的角色是把 otherwise unobserved inclusive value
+            寫成 CCP 與 closed-form correction。
+          </div>
+
           <table class="comparison-table">
             <thead>
               <tr><th>資料 variation</th><th>主要識別對象</th><th>直覺</th></tr>
@@ -2411,6 +2580,14 @@
               </tr>
             </tbody>
           </table>
+
+          <div class="takeaway">
+            <strong>Identification 的尺度分工：</strong>
+            CCPs 只把 relative job values 恢復到 taste-shock normalization 下的 utility units；
+            compensation schedule 將這些 values 接到 dollar scale；abnormal-return densities
+            再告訴模型 performance pay 究竟在保險哪種 effort signal risk。
+            三類資料缺一，就容易把 amenities、human capital 與 risk premium 混在一起。
+          </div>
 
           <div class="grid-2">
             <article class="mini-card navy">
@@ -2474,6 +2651,42 @@
           </div>
 
           <h3>Firm-size executive pay premium</h3>
+          <p>
+            p.37 的 Figure 3 先把 expected pay 分成 certainty-equivalent pay 與 risk premium，
+            再將 certainty equivalent 分成 human capital、demand 與 nonpecuniary components：
+          </p>
+
+          <div class="equation-card">
+            <div class="equation-title">
+              <strong>Figure 3 的兩層 decomposition</strong>
+              <span class="tag">pp.37–38</span>
+            </div>
+            <div class="equation">
+              \[
+                \E[w]
+                =
+                \text{certainty-equivalent pay}
+                +
+                \text{moral-hazard risk premium},
+              \]
+              \[
+                \text{certainty-equivalent pay}
+                =
+                \text{human capital}
+                +
+                \text{demand}
+                +
+                \text{nonpecuniary adjustment}.
+              \]
+            </div>
+            <div class="intuition">
+              Panel (a) 比較不同 firm sizes / ranks 的 expected pay 與 risk premium；
+              panels (b)、(c) 再按 firm size 與 rank 拆 certainty equivalent。
+              因此圖表不是把所有 pay difference 都解讀成 productivity，而是先分離
+              接受 job 所需的平均價值與承擔 incentive risk 所需的額外補償。
+            </div>
+          </div>
+
           <div class="grid-2">
             <article class="mini-card green">
               <h3>80%：risk premium</h3>
@@ -2497,6 +2710,48 @@
             <li>教育與經驗個別重要，但合計後沒有剩餘的 firm-size human-capital pay premium。</li>
           </ul>
 
+          <div class="grid-2">
+            <article class="mini-card navy">
+              <h3>Talent sorting \(\ne\) pay-premium mechanism</h3>
+              <p>
+                Large firms 可以雇用更 talented executives，但在控制 sorting 與 observable
+                human-capital components 後，large-versus-small 的 pay difference
+                不必由 human-capital price 解釋。因此「誰去了 large firm」與
+                「為何 large firm 付得更多」是兩個不同問題。
+              </p>
+            </article>
+            <article class="mini-card green">
+              <h3>Large-firm amenities do not explain high pay</h3>
+              <p>
+                沒有證據顯示 executives 偏好 small firms；若 large-firm job 本身較有吸引力，
+                nonpecuniary component 反而使他們願意少拿一些 current pay。
+                Observed positive premium 因而更需要由 risk premium 與 demand 抵銷並解釋。
+              </p>
+            </article>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title">
+              <strong>Firm-size pay gap 的 structural conclusion</strong>
+              <span class="tag">80 / 20</span>
+            </div>
+            <div class="equation">
+              \[
+                \text{observed firm-size compensation gap}
+                \approx
+                0.80\times\text{risk premium}
+                +
+                0.20\times\text{productivity demand}.
+              \]
+            </div>
+            <div class="intuition">
+              Large firms 的組織更複雜、supervisory positions 更多，individual accountability
+              較困難，所以 abnormal return 是較差的 effort signal；為了 induce work，
+              executive 必須承擔更多 performance risk。剩餘 demand component 則來自大型資源基礎
+              放大 executive decisions 的 marginal productivity。
+            </div>
+          </div>
+
           <div class="takeaway">
             <strong>全章核心：</strong>
             observed compensation = participation 所需的平均價值
@@ -2504,6 +2759,13 @@
             + job amenities 的 compensating differential
             + human-capital / career investment value。
             Structural model 的工作，就是利用 wage、choice 與 return variation 把這四項拆開。
+          </div>
+
+          <div class="flow" aria-label="structural decomposition logic">
+            <div class="flow-step"><span>Job choices</span>揭露 amenities 與 career values</div>
+            <div class="flow-step"><span>Returns</span>揭露 effort-signal quality</div>
+            <div class="flow-step"><span>Compensation</span>揭露 participation 與 risk premium</div>
+            <div class="flow-step"><span>Decomposition</span>區分 80% incentive risk 與 20% demand</div>
           </div>
 
           <table class="comparison-table">
