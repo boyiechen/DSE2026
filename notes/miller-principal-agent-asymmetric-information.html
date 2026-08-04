@@ -1221,6 +1221,243 @@
             也可能表示 output 是非常精確的 effort signal、所以少量 risk 就能提供誘因。
             沒有額外 variation 時，risk attitude 與 signal technology 彼此 confounded。
           </div>
+
+          <h3>“You give me a \(\gamma\), I give you an observationally equivalent set of parameters”</h3>
+          <p>
+            這句話要從「資料看得到什麼」開始讀。Observed panel
+            \(\{x_n,w_n\}\) 識別的是 working-output density \(f(x)\) 與 wage schedule
+            \(w^o(x)\)，看不到 risk aversion、work / shirk utility costs，也看不到
+            counterfactual shirking density \(f(x)g(x)\)。因此先任選一個 candidate
+            \(\widetilde\gamma\)，就可以把 observed \(w^o(x)\) 代回上面的 inversion，
+            配出一整組 companion primitives：
+          </p>
+
+          <div class="equation-card">
+            <div class="equation-title">
+              <strong>每個 candidate \(\gamma\) 對應一個完整 parameterization</strong>
+              <span class="tag">equivalence class</span>
+            </div>
+            <div class="equation">
+              \[
+                \theta(\widetilde\gamma)
+                =
+                \left\{
+                  \widetilde\gamma,\,
+                  \alpha(\widetilde\gamma),\,
+                  \beta(\widetilde\gamma),\,
+                  g(\cdot,\widetilde\gamma)
+                \right\}.
+              \]
+              \[
+                P_{\theta(\gamma_1)}(x,w)
+                =
+                P_{\theta(\gamma_2)}(x,w)
+                \qquad
+                \text{for observationally equivalent }
+                \theta(\gamma_1),\theta(\gamma_2).
+              \]
+            </div>
+            <div class="intuition">
+              <strong>相同的是 observables，不同的是經濟故事。</strong>
+              不同 \(\gamma\) 會重新解讀同一條 wage schedule 中有多少是 risk compensation；
+              相應調整 \(\alpha,\beta,g\) 與 IC shadow price 後，仍可產生完全相同的
+              \(f(x)\) 與 \(w^o(x)\)。即使樣本無限大，只看目前 observables
+              也無法分辨這些 parameterizations。
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="mini-card green">
+              <h3>它們共同預測</h3>
+              <p>
+                相同的 observed contract、working-output distribution，以及 equilibrium
+                中 agent 接受契約並 work。換言之，它們對 observed-data likelihood 相同。
+              </p>
+            </article>
+            <article class="mini-card red">
+              <h3>它們不同之處</h3>
+              <p>
+                Risk attitude、effort disutility、shirking technology
+                \(f(x)g(x,\gamma)\)，以及依賴這些 primitives 的 counterfactual policy effects。
+              </p>
+            </article>
+          </div>
+
+          <div class="note">
+            此處 “a set of parameters” 是指給定一個 \(\gamma\) 後得到的一組
+            parameter vector / function。讓 \(\gamma\) 在所有 admissible values 間變動，
+            才形成整個 observational-equivalence class，也就是 identified set。
+          </div>
+
+          <h3>Sharp、tight 與 empty-set rejection</h3>
+          <p>
+            將 induce-work contract 與固定薪資、接受 shirking 的 contract 利潤寫成
+          </p>
+
+          <div class="equation-card">
+            <div class="equation-title">
+              <strong>Profitability restriction 與 identified set</strong>
+              <span class="tag">necessity + sufficiency</span>
+            </div>
+            <div class="equation">
+              \[
+                \Pi_W(\gamma)
+                =
+                \E[x]-\E[w^o(x)],
+                \qquad
+                \Pi_S(\gamma)
+                =
+                \E[xg(x,\gamma)]-\gamma^{-1}\ln\beta(\gamma),
+              \]
+              \[
+                \Gamma_I
+                =
+                \left\{
+                  \gamma\gt0:
+                  \Pi_W(\gamma)\ge\Pi_S(\gamma)
+                \right\}.
+              \]
+            </div>
+            <div class="intuition">
+              Inversion equalities 幾乎能讓每個 candidate \(\gamma\) fit 同一份 observables；
+              profitability inequality 是額外的 optimality implication。它排除那些
+              「principal 其實寧可付固定薪資並接受 shirk」的 parameterizations。
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="mini-card navy">
+              <h3>Necessary</h3>
+              <p>
+                若 \(\gamma\) 是 true value，它一定在 \(\Gamma_I\) 中；否則 observed
+                work-inducing contract 不可能是 principal 的最適選擇。
+              </p>
+            </article>
+            <article class="mini-card green">
+              <h3>Sufficient</h3>
+              <p>
+                每個 \(\gamma\in\Gamma_I\) 都能配上相應的
+                \(\alpha(\gamma),\beta(\gamma),g(\cdot,\gamma)\)，完整 rationalize
+                observables 與 optimality。
+              </p>
+            </article>
+          </div>
+
+          <p>
+            因此 \(\Gamma_I\) 是 <strong>sharp</strong> 的：它不是只保證包含 true value
+            的寬鬆 outer bound，而是恰好包含所有且僅包含能 rationalize data 的 values。
+            講義的 “sharp and tight” 是在強調沒有多餘空間；partial-identification 文獻中，
+            “sharp identified set” 通常已包含「由現有 assumptions 所能推出的最緊集合」這層意思。
+          </p>
+
+          <div class="warning">
+            <strong>若 \(\Gamma_I=\varnothing\)：</strong>
+            不存在任何 \(\gamma,\alpha,\beta,g\) 能同時解釋 observed wage、output、
+            participation、IC 與 principal optimality，所以是整組模型 restrictions 被拒絕，
+            不是只有某個 \(\gamma\) 被拒絕。這是 population statement；sample analog
+            因 sampling error 暫時為空時，仍須使用 moment-inequality inference，
+            不能直接宣布模型失敗。
+          </div>
+
+          <h3>Point identification 不等於 optimizer 回傳一個數字</h3>
+          <p>
+            Point identification 的 population 定義是
+            \(\Theta_I=\{\theta_0\}\)：只有一個 parameter vector 能產生 observed distribution。
+            一次 optimization 只找到一個 numerical solution，並不證明 moment mapping
+            globally one-to-one，也不排除其他 roots、weak identification、local optimum，
+            或由強 functional-form assumptions 人為製造的唯一性。
+          </p>
+
+          <div class="equation-card">
+            <div class="equation-title">
+              <strong>Just identified 仍可能有多個 roots</strong>
+              <span class="tag">one moment, one parameter</span>
+            </div>
+            <div class="equation">
+              \[
+                \E[Y]-\theta^2=0
+                \quad\Longrightarrow\quad
+                \theta\in
+                \left\{
+                  \sqrt{\E[Y]},-\sqrt{\E[Y]}
+                \right\}.
+              \]
+            </div>
+            <div class="intuition">
+              Moment 數量等於 parameter 數量只是一個 counting condition。
+              Point identification 還需要 mapping 的 global injectivity；
+              Jacobian full rank 通常只保證某個 solution 附近的 local identification，
+              不一定排除遠處的另一個 solution。
+            </div>
+          </div>
+
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>概念</th>
+                <th>形式</th>
+                <th>能告訴我們什麼</th>
+                <th>不能自動保證什麼</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Point identified</td>
+                <td>\(\Theta_I=\{\theta_0\}\)</td>
+                <td>Population observables 只有一個 structural 反解</td>
+                <td>Estimator 沒有 bias、模型正確或 counterfactual 穩健</td>
+              </tr>
+              <tr>
+                <td>Just identified moments</td>
+                <td>\(J=K\)</td>
+                <td>Moments 與 parameters 數量相等</td>
+                <td>Global uniqueness、strong identification 或 specification validity</td>
+              </tr>
+              <tr>
+                <td>Over-identified moments</td>
+                <td>\(J\gt K\)</td>
+                <td>留下沒有被自由 parameters 完全配適的 restrictions</td>
+                <td>Full-rank Jacobian、唯一 root、強 instruments 或模型為真</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>所以一定要 over-identify 嗎？</h3>
+          <div class="grid-2">
+            <article class="mini-card green">
+              <h3>對 identification：不一定</h3>
+              <p>
+                例如 \(\E[Y-\theta]=0\) 唯一給出 \(\theta=\E[Y]\)；
+                just-identified model 可以真正 point identify。
+                相反地，\(J\gt K\) 若 moments redundant 或 Jacobian rank deficient，
+                仍可能無法識別。
+              </p>
+            </article>
+            <article class="mini-card gold">
+              <h3>對 internal model testing：需要剩餘限制</h3>
+              <p>
+                Just-identified GMM 通常可令所有 sample moments 為零，
+                Hansen \(J\)-test 的 degrees of freedom 是 \(J-K=0\)。
+                要讓模型有被資料拒絕的機會，必須留下未被 fitting 用完的 empirical implications。
+              </p>
+            </article>
+          </div>
+
+          <p>
+            這些剩餘 implications 不一定是傳統 \(J\gt K\) 的 moment equalities；
+            也可以是 moment inequalities、distributional restrictions、excluded variation、
+            cross-market restrictions 或 out-of-sample predictions。p.11 的 profitability
+            inequality 就是例子：它不是傳統 overidentifying equality，卻能刪除部分 candidates，
+            甚至在 \(\Gamma_I\) 為空時拒絕整個模型。
+          </p>
+
+          <div class="takeaway">
+            <strong>最重要的區分：</strong>
+            Point identification 需要 parameter-to-observable mapping 具有唯一反解；
+            model testing 需要一些沒有被估計程序完全用掉的 surplus restrictions。
+            Over-identification 是取得後者的一種常見方式，但既不是 point identification
+            的必要條件，也不是充分條件。
+          </div>
           <a class="back-top" href="#top">回到頁首</a>
         </section>
 
