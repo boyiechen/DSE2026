@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""Estimate Practicum 1 on S1/S2/S3 and write the Kaggle submission.
+"""Estimate Practicum 1 on S1/S2/S3 and write the official Kaggle submission.
 
 Run this file from anywhere inside the repository.  It uses the official
 S1/S2/S3 parquet panels, the specifications described in the student
 notebook, and the structural-moment/counterfactual utilities in ``klw.py``.
-The resulting CSV is checked against the official 51-row template before the
-script reports success.
+
+Following the TA's correction, ``submission_template.csv`` is the authoritative
+51-row template.  Its IDs and row order drive the output.  The obsolete
+36-row A/B/C ``sample_submission.csv`` is deliberately never used.
 """
 
 from __future__ import annotations
@@ -29,7 +31,7 @@ REPO_ROOT = SCRIPT_DIR.parents[1]
 PRACTICUM1_DIR = REPO_ROOT / "practicum" / "practicum1"
 DEFAULT_DATA_DIR = PRACTICUM1_DIR / "data"
 DEFAULT_OUTPUT = SCRIPT_DIR / "practicum1_submission.csv"
-DEFAULT_TEMPLATE = DEFAULT_DATA_DIR / "submission_template.csv"
+EXPECTED_ROWS = 51
 
 # Import the official toolkit by absolute repository path so the script does
 # not depend on the caller's current working directory.
@@ -45,7 +47,6 @@ from klw import (  # noqa: E402
     counterfactual,
     expected_design,
     gmm_fit,
-    make_submission,
     monetary_cost,
     next_state_arr,
     state_bounds,
@@ -98,8 +99,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--template",
         type=Path,
-        default=DEFAULT_TEMPLATE,
-        help=f"Official submission template (default: {DEFAULT_TEMPLATE})",
+        default=None,
+        help="Official 51-row template (default: <data-dir>/submission_template.csv)",
     )
     parser.add_argument(
         "--output",
@@ -139,6 +140,42 @@ def _require_files(data_dir: Path, template_path: Path) -> None:
     missing = [str(path) for path in required if not path.is_file()]
     if missing:
         raise FileNotFoundError("Missing required Practicum 1 file(s):\n" + "\n".join(missing))
+
+
+def _canonical_ids() -> set[str]:
+    identifiers: set[str] = set()
+    for label in ("S1", "S2", "S3"):
+        identifiers.add(f"{label}_sigma")
+        identifiers.update(f"{label}_theta_{term}" for term in NMC_SPECS[label])
+        identifiers.update(f"{label}_mc_{term}" for term in MC_SPECS[label])
+    identifiers.update(f"S3_cf_{scenario}" for scenario in SCENARIOS)
+    return identifiers
+
+
+def _read_template(path: Path) -> pd.DataFrame:
+    template = pd.read_csv(path)
+    if list(template.columns) != ["Id", "Prediction"]:
+        raise ValueError(
+            f"{path} has columns {list(template.columns)}; expected ['Id', 'Prediction']"
+        )
+    if len(template) != EXPECTED_ROWS:
+        raise ValueError(
+            f"{path} has {len(template)} rows; the official S1/S2/S3 template "
+            f"must have {EXPECTED_ROWS}."
+        )
+    if template["Id"].duplicated().any():
+        duplicates = template.loc[template["Id"].duplicated(), "Id"].tolist()
+        raise ValueError(f"{path} contains duplicate submission IDs: {duplicates}")
+    template_ids = set(template["Id"])
+    canonical_ids = _canonical_ids()
+    if template_ids != canonical_ids:
+        missing = sorted(canonical_ids.difference(template_ids))
+        extra = sorted(template_ids.difference(canonical_ids))
+        raise ValueError(
+            "Template IDs do not match the official S1/S2/S3 specification; "
+            f"missing={missing}, extra={extra}"
+        )
+    return template
 
 
 def _load_panel(path: Path) -> pd.DataFrame:
@@ -378,30 +415,86 @@ def _fit_structural_panel(
     return result, diagnostics, ccp_spec
 
 
-def _validate_submission(output: Path, template_path: Path) -> pd.DataFrame:
-    template = pd.read_csv(template_path)
-    submission = pd.read_csv(output)
-    if list(template.columns) != ["Id", "Prediction"]:
-        raise ValueError(f"Unexpected Practicum 1 template columns: {list(template.columns)}")
-    if list(submission.columns) != list(template.columns):
-        raise ValueError("Submission columns do not match the official template")
-    if submission["Id"].tolist() != template["Id"].tolist():
-        raise ValueError("Submission IDs/order do not match the official S1/S2/S3 template")
-    values = pd.to_numeric(submission["Prediction"], errors="coerce").to_numpy(float)
-    if len(submission) != 51 or not np.all(np.isfinite(values)):
-        raise ValueError("Submission must contain 51 finite predictions")
+def _collect_estimates(
+    results: dict[str, Result],
+    grid: dict[tuple[str, str], float],
+) -> dict[str, float]:
+    """Return the complete 51-estimate S1/S2/S3 submission mapping."""
+
+    values: dict[str, float] = {}
+    for label, result in results.items():
+        values[f"{label}_sigma"] = float(result.sigma)
+        values.update(
+            {
+                f"{label}_theta_{term}": float(result.theta[term])
+                for term in result.spec
+            }
+        )
+        values.update(
+            {
+                f"{label}_mc_{term}": float(coefficient)
+                for term, coefficient in result.cost_coef.items()
+            }
+        )
+    values.update(
+        {
+            f"{label}_cf_{scenario}": float(value)
+            for (label, scenario), value in grid.items()
+        }
+    )
+    if set(values) != _canonical_ids():
+        missing = sorted(_canonical_ids().difference(values))
+        extra = sorted(set(values).difference(_canonical_ids()))
+        raise RuntimeError(
+            f"Internal estimate-ID mismatch; missing={missing}, extra={extra}"
+        )
+    return values
+
+
+def _write_and_validate_submission(
+    output: Path,
+    template: pd.DataFrame,
+    estimates: dict[str, float],
+) -> pd.DataFrame:
+    missing = [identifier for identifier in template["Id"] if identifier not in estimates]
+    if missing:
+        raise ValueError(f"No estimate is available for template IDs: {missing}")
+    submission = template.copy()
+    submission["Prediction"] = [
+        float(estimates[identifier]) for identifier in submission["Id"]
+    ]
+    values = submission["Prediction"].to_numpy(float)
+    if len(submission) != EXPECTED_ROWS or not np.all(np.isfinite(values)):
+        raise ValueError(f"Submission must contain {EXPECTED_ROWS} finite predictions")
     if np.allclose(values, 0.0):
         raise ValueError("Submission still contains only template placeholder zeros")
-    return submission
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+    submission.to_csv(output, index=False)
+    check = pd.read_csv(output)
+    if list(check.columns) != list(template.columns):
+        raise RuntimeError("Written submission columns do not match the template")
+    if check["Id"].tolist() != template["Id"].tolist():
+        raise RuntimeError("Written submission IDs/order do not match the template")
+    if not np.all(
+        np.isfinite(pd.to_numeric(check["Prediction"], errors="coerce").to_numpy(float))
+    ):
+        raise RuntimeError("Written submission contains non-finite predictions")
+    return check
 
 
 def main() -> None:
     args = parse_args()
     data_dir = args.data_dir.expanduser().resolve()
-    template_path = args.template.expanduser().resolve()
+    template_path = (
+        data_dir / "submission_template.csv"
+        if args.template is None
+        else args.template.expanduser().resolve()
+    )
     output = args.output.expanduser().resolve()
     _require_files(data_dir, template_path)
-    output.parent.mkdir(parents=True, exist_ok=True)
+    template = _read_template(template_path)
+    print(f"Using submission template: {template_path} ({len(template)} rows)")
 
     started = time.perf_counter()
     results: dict[str, Result] = {}
@@ -440,8 +533,12 @@ def main() -> None:
         grid[("S3", scenario)] = float(value)
         print(f"[S3] {scenario}: {value:.6f}%")
 
-    make_submission(results, grid, path=output)
-    submission = _validate_submission(output, template_path)
+    estimates = _collect_estimates(results, grid)
+    submission = _write_and_validate_submission(
+        output,
+        template,
+        estimates,
+    )
     elapsed = time.perf_counter() - started
     print(
         f"\nSUCCESS: {output}\n"
