@@ -862,14 +862,58 @@
               <p>PDF 15-25：用稀疏模型看清短期行為與長期市場結構的政策回饋。</p>
             </div>
           </div>
+          <div class="flow" aria-label="模型的一期時間線">
+            <div class="flow-item"><strong>Entry</strong><span>shareholders 比較 franchise value 與 \(\kappa\)</span></div>
+            <div class="flow-item"><strong>Funding</strong><span>banks 選 \(D_i\)，市場形成 \(r_D(Z)\)</span></div>
+            <div class="flow-item"><strong>Portfolio</strong><span>manager 選 \(S_i\) 的 risk-return 組合</span></div>
+            <div class="flow-item"><strong>Realization</strong><span>成功取得 \(AS_i\)，失敗 equity 歸零</span></div>
+            <div class="flow-item"><strong>Industry</strong><span>survival、exit 與新 entry 推進 \(N'\)</span></div>
+          </div>
+          <div class="callout green">
+            <strong>用一條故事線讀模型。</strong>
+            <p>
+              潛在銀行先決定是否支付 entry cost；進入後以 Cournot 數量競爭吸收 insured deposits，
+              manager 再決定用多少 funding 以及承擔多大 portfolio risk。成功者支付 funding cost 並保留
+              charter value，失敗者退出而 insured depositors 受保護；profit 與 survival 最後回頭決定
+              下一期 entry 和銀行數 \(N\)。均衡就是讓這五步的 choices、prices 與 market structure 彼此一致。
+            </p>
+          </div>
 
           <article class="slide-note" id="p15">
             <div class="slide-rail"><span class="pdf-page">PDF 15</span><span class="deck-page">slide 14/43</span></div>
             <div class="slide-content">
               <div class="slide-title"><h3>A Simple Dynamic Model with Endogenous Bank Market Shares</h3><p>Corbae-Levine 的目的不是複製所有銀行細節，而是隔離 competition-stability tradeoff。</p></div>
               <div class="reading-grid">
-                <div><span class="reading-label">模型放入什麼</span><p>Deposit insurance 與 limited liability 造成 moral hazard；deposit market power 影響 funding price；manager-shareholder discount-rate wedge 造成 agency problem；entry 讓銀行數 (N) endogenous。</p></div>
-                <div class="intuition"><span class="reading-label">經濟直覺</span><p>更多 competition 提高 quantity efficiency，卻壓低 charter value。當 downside 由 deposit insurer 或 creditors 承擔時，低 charter value 使股東與 manager 更願意賭高報酬低成功率的 portfolio。</p></div>
+                <div>
+                  <span class="reading-label">模型要回答什麼</span>
+                  <p>
+                    更多 competition 會壓低 deposit-market margin、擴張 aggregate lending，改善 quantity
+                    efficiency；但較低 profit 與 charter value 也降低失敗的機會成本。模型要讓
+                    competition 同時作用於 lending 與 risk，而不是先驗假設 stability 的方向。
+                  </p>
+                </div>
+                <div class="intuition">
+                  <span class="reading-label">為什麼刻意簡化</span>
+                  <p>
+                    對稱 banks、binary portfolio payoff、linear deposit supply 與單一 risk choice
+                    讓 risk、funding、entry 各由一條條件決定。模型犧牲 borrower heterogeneity 與
+                    完整 balance-sheet detail，換來可看清 policy 如何由 incumbent behavior 傳到長期 \(N\)。
+                  </p>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr><th>Economic friction</th><th>Model device</th><th>它隔離出的機制</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>Insured creditors 不監督 risk</td><td>Deposit insurance + limited liability</td><td>失敗 downside 部分外部化，產生 risk shifting</td></tr>
+                    <tr><td>Deposit market power</td><td>Cournot quantity choice + \(r_D(Z)\)</td><td>自己的 \(D_i\) 推高全市場 marginal funding cost</td></tr>
+                    <tr><td>Manager-shareholder conflict</td><td>\(\beta\leq\delta\)</td><td>manager 低估 failure 摧毀的長期 franchise value</td></tr>
+                    <tr><td>Excessive leverage</td><td>\(D_i/E_i\leq\lambda\)</td><td>限制以少量 equity 放大 insured funding</td></tr>
+                    <tr><td>Endogenous concentration</td><td>Fixed cost \(\kappa\) + free entry</td><td>政策透過 charter value 改變 \(N\) 與 \(1/N\)</td></tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </article>
@@ -888,9 +932,48 @@
                   \frac{D_i}{E_i}\leq\lambda,qquad \beta\leq\delta.
                 \]
               </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr><th>類型</th><th>符號</th><th>經濟含義</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>Bank choices</td><td>\(S_i,D_i,E_i\)</td><td>portfolio risk-yield intensity、deposit-funded loan scale、equity capital</td></tr>
+                    <tr><td>Industry outcome</td><td>\(N\)</td><td>free entry 決定的銀行數；對稱模型以 \(1/N\) 表示 concentration</td></tr>
+                    <tr><td>Derived objects</td><td>\(Z,p(S),r_D(Z),R_i\)</td><td>aggregate lending、success probability、deposit rate、interest margin</td></tr>
+                    <tr><td>Technology</td><td>\(A,\eta\)</td><td>成功 payoff 的尺度，以及 monitoring/risk frontier 的形狀</td></tr>
+                    <tr><td>Deposit supply</td><td>\(b,\gamma\)</td><td>funding 的 baseline price 與 inverse-supply slope</td></tr>
+                    <tr><td>Preferences</td><td>\(\delta,\beta\)</td><td>shareholder 與 manager 的 discount factors；差距衡量 governance friction</td></tr>
+                    <tr><td>Policy</td><td>\(\kappa,\lambda,\alpha\)</td><td>entry barrier、leverage cap、monetary/external funding cost</td></tr>
+                  </tbody>
+                </table>
+              </div>
               <div class="reading-grid">
-                <div><span class="reading-label">符號怎麼讀</span><p>每單位資金成功時回收 (AS_i)，失敗時為零；較高 (S_i) 是高 yield、低 success。\(\eta\) 越高，在給定 \(S\) 下成功率越高。Deposit supply 向上傾斜，aggregate deposits 越多就要付越高 rate。</p></div>
-                <div class="intuition"><span class="reading-label">經濟直覺</span><p>銀行把「portfolio risk-return frontier」與「搶 deposits 時推高全市場 funding cost」一起考慮。\(\beta<\delta\) 表示 managers 比 shareholders 更短視；\(\lambda\) 控制 leverage，\(\kappa\) 則控制 entry cost。</p></div>
+                <div>
+                  <span class="reading-label">Risk-return technology</span>
+                  <p>
+                    每單位資金成功時回收 \(AS_i\)，失敗時為零。提高 \(S_i\) 會線性提高成功狀態 payoff，
+                    卻降低 \(p(S_i)=1-S_i^\eta\)：\(S=0\) 幾乎必然成功但 payoff 為零，
+                    \(S=1\) payoff 最高但成功率為零，所以經濟上關心 interior choice。
+                    對 \(0<S<1\)，提高 \(\eta\) 會降低 \(S^\eta\)、提高給定 \(S\) 的 success probability，
+                    因而被解釋為 better monitoring。
+                  </p>
+                </div>
+                <div class="intuition">
+                  <span class="reading-label">Funding technology</span>
+                  <p>
+                    \(r_D(Z)=b+\gamma Z\) 是 inverse deposit supply：銀行體系吸收更多 deposits，
+                    必須提供更高利率。Cournot bank 知道自己的 \(D_i\) 會增加 \(Z\)，所以會 internalize
+                    一部分 price impact；但不會 internalize 自己提高其他銀行 funding cost 的
+                    pecuniary externality。Insured deposits 使 \(r_D\) 不直接依賴 bank risk，
+                    有意隔離 deposit insurance 的 moral hazard。
+                  </p>
+                </div>
+              </div>
+              <div class="equation-note">
+                \(E_i\) 在 leverage constraint 中是 equity capital。後面的 entry condition 也沿用
+                \(E_i(N)\) 表示 shareholder equity/franchise valuation；本筆記以
+                \(\mathcal E_i(N)\) 標示後者，避免兩種概念混在一起。
               </div>
             </div>
           </article>
@@ -906,8 +989,31 @@
                 \]
               </div>
               <div class="reading-grid">
-                <div><span class="reading-label">公式怎麼讀</span><p>成功機率乘以「每單位 loan return 減 funding cost」再乘 scale。\(\alpha\) 是 external borrowing/monetary-policy cost；銀行的 (D_i) 也透過 (Z) 推高所有人的 deposit rate。</p></div>
-                <div class="intuition"><span class="reading-label">經濟直覺</span><p>Limited liability 使失敗 state 的負值不完整落在 equity holders 身上，因此提高 (S) 的 upside 被保留，downside 部分外部化。這是 risk shifting 的基本來源。</p></div>
+                <div>
+                  <span class="reading-label">三個乘數</span>
+                  <p>
+                    \(p(S_i)\) 是 portfolio 成功機率；\(R_i=AS_i-[r_D(Z)+\alpha]\) 是成功狀態每單位
+                    interest margin；\(D_i\) 是 scale。\(\alpha\) 把 monetary policy 或 external
+                    borrowing spread 加到 funding cost，而 \(D_i\) 還會透過 \(Z\) 改變 \(r_D(Z)\)。
+                  </p>
+                </div>
+                <div class="intuition">
+                  <span class="reading-label">為何整個 margin 乘上 \(p\)</span>
+                  <p>
+                    成功時 shareholders 得到 \(R_iD_i\)；失敗時 asset payoff 與 equity payoff 都歸零，
+                    insured depositors 則由保險制度保護。這是 private expected profit，不是 social
+                    surplus：失敗狀態由 insurer 承擔的成本沒有完整進入 \(\pi_i\)，所以提高 \(S_i\)
+                    的 upside 被保留、downside 部分外部化。
+                  </p>
+                </div>
+              </div>
+              <div class="callout red">
+                <strong>Eq. (1) 是 moral hazard 的關鍵，而不只是會計恆等式。</strong>
+                <p>
+                  若 uninsured creditors 會依 \(S_i\) 要求 risk premium，或 shareholders 必須完整支付
+                  failure loss，funding cost 就會隨 risk 內生調整，risk-shifting incentive 會變弱。
+                  投影片讓 insured deposit price 只依賴 \(Z\)，正是為了把這個 wedge 寫得最乾淨。
+                </p>
               </div>
             </div>
           </article>
@@ -923,9 +1029,30 @@
                   \qquad \frac{D_i}{E_i}\leq\lambda.
                 \]
               </div>
+              <div class="equation-note">
+                若政策與 market structure 固定、給定同一組 \(S_i,D_i\)，則
+                \(V_i=\pi_i/[1-\beta p(S_i)]\)。這讓 current risk choice 直接改變未來 value
+                被保留的機率，而不只是改變當期 profit。
+              </div>
               <div class="reading-grid">
-                <div><span class="reading-label">新增內容</span><p>Continuation value 只有 bank survives 時才保留，所以乘上 (p(S_i))。Manager 用 β 折現未來；(N') 允許未來 market structure 改變。</p></div>
-                <div class="intuition"><span class="reading-label">經濟直覺</span><p>Charter value 是賭博的機會成本。銀行越重視未來，失敗會失去的 franchise 越多，因此選擇更安全。Leverage cap 則限制用很少 equity 放大 insured funding 的能力。</p></div>
+                <div>
+                  <span class="reading-label">Continuation discipline</span>
+                  <p>
+                    下一期 value 乘上 \(p(S_i)\)，因為只有 bank survives 才保留 franchise；
+                    \(N'\) 則允許 entry/exit 改變未來 competition。Manager 用 \(\beta\) 評價這份 value，
+                    所以 \(\beta<\delta\) 時，相較 shareholders 更低估 failure 摧毀的未來 rents。
+                    Charter value 因而是冒險的內生機會成本。
+                  </p>
+                </div>
+                <div class="intuition">
+                  <span class="reading-label">Leverage constraint</span>
+                  <p>
+                    \(D_i/E_i\leq\lambda\) 限制用一元 equity 支持的 insured funding。若限制 slack，
+                    Kuhn-Tucker multiplier 為零，後面 slide 17（PDF 20）的簡化 FOCs 適用；若 \(D_i/E_i=\lambda\)
+                    binding，funding FOC 必須加入 shadow cost，降低 \(D_i\) 並改變 risk choice。
+                    因此 \(\lambda\) 的行為效果只有在 constraint 有效時才能從資料看見。
+                  </p>
+                </div>
               </div>
             </div>
           </article>
@@ -937,16 +1064,66 @@
               <div class="equation">
                 \[
                   \mathcal E_i(N)
-                  \equiv \frac{\pi_i(N)}{1-\delta p(S_i)}
+                  \equiv \sum_{t=0}^{\infty}
+                  [\delta p(S_i)]^t\pi_i(N)
+                  =\frac{\pi_i(N)}{1-\delta p(S_i)}
                   \geq \kappa.
                 \]
               </div>
               <div class="reading-grid">
-                <div><span class="reading-label">公式怎麼讀</span><p>\(\mathcal E_i(N)\) 是 shareholders 用較長期 discount factor \(\delta\) 評價的 charter value。只有其至少支付 fixed entry cost \(\kappa\) 時才進入；free-entry steady state 通常令等號成立。</p></div>
-                <div class="intuition"><span class="reading-label">經濟直覺</span><p>Policy 先改變 profit 與 survival，再改變 charter value，最後改變 entry 與 (N)。這正是「短期固定 (N)」和「長期 (N) endogenous」結果可能不同的原因。</p></div>
+                <div>
+                  <span class="reading-label">Geometric franchise value</span>
+                  <p>
+                    Shareholders 用 \(\delta\) 折現，而 bank 每一期以 \(p(S_i)\) 存活；stationary profit stream
+                    因此是 geometric series，收斂條件為 \(\delta p(S_i)<1\)。
+                    \(\mathcal E_i(N)\) 是願意為 entry 支付的 equity/franchise value，不是單期 profit。
+                  </p>
+                </div>
+                <div class="intuition">
+                  <span class="reading-label">Free-entry closure</span>
+                  <p>
+                    只有 \(\mathcal E_i(N)\geq\kappa\) 才值得進入。連續 \(N\) approximation 通常以
+                    \(\mathcal E(N)=\kappa\) 封閉模型；若 \(N\) 必須是整數，更精確的是
+                    \(\mathcal E(N)\geq\kappa\) 且 \(\mathcal E(N+1)<\kappa\)。
+                    Policy 先改變 profit 與 survival，再改變 franchise value，最後改變長期 \(N\)。
+                  </p>
+                </div>
               </div>
             </div>
           </article>
+
+          <div class="callout gold">
+            <strong>Equilibrium restrictions 不等於 econometric identification。</strong>
+            <p>
+              Eqs. (1)-(4) 說明給定 primitives 時，profit、manager choices、shareholder value 與 entry
+              必須如何彼此一致；它們是模型內部的 behavioral restrictions。要從資料反推出
+              \(A,\eta,b,\gamma,\delta\) 與政策 wedges，還需要下表所列的外生 variation 或 normalization。
+            </p>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Primitive / restriction</th><th>主要資料訊息</th><th>識別時要小心什麼</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>\(A,\eta\) 與 \(p(S)=1-S^\eta\)</td><td>portfolio return、default/survival、risk proxy</td><td>只看成功 payoff \(AS\) 通常無法分開 \(A\) 與未觀察的 \(S\)</td></tr>
+                <tr><td>\(b,\gamma\) 與 \(r_D(Z)\)</td><td>deposit rates、quantities、使 bank demand 移動的 instruments</td><td>需要沿 supply curve 的外生 variation；單看均衡 rate-quantity correlation 會混合 demand 與 supply</td></tr>
+                <tr><td>\(\alpha\)</td><td>外生 monetary-policy 或 wholesale-funding shocks</td><td>\(b\) 與 \(\alpha\) 都加在 funding cost，沒有政策 variation 時難分</td></tr>
+                <tr><td>\(\beta,\delta\)</td><td>governance、market valuation、動態 risk response</td><td>static outcomes 常只看到兩者形成的 agency wedge，未必能分別識別</td></tr>
+                <tr><td>\(\lambda,\kappa\)</td><td>binding leverage、regulatory changes、entry/exit、profits 與 \(N\)</td><td>slack leverage 無法揭示 \(\lambda\) 的邊際效果；\(\kappa\) 依賴 long-run free entry</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout plum">
+            <strong>現在可以進入均衡推導。</strong>
+            <p>
+              給定 \(N\)，risk FOC 決定 \(S\)，deposit-funding FOC 決定 \(D\) 或 \(Z=ND\)；
+              free-entry condition 再決定 \(N\)。後面 Eqs. (5)-(7) 採 symmetric、interior、
+              nonbinding-leverage equilibrium，並需要 \(p'(S)<0\)、\(\gamma>0\)、second-order
+              conditions 與 \(\delta p(S)<1\)。三條條件共同回答 competition 提高 lending efficiency、
+              卻可能透過較低 margin 與 charter value 提高 risk 的故事。
+            </p>
+          </div>
 
           <article class="slide-note" id="p20">
             <div class="slide-rail"><span class="pdf-page">PDF 20</span><span class="deck-page">slide 17/43</span></div>
