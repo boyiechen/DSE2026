@@ -1168,7 +1168,190 @@
             </p>
           </div>
 
-          <h3>4.3 \((1+1/S)\) 從哪裡來？</h3>
+          <h3>4.3 Influence function：linearization 後每筆資料的一階貢獻</h3>
+          <p>
+            最直覺的定義是：influence function 衡量某一筆 observation 對 estimator 的
+            first-order effect。令 \(\widehat\theta=T(F_n)\) 是 empirical distribution
+            \(F_n\) 的函數，並在 population distribution \(F\) 中加入極小權重
+            \(\varepsilon\) 的 observation \(w\)：
+          </p>
+          <div class="equation">
+            \[
+              F_\varepsilon=(1-\varepsilon)F+\varepsilon\delta_w.
+            \]
+            \[
+              \IF(w;T,F)
+              =
+              \left.
+              \frac{\partial T(F_\varepsilon)}
+                   {\partial\varepsilon}
+              \right|_{\varepsilon=0}.
+            \]
+          </div>
+          <div class="equation-note">
+            <p>
+              \(\delta_w\) 是把全部機率放在 \(w\) 上的 point mass。這個 derivative 問的是：
+              如果 distribution 多放一點權重在 observation \(w\)，estimate 會以多快的速度移動？
+            </p>
+          </div>
+
+          <p>
+            Empirical distribution 可看成許多權重 \(1/n\) 的 point masses。因此在 regularity
+            conditions 下，上面的 functional derivative 會給出 asymptotically linear representation：
+          </p>
+          <div class="equation">
+            \[
+              \widehat\theta-\theta_0
+              =
+              \frac1n\sum_{i=1}^n\phi(w_i)
+              +o_p(n^{-1/2}),
+              \qquad
+              \E[\phi(w_i)]=0,
+            \]
+            \[
+              \sqrt n(\widehat\theta-\theta_0)
+              =
+              \frac1{\sqrt n}\sum_{i=1}^n\phi(w_i)
+              +o_p(1).
+            \]
+          </div>
+          <p>
+            \(\phi(w_i)\) 就是 observation \(i\) 的 influence function。它不是說 estimator
+            真的完全線性，而是說在 \(n^{-1/2}\) 的 sampling-error 尺度上，nonlinear remainder
+            可以忽略，所以 estimator 的一階行為等同於 observation-level contributions 的平均。
+          </p>
+
+          <h4>從 GMM first-order condition 推出 influence function</h4>
+          <p>
+            令 \(\bar g_n(\theta)=n^{-1}\sum_i g(w_i,\theta)\)。GMM 的 FOC 在 estimate 處為
+          </p>
+          <div class="equation">
+            \[
+              0
+              =
+              D_n(\widehat\theta)'W_n
+              \bar g_n(\widehat\theta).
+            \]
+          </div>
+          <p>
+            以 \(\theta_0\) 為中心 linearize moments，並以 probability limits
+            \(D_n(\widehat\theta)\to D_0\)、\(W_n\to W\) 取代 random matrices：
+          </p>
+          <div class="equation">
+            \[
+              0
+              \approx
+              D_0'W
+              \left[
+                \bar g_n(\theta_0)
+                +D_0(\widehat\theta-\theta_0)
+              \right].
+            \]
+          </div>
+          <p>解出 parameter error：</p>
+          <div class="equation">
+            \[
+              \widehat\theta-\theta_0
+              \approx
+              -\big(D_0'WD_0\big)^{-1}D_0'W
+              \bar g_n(\theta_0)
+            \]
+            \[
+              =
+              \frac1n\sum_{i=1}^n
+              \underbrace{
+                \left[
+                  -\big(D_0'WD_0\big)^{-1}
+                  D_0'Wg(w_i,\theta_0)
+                \right]
+              }_{\displaystyle \phi_\theta(w_i)}.
+            \]
+          </div>
+          <div class="callout green">
+            <strong>Linearization 與 influence function 不是兩個分開的技巧。</strong>
+            <p>
+              Linearization 把 nonlinear argmin 的 FOC 改寫成 sample moments 的線性函數；
+              influence function 則是這個線性近似中，分配給每一筆 observation 的那一項。
+            </p>
+          </div>
+
+          <div class="grid-2">
+            <article class="card blue">
+              <h3>第一段：observation \(\to\) moments</h3>
+              <p>
+                \(g(w_i,\theta_0)\) 描述 observation \(i\) 對 sample moment error 的貢獻。
+                若 matched statistic 是 variance 或 regression coefficient，這一段要換成該
+                statistic 自己的 influence function。
+              </p>
+            </article>
+            <article class="card plum">
+              <h3>第二段：moments \(\to\) parameters</h3>
+              <p>
+                \(-\big(D_0'WD_0\big)^{-1}D_0'W\) 把 moment errors 映射成 parameter errors。
+                它也是後面 parameter-to-moment sensitivity diagnostic 的核心矩陣。
+              </p>
+            </article>
+          </div>
+
+          <h4>最簡單的例子：sample mean</h4>
+          <p>
+            若 moment condition 是 \(g(z_i,\mu)=z_i-\mu\)，則 \(D_0=-1\)、\(W=1\)，所以
+          </p>
+          <div class="equation">
+            \[
+              \phi_\mu(z_i)=z_i-\mu,
+              \qquad
+              \widehat\mu-\mu
+              =\frac1n\sum_{i=1}^n(z_i-\mu).
+            \]
+          </div>
+          <p>
+            這裡 linear representation 甚至是 exact：離 population mean 越遠的 observation，
+            對 sample mean 的影響越大。對 OLS，influence function 是
+            \(\big(\E[x_i'x_i]\big)^{-1}x_i'u_i\)；對 MLE，則是 inverse information
+            乘上 observation-level score。Score 或 moment 是原始訊號，influence function
+            是經 estimator curvature 轉換後對 parameter estimate 的影響。
+          </p>
+
+          <h4>Influence function 為什麼能產生 standard errors？</h4>
+          <p>
+            一旦 estimator 被 linearize，中央極限定理可直接套在 \(\phi(w_i)\) 的平均上：
+          </p>
+          <div class="equation">
+            \[
+              \sqrt n(\widehat\theta-\theta_0)
+              \overset{d}{\longrightarrow}
+              N\!\left(0,\E[\phi_i\phi_i']\right).
+            \]
+          </div>
+          <p>
+            因而可以用 influence functions 的 sample covariance 建立 parameter SE；
+            將不同 statistics 的 influence functions 並排，可以得到它們的 joint covariance；
+            有 clustering 時，則先在 cluster 內加總 influence functions。這正是第 5 節
+            stacked influence-function weight matrix 的理論基礎。
+          </p>
+
+          <h4>SMM 中 data 與 simulation 兩側的 influence</h4>
+          <p>
+            SMM moment discrepancy 是
+            \(\widehat g_n(\theta_0)=\widehat m_D-\widehat m_S(\theta_0)\)。
+            因此它的 influence contribution 同時包含 data-side contribution 與
+            simulation-side contribution。兩者獨立時 covariance 相加；若每個 simulated panel
+            與 data sample 同樣長，平均 \(S\) 個 simulations 後，下一節的
+            \((1+1/S)\) correction 就自然出現。
+          </p>
+
+          <div class="callout gold">
+            <strong>這個推導依賴哪些條件？</strong>
+            <p>
+              \(\widehat\theta\) 必須 consistent；moments 與 FOC 在 \(\theta_0\) 附近可微；
+              \(D_0\) 有 full column rank，使 \(D_0'WD_0\) 可逆；\(W_n\) 收斂到正定的 \(W\)；
+              observation-level contributions 滿足適當的 finite-variance CLT。若 Jacobian
+              接近 singular，influence function 會很大，正是 weak identification 的表現。
+            </p>
+          </div>
+
+          <h3>4.4 \((1+1/S)\) 從哪裡來？</h3>
           <p>moment discrepancy 同時包含兩個獨立誤差來源：</p>
           <div class="grid-2">
             <article class="card blue">
@@ -1207,7 +1390,7 @@
             </p>
           </div>
 
-          <h3>4.4 Numerical Jacobian</h3>
+          <h3>4.5 Numerical Jacobian</h3>
           <p>由於 moments 來自 simulation，通常沒有解析 derivative。對 parameter \(j\)：</p>
           <div class="equation">
             \[
@@ -1237,7 +1420,7 @@
             計算左右差分時必須使用相同 random draws。
           </p>
 
-          <h3>4.5 Overidentification 與 individual moment errors</h3>
+          <h3>4.6 Overidentification 與 individual moment errors</h3>
           <p>若 \(m&gt;k\) 且 \(W=\Lambda^{-1}\)，SMM 的 \(J\)-statistic 為</p>
           <div class="equation">
             \[
@@ -1254,7 +1437,7 @@
             moment errors 與對應 \(t\)-statistics。
           </p>
 
-          <h3>4.6 Indirect inference</h3>
+          <h3>4.7 Indirect inference</h3>
           <p>
             Indirect inference 不是另一套完全不同的機器。它把 \(g(\cdot)\) 換成 auxiliary model
             的估計係數，例如 regression slopes、VAR coefficients 或 probit coefficients。
