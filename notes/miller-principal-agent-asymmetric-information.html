@@ -1,0 +1,1966 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Principal-Agent Models with Asymmetric Information：導讀筆記</title>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]],
+        macros: {
+          E: "\\operatorname{E}",
+          Pr: "\\operatorname{Pr}",
+          Cov: "\\operatorname{Cov}",
+          Var: "\\operatorname{Var}",
+          argmax: "\\operatorname*{arg\\,max}",
+          argmin: "\\operatorname*{arg\\,min}"
+        }
+      },
+      svg: { fontCache: "global" }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    :root {
+      --paper: #f2f4f5;
+      --surface: #ffffff;
+      --surface-2: #f8fafb;
+      --ink: #17252d;
+      --muted: #5e6c73;
+      --line: #d5dde0;
+      --navy: #25506f;
+      --navy-soft: #e5eef4;
+      --green: #16705a;
+      --green-soft: #e1f1ec;
+      --red: #b8473e;
+      --red-soft: #f7e6e3;
+      --gold: #8a650b;
+      --gold-soft: #f5edd5;
+      --plum: #76516f;
+      --plum-soft: #f1e8ef;
+      --shadow: 0 14px 36px rgba(23, 37, 45, 0.09);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.68;
+      letter-spacing: 0;
+    }
+
+    a {
+      color: var(--navy);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 880px;
+      margin: 0 0 14px;
+      font-size: clamp(2rem, 4vw, 3.15rem);
+      line-height: 1.08;
+      overflow-wrap: anywhere;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 1.55rem;
+      line-height: 1.22;
+    }
+
+    h3 {
+      margin: 0 0 9px;
+      font-size: 1.08rem;
+      line-height: 1.3;
+    }
+
+    h4 {
+      margin: 0 0 6px;
+      font-size: 0.97rem;
+    }
+
+    p {
+      margin: 0 0 13px;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.9em;
+    }
+
+    .shell {
+      width: min(1380px, 100%);
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .masthead {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(310px, 0.65fr);
+      margin-bottom: 22px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .masthead-copy {
+      min-width: 0;
+      padding: 31px 34px;
+      border-right: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--green);
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .lead {
+      max-width: 820px;
+      margin-bottom: 0;
+      color: #34464f;
+      font-size: 1.05rem;
+    }
+
+    .masthead-map {
+      display: grid;
+      grid-template-rows: repeat(3, 1fr);
+    }
+
+    .layer {
+      display: grid;
+      grid-template-columns: 48px minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+      min-height: 96px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .layer:last-child {
+      border-bottom: 0;
+    }
+
+    .layer-number {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--navy);
+      font-weight: 850;
+    }
+
+    .layer:nth-child(2) .layer-number {
+      background: var(--red);
+    }
+
+    .layer:nth-child(3) .layer-number {
+      background: var(--green);
+    }
+
+    .layer strong,
+    .layer span {
+      display: block;
+    }
+
+    .layer span {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 244px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .toc {
+      position: sticky;
+      top: 18px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      box-shadow: 0 8px 24px rgba(23, 37, 45, 0.06);
+    }
+
+    .toc strong {
+      display: block;
+      margin-bottom: 9px;
+      color: var(--muted);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+    }
+
+    .toc a {
+      display: block;
+      padding: 5px 8px;
+      border-left: 2px solid transparent;
+      color: #41515a;
+      font-size: 0.88rem;
+      text-decoration: none;
+    }
+
+    .toc a:hover,
+    .toc a:focus-visible {
+      border-left-color: var(--green);
+      color: var(--green);
+      background: var(--green-soft);
+    }
+
+    main {
+      min-width: 0;
+    }
+
+    .section {
+      scroll-margin-top: 20px;
+      margin-bottom: 18px;
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      box-shadow: 0 10px 28px rgba(23, 37, 45, 0.055);
+    }
+
+    .section-heading {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 18px;
+    }
+
+    .section-heading p {
+      margin: 5px 0 0;
+      color: var(--muted);
+    }
+
+    .section-index {
+      display: grid;
+      width: 36px;
+      height: 36px;
+      place-items: center;
+      border-radius: 6px;
+      color: #fff;
+      background: var(--ink);
+      font-weight: 850;
+    }
+
+    .takeaway,
+    .note,
+    .warning {
+      margin: 12px 0;
+      padding: 11px 14px;
+      border-left: 3px solid;
+    }
+
+    .takeaway {
+      margin-top: 0;
+      border-left-width: 4px;
+      border-color: var(--green);
+      background: var(--green-soft);
+    }
+
+    .takeaway strong {
+      color: var(--green);
+    }
+
+    .note {
+      border-color: var(--navy);
+      background: var(--navy-soft);
+    }
+
+    .warning {
+      border-color: var(--red);
+      background: var(--red-soft);
+    }
+
+    .grid-2,
+    .grid-3,
+    .grid-4 {
+      display: grid;
+      gap: 14px;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .mini-card {
+      min-width: 0;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--surface-2);
+    }
+
+    .mini-card.navy {
+      border-top: 4px solid var(--navy);
+    }
+
+    .mini-card.green {
+      border-top: 4px solid var(--green);
+    }
+
+    .mini-card.red {
+      border-top: 4px solid var(--red);
+    }
+
+    .mini-card.gold {
+      border-top: 4px solid var(--gold);
+    }
+
+    .mini-card.plum {
+      border-top: 4px solid var(--plum);
+    }
+
+    .mini-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .equation-card {
+      margin: 14px 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--surface);
+    }
+
+    .equation-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 42px;
+      padding: 9px 13px;
+      border-bottom: 1px solid var(--line);
+      background: #f4f7f8;
+    }
+
+    .equation-title strong {
+      line-height: 1.3;
+    }
+
+    .tag {
+      flex: 0 0 auto;
+      padding: 2px 8px;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      color: var(--navy);
+      font-size: 0.74rem;
+      font-weight: 800;
+    }
+
+    .equation {
+      padding: 11px 16px 5px;
+      overflow-x: auto;
+      color: #132938;
+    }
+
+    .equation mjx-container[display="true"] {
+      margin: 0.55em 0;
+    }
+
+    .intuition {
+      margin: 8px 12px 12px;
+      padding: 10px 12px;
+      border-left: 3px solid var(--gold);
+      background: var(--gold-soft);
+      color: #3c3527;
+    }
+
+    .intuition strong {
+      color: var(--gold);
+    }
+
+    .symbol-table,
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.93rem;
+    }
+
+    .symbol-table th,
+    .symbol-table td,
+    .comparison-table th,
+    .comparison-table td {
+      padding: 10px 11px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .symbol-table th,
+    .comparison-table th {
+      color: #34434c;
+      background: #eef2f4;
+      font-size: 0.85rem;
+    }
+
+    .symbol-table tr:last-child td,
+    .comparison-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      margin: 15px 0;
+    }
+
+    .pipe-step {
+      position: relative;
+      min-height: 114px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--surface-2);
+    }
+
+    .pipe-step:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      top: 43px;
+      right: -12px;
+      z-index: 2;
+      display: grid;
+      width: 22px;
+      height: 22px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      color: var(--muted);
+      background: var(--surface);
+      font-weight: 800;
+    }
+
+    .pipe-step span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin: 16px 0;
+    }
+
+    .flow-step {
+      position: relative;
+      min-height: 88px;
+      padding: 13px;
+      border-top: 4px solid var(--navy);
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      border-left: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--surface-2);
+    }
+
+    .flow-step:nth-child(2n) {
+      border-top-color: var(--green);
+    }
+
+    .flow-step span {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--muted);
+      font-size: 0.79rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .clean-list {
+      margin: 8px 0 0;
+      padding-left: 20px;
+    }
+
+    .clean-list li {
+      margin-bottom: 6px;
+    }
+
+    details {
+      margin: 12px 0;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--surface-2);
+    }
+
+    summary {
+      cursor: pointer;
+      padding: 11px 13px;
+      font-weight: 800;
+    }
+
+    details > div {
+      padding: 0 13px 13px;
+    }
+
+    .source {
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .back-top {
+      display: inline-block;
+      margin-top: 7px;
+      font-size: 0.88rem;
+    }
+
+    @media (max-width: 1080px) {
+      .masthead {
+        grid-template-columns: 1fr;
+      }
+
+      .masthead-copy {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .masthead-map {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: auto;
+      }
+
+      .layer {
+        border-right: 1px solid var(--line);
+        border-bottom: 0;
+      }
+
+      .layer:last-child {
+        border-right: 0;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .toc {
+        position: static;
+        columns: 2;
+      }
+
+      .toc strong {
+        column-span: all;
+      }
+
+      .grid-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .pipeline,
+      .flow {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .pipe-step:not(:last-child)::after {
+        display: none;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .shell {
+        padding: 12px;
+      }
+
+      .masthead-copy,
+      .section {
+        padding: 21px;
+      }
+
+      .masthead-map,
+      .grid-2,
+      .grid-3,
+      .grid-4,
+      .pipeline,
+      .flow {
+        grid-template-columns: 1fr;
+      }
+
+      .layer {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .toc {
+        columns: 1;
+      }
+
+      .section-heading {
+        grid-template-columns: 34px minmax(0, 1fr);
+      }
+
+      .section-index {
+        width: 32px;
+        height: 32px;
+      }
+
+      .equation-title {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .symbol-table,
+      .comparison-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      .shell {
+        width: 100%;
+        padding: 0;
+      }
+
+      .toc {
+        display: none;
+      }
+
+      .layout {
+        display: block;
+      }
+
+      .masthead,
+      .section {
+        box-shadow: none;
+      }
+
+      a {
+        color: inherit;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell" id="top">
+    <header class="masthead">
+      <div class="masthead-copy">
+        <p class="eyebrow">Robert A. Miller · DSE at Michigan · August 2026</p>
+        <h1>Principal-Agent Models with Asymmetric Information</h1>
+        <p class="lead">
+          這份講義問的是：當 effort 看不見、output 又帶有運氣時，企業如何同時提供保險與工作誘因？
+          前半從 pure moral hazard 推導最適契約與 primitives 的 identification；後半把同一套邏輯放進
+          executive labor market，讓薪酬、職涯選擇、人力資本與 CCP 一起決定。
+        </p>
+      </div>
+      <div class="masthead-map" aria-label="lecture map">
+        <div class="layer">
+          <div class="layer-number">1</div>
+          <div><strong>Contract</strong><span>participation、IC、likelihood ratio</span></div>
+        </div>
+        <div class="layer">
+          <div class="layer-number">2</div>
+          <div><strong>Identification</strong><span>wage schedule 反推 hidden technology</span></div>
+        </div>
+        <div class="layer">
+          <div class="layer-number">3</div>
+          <div><strong>Career</strong><span>CCP、human capital、risk premium</span></div>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <nav class="toc" aria-label="目錄">
+        <strong>目錄</strong>
+        <a href="#map">0. 閱讀地圖</a>
+        <a href="#benchmark">1. 為何契約形式重要</a>
+        <a href="#primitives">2. Pure moral hazard primitives</a>
+        <a href="#constraints">3. Participation 與 IC</a>
+        <a href="#contract">4. 最適契約</a>
+        <a href="#measures">5. Moral hazard 的三種成本</a>
+        <a href="#identification">6. 靜態 identification</a>
+        <a href="#dynamic">7. 動態延伸</a>
+        <a href="#estimation">8. Parametric estimation</a>
+        <a href="#labor-market">9. Executive labor market</a>
+        <a href="#career-choice">10. Career choice 與 CCP</a>
+        <a href="#dynamic-contract">11. 動態最適契約</a>
+        <a href="#gmm">12. Identification 與 GMM</a>
+        <a href="#evidence">13. 實證結論與總整理</a>
+      </nav>
+
+      <main>
+        <section class="section" id="map">
+          <div class="section-heading">
+            <div class="section-index">0</div>
+            <div>
+              <h2>閱讀地圖：其實是同一個問題的兩個尺度</h2>
+              <p>先解單期契約，再把職涯本身也當成 incentive。</p>
+            </div>
+          </div>
+
+          <div class="takeaway">
+            <strong>一句話：</strong>
+            薪酬不只是交換勞務的價格，而是在 hidden action 下，用 observable outcome
+            分配風險並改變 effort 的工具。
+          </div>
+
+          <div class="grid-2">
+            <article class="mini-card navy">
+              <h3>第一層：pure moral hazard</h3>
+              <p>
+                單一 principal 面對單一 agent。Agent 接受契約後 privately work 或 shirk，
+                principal 只能看到 revenue \(x\)，所以契約只能寫成 \(w(x)\)。
+              </p>
+            </article>
+            <article class="mini-card red">
+              <h3>第二層：dynamic generalized Roy model</h3>
+              <p>
+                多家企業、多個職位與多期職涯。工作會累積 human capital，今天的 effort
+                因而改變明天的選擇集合；explicit pay-for-performance 與 career concerns
+                可以互相替代。
+              </p>
+            </article>
+          </div>
+
+          <div class="flow" aria-label="logic of the lecture">
+            <div class="flow-step"><span>Observe</span>output、wage、job choice、returns</div>
+            <div class="flow-step"><span>Infer</span>effort signal \(g\)、preferences、human capital</div>
+            <div class="flow-step"><span>Constrain</span>participation 與 incentive compatibility</div>
+            <div class="flow-step"><span>Decompose</span>certainty equivalent、career value、risk premium</div>
+          </div>
+
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>層次</th>
+                <th>觀察到什麼</th>
+                <th>看不到什麼</th>
+                <th>主要 inversion</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>單期契約</td>
+                <td>\(x,w(x)\)</td>
+                <td>work / shirk</td>
+                <td>wage schedule \(\Rightarrow g(x),\alpha,\beta\)</td>
+              </tr>
+              <tr>
+                <td>動態職涯</td>
+                <td>CCPs、compensation、returns、career histories</td>
+                <td>effort、taste shock、true human capital</td>
+                <td>CCP inversion \(\Rightarrow\) relative job values</td>
+              </tr>
+            </tbody>
+          </table>
+          <a class="back-top" href="#top">回到頁首</a>
+        </section>
+
+        <section class="section" id="benchmark">
+          <div class="section-heading">
+            <div class="section-index">1</div>
+            <div>
+              <h2>為什麼契約形式會重要？</h2>
+              <p>Arrow-Debreu benchmark 失效之處，就是 principal-agent model 的起點。</p>
+            </div>
+          </div>
+
+          <p>
+            在 complete markets、symmetric information 的 Arrow-Debreu 世界，固定薪資或 piece rate
+            只是同一份 surplus 的不同分配方式；只要狀態可驗證、契約完整，形式本身不改變行為。
+            這裡改掉一件事：<strong>effort 由 agent 私下選擇，而且不能直接寫進契約</strong>。
+          </p>
+
+          <div class="pipeline" aria-label="static model timing">
+            <div class="pipe-step"><strong>1. Offer</strong><span>principal 提出 \(w(x)\)</span></div>
+            <div class="pipe-step"><strong>2. Participate</strong><span>agent 接受或拿 outside option</span></div>
+            <div class="pipe-step"><strong>3. Effort</strong><span>privately work 或 shirk</span></div>
+            <div class="pipe-step"><strong>4. Revenue</strong><span>realize observable \(x\)</span></div>
+            <div class="pipe-step"><strong>5. Pay</strong><span>agent 得 \(w(x)\)，principal 得 \(x-w(x)\)</span></div>
+          </div>
+
+          <div class="grid-3">
+            <article class="mini-card green">
+              <h3>Risk-neutral principal</h3>
+              <p>只在乎 expected profit，願意承擔 output risk。</p>
+            </article>
+            <article class="mini-card gold">
+              <h3>Risk-averse agent</h3>
+              <p>希望 wage 平滑；performance pay 需要額外風險補償。</p>
+            </article>
+            <article class="mini-card red">
+              <h3>Conflict of interest</h3>
+              <p>principal 希望 work，agent 在其他條件相同時偏好 shirk。</p>
+            </article>
+          </div>
+
+          <div class="note">
+            <strong>關鍵張力：</strong>固定薪資提供最好保險，但沒有 effort incentive；
+            高度變動的薪資提供強誘因，卻把大量 output risk 推給 risk-averse agent。
+            Optimal contract 就是在兩者之間找最低成本的平衡。
+          </div>
+          <a class="back-top" href="#top">回到頁首</a>
+        </section>
+
+        <section class="section" id="primitives">
+          <div class="section-heading">
+            <div class="section-index">2</div>
+            <div>
+              <h2>Pure moral hazard：primitives 與 likelihood ratio</h2>
+              <p>用 \(g(x)\) 把不可觀察的 effort 轉成 observable outcome 的資訊含量。</p>
+            </div>
+          </div>
+
+          <table class="symbol-table">
+            <thead>
+              <tr><th>符號</th><th>定義</th><th>經濟角色</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>\(l_0\)</td><td>\(1\)：拒絕；\(0\)：接受</td><td>participation choice</td></tr>
+              <tr><td>\(l\)</td><td>\(1\)：work；\(0\)：shirk</td><td>hidden action</td></tr>
+              <tr><td>\(f(x)\)</td><td>work 時 revenue density</td><td>observable output technology</td></tr>
+              <tr><td>\(f(x)g(x)\)</td><td>shirk 時 revenue density</td><td>counterfactual output technology</td></tr>
+              <tr><td>\(\gamma\)</td><td>CARA absolute risk aversion</td><td>agent 承受 wage risk 的成本</td></tr>
+              <tr><td>\(\alpha,\beta\)</td><td>work 與 shirk 的 utility shifters</td><td>\(\alpha\gt\beta\) 表示 agent 偏好 shirk</td></tr>
+            </tbody>
+          </table>
+
+          <div class="equation-card">
+            <div class="equation-title">
+              <strong>Effort 對 output distribution 的影響</strong>
+              <span class="tag">technology</span>
+            </div>
+            <div class="equation">
+              \[
+                f_s(x)=f_w(x)g(x),\qquad
+                g(x)=\frac{f_s(x)}{f_w(x)},\qquad
+                \E_f[g(x)]=1.
+              \]
+              \[
+                \E_f[xg(x)]\lt\E_f[x].
+              \]
+            </div>
+            <div class="intuition">
+              <strong>直覺：</strong>\(g(x)\) 是 shirk 相對於 work 的 likelihood ratio。
+              若某個 \(x\) 的 \(g(x)\) 很低，這個 outcome 在 work 下相對更可能，因此是「努力」的好消息；
+              \(\E[xg]\lt\E[x]\) 則保證 principal 確實偏好 work。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title">
+              <strong>CARA utility 的三個選項</strong>
+              <span class="tag">preferences</span>
+            </div>
+            <div class="equation">
+              \[
+                U_0=-1,\qquad
+                U_w=-\alpha\E_f\!\left[e^{-\gamma w(x)}\right],\qquad
+                U_s=-\beta\E_f\!\left[e^{-\gamma w(x)}g(x)\right].
+              \]
+            </div>
+            <div class="intuition">
+              <strong>直覺：</strong>負號使較小的 certainty-cost 對應較高 utility。
+              \(\gamma\) 控制 wage variation 有多痛；\(\alpha\gt\beta\) 使 work 的 utility cost 較高。
+              CARA 的好處是 wealth 與 incentive problem 容易分離，契約也可寫成 likelihood ratio 的封閉形式。
+            </div>
+          </div>
+          <a class="back-top" href="#top">回到頁首</a>
+        </section>
+
+        <section class="section" id="constraints">
+          <div class="section-heading">
+            <div class="section-index">3</div>
+            <div>
+              <h2>Participation 與 incentive compatibility</h2>
+              <p>一條讓 agent 願意加入，另一條讓加入後的 agent 願意 work。</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="equation-card">
+              <div class="equation-title">
+                <strong>Participation constraint</strong>
+                <span class="tag">accept</span>
+              </div>
+              <div class="equation">
+                \[
+                  \alpha\E_f[e^{-\gamma w(x)}]\le 1.
+                \]
+              </div>
+              <div class="intuition">
+                Work 後的 expected utility 至少要等於 outside option \(-1\)。
+              </div>
+            </div>
+
+            <div class="equation-card">
+              <div class="equation-title">
+                <strong>Incentive compatibility</strong>
+                <span class="tag">work</span>
+              </div>
+              <div class="equation">
+                \[
+                  \alpha\E_f[e^{-\gamma w(x)}]
+                  \le
+                  \beta\E_f[e^{-\gamma w(x)}g(x)].
+                \]
+              </div>
+              <div class="intuition">
+                接受契約後，work 的 utility 必須至少與 shirk 一樣高。
+              </div>
+            </div>
+          </div>
+
+          <p>
+            若 principal 只想 induce shirking，給一份固定薪資
+            \(\gamma^{-1}\ln\beta\) 即可滿足 participation。要 induce work，
+            principal 解的是：
+          </p>
+
+          <div class="equation-card">
+            <div class="equation-title">
+              <strong>Cost minimization problem</strong>
+              <span class="tag">principal</span>
+            </div>
+            <div class="equation">
+              \[
+                \min_{w(\cdot)}\ \E_f[w(x)]
+                \quad\text{s.t. participation and IC.}
+              \]
+            </div>
+            <div class="intuition">
+              <strong>為什麼兩條 constraint 都 bind？</strong>
+              若 participation 有 slack，可以整體降低 wage；若 IC 有 slack，可以讓薪資更平滑，
+              降低 risk premium。最小成本點因此恰好讓 agent 願意加入，也恰好願意 work。
+            </div>
+          </div>
+
+          <div class="warning">
+            兩條 constraint 的功能不同。Participation pin down compensation 的平均水準；
+            IC pin down compensation 如何隨 outcome 改變。只放 participation 會得到固定薪資，
+            只放 IC 則沒有保證 agent 願意接受。
+          </div>
+          <a class="back-top" href="#top">回到頁首</a>
+        </section>
+
+        <section class="section" id="contract">
+          <div class="section-heading">
+            <div class="section-index">4</div>
+            <div>
+              <h2>最適契約：pay the likelihood ratio</h2>
+              <p>薪資不是直接獎勵高 revenue，而是獎勵「更像 work 產生的 revenue」。</p>
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title">
+              <strong>Margiotta-Miller cost-minimizing contract</strong>
+              <span class="tag">p.7</span>
+            </div>
+            <div class="equation">
+              \[
+                w^o(x)
+                =
+                \frac{1}{\gamma}\ln\alpha
+                +
+                \frac{1}{\gamma}
+                \ln\!\left[
+                  1+\eta\left(\frac{\alpha}{\beta}-g(x)\right)
+                \right],
+              \]
+              \[
+                \E_f\!\left[
+                  \frac{g(x)}
+                  {\alpha+\eta\left[(\alpha/\beta)-g(x)\right]}
+                \right]
+                =
+                \E_f\!\left[
+                  \frac{\alpha/\beta}
+                  {\alpha+\eta\left[(\alpha/\beta)-g(x)\right]}
+                \right],
+                \qquad \eta\gt0.
+              \]
+            </div>
+            <div class="intuition">
+              <strong>\(\eta\) 的角色：</strong>它是 IC 的 shadow price。
+              當 agent 更想 shirk，或 output 對 effort 的訊號較差時，IC 更昂貴，契約需要更大的 outcome sensitivity。
+              第二條式子選出唯一的 \(\eta\)，使 participation 與 IC 同時恰好成立。
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <article class="mini-card navy">
+              <h3>Level</h3>
+              <p>\(\gamma^{-1}\ln\alpha\) 是 work 的 certainty equivalent，補償 effort 的平均效用成本。</p>
+            </article>
+            <article class="mini-card green">
+              <h3>Slope</h3>
+              <p>\(g(x)\) 越低，outcome 越支持 work，\(w^o(x)\) 越高。</p>
+            </article>
+            <article class="mini-card gold">
+              <h3>Risk premium</h3>
+              <p>因為 wage 必須依 \(x\) 變動，risk-averse agent 需要額外的平均薪資。</p>
+            </article>
+          </div>
+
+          <div class="note">
+            若 \(g(x)\) 隨 \(x\) 下降，最適薪資會隨 revenue 上升，看起來像一般 bonus contract。
+            但模型真正說的是 <strong>likelihood-ratio principle</strong>：
+            任何不提供 effort 資訊的 outcome variation 都不該影響薪資；反之，即使不是 revenue level，
+            只要是 informative signal，也應進入契約。
+          </div>
+
+          <details>
+            <summary>為什麼不是讓 agent 承擔全部 output risk？</summary>
+            <div>
+              <p>
+                因為 principal risk-neutral、agent risk-averse。把所有 risk 交給 agent 的確能提供強誘因，
+                但要支付很高的 risk premium。FOC 讓 wage sensitivity 只大到足以滿足 IC，
+                再多一點只會增加保險成本。
+              </p>
+            </div>
+          </details>
+          <a class="back-top" href="#top">回到頁首</a>
+        </section>
+
+        <section class="section" id="measures">
+          <div class="section-heading">
+            <div class="section-index">5</div>
+            <div>
+              <h2>Moral hazard 有多重要？三個不同問題</h2>
+              <p>不要把 incentive cost、effort disutility 與 lost output 混成同一個量。</p>
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <article class="mini-card green">
+              <h3>\(\Delta_1\)：契約成本</h3>
+              <p>
+                \[
+                  \Delta_1=\E[w^o(x)]-\gamma^{-1}\ln\alpha.
+                \]
+                因 hidden action 而必須支付的 risk premium；等於股東最多願意付多少來消除 moral hazard。
+              </p>
+            </article>
+            <article class="mini-card plum">
+              <h3>\(\Delta_2\)：非金錢效用差</h3>
+              <p>
+                \[
+                  \Delta_2=\gamma^{-1}\ln\beta-\gamma^{-1}\ln\alpha
+                  =-\gamma^{-1}\ln(\alpha/\beta).
+                \]
+                講義採負號；其正的 effort-cost magnitude 是
+                \(\gamma^{-1}\ln(\alpha/\beta)\)。
+              </p>
+            </article>
+            <article class="mini-card red">
+              <h3>\(\Delta_3\)：產出損失</h3>
+              <p>
+                \[
+                  \Delta_3=\E[x]-\E[xg(x)].
+                \]
+                若 agent 真去 shirk，firm 的 gross expected revenue 會少多少。
+              </p>
+            </article>
+          </div>
+
+          <table class="comparison-table">
+            <thead>
+              <tr><th>Measure</th><th>在問什麼</th><th>由誰承擔</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>\(\Delta_1\)</td><td>要讓 hidden action 變成 work，多付多少？</td><td>shareholders 的 compensation cost</td></tr>
+              <tr><td>\(|\Delta_2|\)</td><td>agent 覺得 work 比 shirk 痛苦多少？</td><td>agent 的 nonpecuniary cost</td></tr>
+              <tr><td>\(\Delta_3\)</td><td>若沒有誘因、真的 shirk，少生產多少？</td><td>firm / shareholders 的 output loss</td></tr>
+            </tbody>
+          </table>
+
+          <div class="takeaway">
+            <strong>經濟比較：</strong>\(\Delta_1\) 可以遠小於 \(\Delta_3\)。
+            這表示 performance contract 雖然有成本，但相對於放任 shirking 造成的產出損失，仍可能非常便宜。
+          </div>
+          <a class="back-top" href="#top">回到頁首</a>
+        </section>
+
+        <section class="section" id="identification">
+          <div class="section-heading">
+            <div class="section-index">6</div>
+            <div>
+              <h2>靜態 identification：從 wage schedule 反推 hidden technology</h2>
+              <p>契約的形狀本身就是 principal 對 signal quality 的 revealed assessment。</p>
+            </div>
+          </div>
+
+          <p>
+            Primitives 是 \(\{f(x),g(x),\alpha,\beta,\gamma\}\)。Panel data
+            \(\{x_n,w_n\}_{n=1}^N\) 識別 working density \(f(x)\) 與
+            conditional wage schedule \(w(x)=\E[w_n\mid x_n=x]\)；剩下的問題是
+            \(g,\alpha,\beta,\gamma\)。
+          </p>
+
+          <div class="equation-card">
+            <div class="equation-title">
+              <strong>Known \(\gamma\)：FOC inversion</strong>
+              <span class="tag">point identification</span>
+            </div>
+            <div class="equation">
+              \[
+                v(x)=e^{-\gamma w^o(x)},\qquad
+                \bar v^{-1}=\lim_{x\to\infty}v(x)^{-1},
+              \]
+              \[
+                g(x)=
+                \frac{\bar v^{-1}-v(x)^{-1}}
+                     {\bar v^{-1}-\E[v(x)^{-1}]},
+                \qquad
+                \alpha=\E[v(x)]^{-1},
+                \qquad
+                \beta=\E[v(x)g(x)]^{-1}.
+              \]
+            </div>
+            <div class="intuition">
+              <strong>推導邏輯：</strong>FOC 使 \(v(x)^{-1}\) 對 \(g(x)\) 呈 affine relation。
+              在 tail condition \(g(x)\to0\) 下，極端高 \(x\) 提供 intercept；
+              再用 \(\E[g]=1\) 定 scale，最後由兩條 binding constraints 解出
+              \(\alpha,\beta\)。
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="mini-card navy">
+              <h3>Identification 來自哪裡？</h3>
+              <p>
+                Wage 對 outcome 的 curvature 告訴我們哪些 \(x\) 是 work 的強訊號；
+                wage level 與兩條 binding constraints 告訴我們 participation 與 effort cost。
+              </p>
+            </article>
+            <article class="mini-card red">
+              <h3>需要哪些條件？</h3>
+              <p>
+                Optimal-contract restriction 正確、\(\gamma\) 已知、足夠 outcome support、
+                \(g(x)\to0\) 的 tail normalization、兩條 constraints bind，且 \(w(x)\) 可被資料識別。
+              </p>
+            </article>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title">
+              <strong>Unknown \(\gamma\)：candidate primitives 與 sharp set</strong>
+              <span class="tag">set identification</span>
+            </div>
+            <div class="equation">
+              \[
+                \bar w=\lim_{x\to\infty}w^o(x),
+                \qquad
+                \alpha(\gamma)=
+                \left\{\E[e^{-\gamma w^o(x)}]\right\}^{-1},
+              \]
+              \[
+                \beta(\gamma)=
+                \frac{
+                  1-\E[e^{\gamma(w^o(x)-\bar w)}]
+                }{
+                  \E[e^{-\gamma w^o(x)}]-e^{-\gamma\bar w}
+                },
+              \]
+              \[
+                g(x,\gamma)=
+                \frac{e^{\gamma\bar w}-e^{\gamma w^o(x)}}
+                     {e^{\gamma\bar w}-\E[e^{\gamma w^o(x)}]},
+              \]
+              \[
+                0\le
+                \E[x]-\E[w^o(x)]-\E[xg(x,\gamma)]
+                +\gamma^{-1}\ln\beta(\gamma).
+              \]
+            </div>
+            <div class="intuition">
+              每個 candidate \(\gamma\) 都把同一條 wage schedule 解讀成不同程度的 risk compensation，
+              因而產生一組 \(\alpha(\gamma),\beta(\gamma),g(x,\gamma)\)。
+              最後一條 profitability inequality 保留那些「induce work 至少不比固定薪資放任 shirk 差」
+              的 \(\gamma\)。通過者構成 sharp identified set；若集合為空，模型被資料拒絕。
+            </div>
+          </div>
+
+          <div class="warning">
+            <strong>為什麼 unknown \(\gamma\) 通常不能 point identify？</strong>
+            同一個陡峭 wage schedule 可能表示 agent 很 risk-tolerant、所以可放入強誘因；
+            也可能表示 output 是非常精確的 effort signal、所以少量 risk 就能提供誘因。
+            沒有額外 variation 時，risk attitude 與 signal technology 彼此 confounded。
+          </div>
+          <a class="back-top" href="#top">回到頁首</a>
+        </section>
+
+        <section class="section" id="dynamic">
+          <div class="section-heading">
+            <div class="section-index">7</div>
+            <div>
+              <h2>動態延伸：saving、bond price 與短期契約</h2>
+              <p>Agent 能跨期平滑 consumption，卻不表示 incentive 必須延後很久。</p>
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title">
+              <strong>Lifetime utility 與轉換後的 compensation value</strong>
+              <span class="tag">dynamic</span>
+            </div>
+            <div class="equation">
+              \[
+                -\sum_{t=0}^{\infty}\delta^t e^{-\gamma c_t}
+                \left[l_{0t}+l_t\alpha+(1-l_t)\beta\right],
+              \]
+              \[
+                v_t(x)=
+                \exp\!\left(-\frac{\gamma w_t(x)}{b_{t+1}}\right),
+              \]
+              \[
+                \alpha^{-1/(b_t-1)}\ge \E[v_t(x)],
+                \qquad
+                0\ge
+                \E\!\left[
+                  \left\{
+                    g(x)-(\alpha/\beta)^{1/(b_t-1)}
+                  \right\}v_t(x)
+                \right].
+              \]
+            </div>
+            <div class="intuition">
+              \(b_t\) 是 bond price。它改變今天一美元薪資可以轉成多少 lifetime consumption，
+              因而同時 tilt participation 與 IC。若 \(b_t\) 是外生且在時間上變動，
+              它提供區分 risk preference 與 incentive technology 的額外 variation。
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <article class="mini-card navy">
+              <h3>Consumption smoothing</h3>
+              <p>有效的 risk-aversion term 由 \(\gamma\) 轉成 \(\gamma/b_{t+1}\)。</p>
+            </article>
+            <article class="mini-card green">
+              <h3>Identification</h3>
+              <p>外生 \(b_t\) 移動 constraints，讓 observational equivalence 變少。</p>
+            </article>
+            <article class="mini-card red">
+              <h3>Implementation</h3>
+              <p>最適 long-term contract 可由每期重複 optimal short-term contract 實現。</p>
+            </article>
+          </div>
+
+          <div class="takeaway">
+            <strong>為什麼 short-term contracts 足夠？</strong>
+            關於 period \(t\) shirking 的資訊在 \(t+1\) 已經到齊；更晚才發 bonus 或 punishment
+            不會增加訊號，只會扭曲 consumption smoothing。動態模型的功能主要是跨期分配 wealth risk，
+            不是把已知的 incentive signal 無限延後。
+          </div>
+          <a class="back-top" href="#top">回到頁首</a>
+        </section>
+
+        <section class="section" id="estimation">
+          <div class="section-heading">
+            <div class="section-index">8</div>
+            <div>
+              <h2>Fully parametric specification 與 estimation</h2>
+              <p>把兩個 effort states 的 revenue distributions 參數化，再把 optimal wage equation 拿去估。</p>
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title">
+              <strong>Lower-truncated normal</strong>
+              <span class="tag">distribution</span>
+            </div>
+            <div class="equation">
+              \[
+                f_w(x)=
+                \frac{
+                  \phi((x-\mu_w)/\sigma)
+                }{
+                  \sigma\Phi((\mu_w-\psi)/\sigma)
+                }\mathbf{1}\{x\ge\psi\},
+              \]
+              \[
+                \ln g(x)
+                =
+                \ln\Phi\!\left(\frac{\mu_w-\psi}{\sigma}\right)
+                -
+                \ln\Phi\!\left(\frac{\mu_s-\psi}{\sigma}\right)
+                +
+                \frac{\mu_w^2-\mu_s^2}{2\sigma^2}
+                +
+                \frac{\mu_s-\mu_w}{\sigma^2}x.
+              \]
+            </div>
+            <div class="intuition">
+              \(\psi\) 是 bankruptcy / limited-liability lower bound；
+              \(\mu_w,\mu_s\) 控制 work 與 shirk 的 location，\(\sigma\) 控制 noise。
+              Equal variance 使 log likelihood ratio 對 \(x\) 線性，讓 wage equation 容易估計。
+            </div>
+          </div>
+
+          <div class="warning">
+            <strong>符號核對：</strong>依講義前面 \(g=f_s/f_w\) 的定義直接取 truncated-density ratio，
+            normalizing-constant 應是上式的
+            \(\ln\Phi_w-\ln\Phi_s\)。投影片 p.15 顯示相反順序，與其自身的 \(g\) 定義不一致；
+            這裡採 density ratio 所推出的方向。
+          </div>
+
+          <div class="pipeline" aria-label="four-step estimator">
+            <div class="pipe-step">
+              <strong>1. Bound</strong>
+              <span>\(\hat\psi=\min_n x_n\)；super-consistent，但怕 measurement error</span>
+            </div>
+            <div class="pipe-step">
+              <strong>2. Output</strong>
+              <span>用 \(f_w(x)\) 的 likelihood 估 \((\mu_w,\sigma)\)</span>
+            </div>
+            <div class="pipe-step">
+              <strong>3. Contract</strong>
+              <span>以 NLS 估 \((\mu_s,\gamma,\alpha,\beta)\)</span>
+            </div>
+            <div class="pipe-step">
+              <strong>Inner loop</strong>
+              <span>每次 trial parameters 解唯一的 \(\eta\)</span>
+            </div>
+            <div class="pipe-step">
+              <strong>4. Inference</strong>
+              <span>修正 generated first-stage estimates 造成的標準誤</span>
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title">
+              <strong>NLS contract equation</strong>
+              <span class="tag">nested estimation</span>
+            </div>
+            <div class="equation">
+              \[
+                \widetilde w_n
+                =
+                \gamma^{-1}\ln\alpha
+                +
+                \gamma^{-1}\ln
+                \left[
+                  1+\eta(\alpha/\beta)-\eta g(x_n)
+                \right]
+                +e_n,
+                \qquad
+                \E[e_n\mid x_n]=0.
+              \]
+            </div>
+            <div class="intuition">
+              外層 NLS 搜尋 structural parameters；內層用 binding constraints 解 \(\eta\)。
+              這個 nesting 不是 NFXP 的 Bellman fixed point，而是每組 parameters 下的一維 IC shadow-price root。
+            </div>
+          </div>
+
+          <div class="note">
+            Margiotta-Miller 的 MAS sample 有 37 家 aerospace、electronics、chemical firms，
+            期間為 1944–1977。估計顯示 annual moral-hazard risk premium 相對小，
+            但若改付 fixed wage 而讓 managers shirk，\(\Delta_3\) 的 output loss 非常大。
+          </div>
+          <a class="back-top" href="#top">回到頁首</a>
+        </section>
+
+        <section class="section" id="labor-market">
+          <div class="section-heading">
+            <div class="section-index">9</div>
+            <div>
+              <h2>從單一契約擴展到 executive labor market</h2>
+              <p>工作不只帶來薪資，也帶來職涯、人力資本與未來的 outside options。</p>
+            </div>
+          </div>
+
+          <p>
+            後半部是 dynamic generalized Roy model：每期 executive 選擇 retire、
+            firm type / sector / mobility \(j\)、job rank \(k\)、consumption \(c_t\)，
+            再 privately 選 effort \(l_t\)。Employment choice 滿足
+          </p>
+
+          <div class="equation-card">
+            <div class="equation-title">
+              <strong>Mutually exclusive career choice</strong>
+              <span class="tag">choice set</span>
+            </div>
+            <div class="equation">
+              \[
+                d_{0t}+\sum_{j=1}^{J}\sum_{k=1}^{K}d_{jkt}=1.
+              \]
+            </div>
+            <div class="intuition">
+              \(d_{0t}=1\) 表示退休；\(d_{jkt}=1\) 表示在 firm category \(j\) 擔任 rank \(k\)。
+              這使 observed career histories 可以轉成 conditional choice probabilities。
+            </div>
+          </div>
+
+          <div class="grid-4">
+            <article class="mini-card navy">
+              <h3>\(h_0\)</h3>
+              <p>固定特徵，如 gender、education。</p>
+            </article>
+            <article class="mini-card green">
+              <h3>\(h_{1t}\)</h3>
+              <p>internal human capital：留在同 firm 並工作而累積。</p>
+            </article>
+            <article class="mini-card gold">
+              <h3>\(h_{2t}\)</h3>
+              <p>general human capital：持續 employment 並工作而累積。</p>
+            </article>
+            <article class="mini-card plum">
+              <h3>\(h_{3t}\)</h3>
+              <p>external human capital：switch firm 並工作而累積。</p>
+            </article>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title">
+              <strong>Work 與 shirk 的 human-capital transitions</strong>
+              <span class="tag">career concerns</span>
+            </div>
+            <div class="equation">
+              \[
+                H(h_t)=
+                (t+1,h_0,d_t^*h_{1t},h_{2t},h_{3t}),
+              \]
+              \[
+                \bar H(h_t)=
+                \left(
+                  t+1,h_0,\,
+                  d_t^*(h_{1t}+1)+(1-d_t^*),\,
+                  h_{2t}+1,\,
+                  h_{3t}+1-d_t^*
+                \right),
+              \]
+              \[
+                d_t^*=1\ \text{same firm},\qquad d_t^*=0\ \text{new firm}.
+              \]
+            </div>
+            <div class="intuition">
+              Shirking 不累積 skill；switching 還會重置 firm-specific capital。
+              Working 則讓 internal / general / external capital 依 mobility choice 更新。
+              因此 effort 即使不立刻影響 bonus，也會透過 future career value 形成 incentive。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title">
+              <strong>Preferences and technology</strong>
+              <span class="tag">hidden effort</span>
+            </div>
+            <div class="equation">
+              \[
+                -\sum_{t=1}^{\infty}
+                \sum_{j=0}^{J}\sum_{k=0}^{K}
+                \delta^t e^{-\gamma c_t-\epsilon_{jkt}}d_{jkt}
+                \left[
+                  \alpha_{jk}(h_t)l_t+
+                  \beta_{jk}(h_t)(1-l_t)
+                \right],
+              \]
+              \[
+                \alpha_{jk}(h_t)\gt\beta_{jk}(h_t)\gt0,
+                \qquad
+                f_j(\pi)g_{jk}(\pi\mid h_t)
+                \ \text{is the shirk return density.}
+              \]
+            </div>
+            <div class="intuition">
+              \(\epsilon_{jkt}\) 是 privately observed firm-job taste shock；
+              \(\alpha_{jk},\beta_{jk}\) 讓 work / shirk disutility 隨 job 與 human capital 改變。
+              Abnormal return \(\pi\) 是 effort signal，而 \(g_{jk}\) 再次扮演 likelihood ratio。
+            </div>
+          </div>
+
+          <details>
+            <summary>Equilibrium timing 的十個步驟</summary>
+            <div>
+              <ol class="clean-list">
+                <li>Executive 知道 true \(h_t\)，並 privately 選 consumption。</li>
+                <li>Shareholders 對 \(h_t\) 持有 belief \(h_t'\)。</li>
+                <li>Executive 觀察 private taste shock \(\epsilon_{jkt}\)，選 firm 與 position。</li>
+                <li>Executives 同時提交 compensation proposals。</li>
+                <li>Off-path proposal 觸發 shareholders 的 worst belief 與 rejection。</li>
+                <li>Rejection 被所有 firms 公開觀察。</li>
+                <li>若 demands 未被接受，executives retire。</li>
+                <li>若接受，executives privately 選 effort。</li>
+                <li>Human capital 依 \(H(h_t)\) 或 \(\bar H(h_t)\) 更新。</li>
+                <li>Equilibrium optimal contract induces work。</li>
+              </ol>
+            </div>
+          </details>
+          <a class="back-top" href="#top">回到頁首</a>
+        </section>
+
+        <section class="section" id="career-choice">
+          <div class="section-heading">
+            <div class="section-index">10</div>
+            <div>
+              <h2>Career choice、value index 與 CCP inversion</h2>
+              <p>先把 consumption optimization 壓縮，再用 observed job shares 還原 relative values。</p>
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title">
+              <strong>Human-capital value index</strong>
+              <span class="tag">recursive index</span>
+            </div>
+            <div class="equation">
+              \[
+                B_t(h,h')
+                =
+                p_{0t}(h,h')\E[e^{-\epsilon_{0t}^*/b_t}]
+                +
+                \sum_{j=1}^{J}\sum_{k=1}^{K}
+                p_{jkt}(h,h')\E[e^{-\epsilon_{jkt}^*/b_t}]
+                V_{jkt}(h,h',b_t).
+              \]
+            </div>
+            <div class="intuition">
+              \(B_t\) 把 retirement 與所有 firm-job paths 的 continuation utility 聚合成一個 index；
+              因為模型用 negative exponential utility，<strong>較低的 \(B_t\) 代表較高的 human-capital value</strong>。
+              \(V_{jkt}\) 內部比較 work 與 shirk 所導致的 compensation、return likelihood 與下一期 \(B_{t+1}\)。
+            </div>
+          </div>
+
+          <p>
+            Value function 分兩步解：先在給定 career path 下選最適 consumption，
+            再沿 equilibrium path \(h=h'\) 選 career。定義
+            \(A_{t+1}(h)=B_{t+1}[\bar H(h),\bar H(h)]\)，每個 job 的 deterministic index 為：
+          </p>
+
+          <div class="equation-card">
+            <div class="equation-title">
+              <strong>Dynamic discrete-choice objective</strong>
+              <span class="tag">equation 6</span>
+            </div>
+            <div class="equation">
+              \[
+                \max_{\{d_{jkt}\}}
+                \sum_{j=0}^{J}\sum_{k=0}^{K}d_{jkt}
+                \left\{
+                  \epsilon_{jkt}
+                  -\ln\alpha_{jkt}(h)
+                  -(b_t-1)
+                  \left[
+                    \ln A_{t+1}(h)
+                    +\ln\E_t[v'_{jk,t+1}]
+                  \right]
+                \right\}.
+              \]
+            </div>
+            <div class="intuition">
+              Executive 在三件事間取捨：
+              當期的 systematic / idiosyncratic nonpecuniary utility、
+              工作對 future human capital 的 investment value、
+              以及 compensation 的 expected utility。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title">
+              <strong>Hotz-Miller inversion</strong>
+              <span class="tag">equation 7</span>
+            </div>
+            <div class="equation">
+              \[
+                q_{jk}[p_t(h)]
+                =
+                \ln\alpha_{jkt}(h)
+                +(b_t-1)
+                \left\{
+                  \ln A_{t+1}(h)
+                  +\ln\E_t[v'_{jk,t+1}]
+                \right\}.
+              \]
+            </div>
+            <div class="intuition">
+              \(q_{jk}[p_t(h)]\) 是一組 taste-shock differences，使 executive 在
+              retirement 與 job \((j,k)\) 間恰好 indifferent。
+              CCP \(p_t(h)\) 越高，代表要把 agent 推離該 job 所需的 adverse taste shock 越大，
+              因而 revealed relative value 越高。
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title">
+              <strong>CCP 所隱含的 certainty-equivalent wage</strong>
+              <span class="tag">participation</span>
+            </div>
+            <div class="equation">
+              \[
+                w^*_{jk,t+1}(h)
+                =
+                \frac{b_t}{\gamma}
+                \left\{
+                  \frac{\ln\alpha_{jkt}(h)}{b_t-1}
+                  +\ln A_{t+1}(h)
+                  -\frac{q_{jk}[p_t(h)]}{b_t-1}
+                \right\}.
+              \]
+            </div>
+            <div class="intuition">
+              這條式子不是把 observed wage 直接設成 market share 的函數；
+              它先用 CCP inversion recover job 相對於 retirement 的總價值，
+              再扣除 nonpecuniary 與 human-capital value，剩餘部分才是使 agent 願意加入的 monetary compensation。
+            </div>
+          </div>
+          <a class="back-top" href="#top">回到頁首</a>
+        </section>
+
+        <section class="section" id="dynamic-contract">
+          <div class="section-heading">
+            <div class="section-index">11</div>
+            <div>
+              <h2>動態 IC 與 optimal contract decomposition</h2>
+              <p>Career concerns 能提供 incentive，但是否足夠是可由模型檢驗的條件。</p>
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title">
+              <strong>One-period incentive compatibility</strong>
+              <span class="tag">equation 8</span>
+            </div>
+            <div class="equation">
+              \[
+                \left[
+                  \frac{\alpha_{jkt}(h)}
+                       {\beta_{jkt}(h)}
+                \right]^{1/(b_t-1)}
+                \le
+                \frac{
+                  \E_t\!\left[
+                    v'_{jk,t+1}g_{jkt}(\pi\mid h)
+                    B_{t+1}[\bar H(h),\bar H(h')]
+                  \right]
+                }{
+                  \E_t\!\left[
+                    v'_{jk,t+1}
+                    B_{t+1}[H(h),\bar H(h')]
+                  \right]
+                }.
+              \]
+            </div>
+            <div class="intuition">
+              右邊把兩種 incentive 合在一起：
+              \(v'g\) 是 explicit compensation 對 performance signal 的反應；
+              \(B_{t+1}[\bar H]\) 與 \(B_{t+1}[H]\) 的差是 work 與 shirk 帶來的 career-value gap。
+              只要合計回報足以抵銷 \(\alpha/\beta\) 的 effort disutility，agent 就會 work。
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="mini-card green">
+              <h3>Career concerns predominates</h3>
+              <p>
+                若 work 明顯改善 future human capital 與 job opportunities，
+                fixed wage 也可能滿足 IC；future career reward 取代一部分 current bonus。
+              </p>
+            </article>
+            <article class="mini-card red">
+              <h3>No career effect</h3>
+              <p>
+                反事實地令 \(H(h)=\bar H(h)\)，fixed wage 讓 IC 的 signal side 失去差異；
+                因 \(\alpha\gt\beta\)，agent 會 shirk，必須加入 explicit performance pay。
+              </p>
+            </article>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title">
+              <strong>Cost-minimizing compensation</strong>
+              <span class="tag">equation 35</span>
+            </div>
+            <div class="equation">
+              \[
+                \begin{aligned}
+                  w_{jk,t+1}(h,\pi)
+                  &=
+                  w^*_{jk,t+1}(h)+r_{jk,t+1}(h,\pi)\\
+                  &=
+                  \Delta^\alpha_{jkt}(h)
+                  +\Delta^A_{jkt}(h)
+                  +\Delta^q_{jkt}(h)
+                  +r_{jk,t+1}(h,\pi),
+                \end{aligned}
+              \]
+              \[
+                \begin{aligned}
+                  \Delta^\alpha_{jkt}
+                  &=
+                  \frac{b_{t+1}}{\gamma(b_t-1)}
+                  \ln\alpha_{jkt},
+                  &
+                  \Delta^A_{jkt}
+                  &=
+                  \frac{b_{t+1}}{\gamma}\ln A_{t+1},\\
+                  \Delta^q_{jkt}
+                  &=
+                  \frac{b_{t+1}}{\gamma(b_t-1)}
+                  q_{jk}[p_t].
+                \end{aligned}
+              \]
+            </div>
+            <div class="intuition">
+              薪酬被拆成四個經濟來源：
+              systematic nonpecuniary job utility \(\Delta^\alpha\)、
+              human-capital investment value \(\Delta^A\)、
+              CCP revealed idiosyncratic compensating differential \(\Delta^q\)，
+              以及隨 abnormal return 變動的 incentive component \(r(\pi)\)。
+              \(\E[r]\) 就是 dynamic moral-hazard risk premium。
+            </div>
+          </div>
+
+          <div class="note">
+            這個 decomposition 的價值在於：兩位 executives 的 observed pay 即使相同，
+            結構意義也可能完全不同。一位可能因工作本身不受歡迎而拿 compensating differential；
+            另一位可能因 effort signal 很差而拿高 risk premium。
+          </div>
+          <a class="back-top" href="#top">回到頁首</a>
+        </section>
+
+        <section class="section" id="gmm">
+          <div class="section-heading">
+            <div class="section-index">12</div>
+            <div>
+              <h2>Dynamic model 的 identification 與 GMM</h2>
+              <p>CCPs 識別 relative values，returns 識別 signal technology，wages 把兩者接上 monetary scale。</p>
+            </div>
+          </div>
+
+          <div class="equation-card">
+            <div class="equation-title">
+              <strong>T1EV aggregation 與 CCP odds equation</strong>
+              <span class="tag">equation 10</span>
+            </div>
+            <div class="equation">
+              \[
+                B_t(h,h')
+                =
+                p_{0t}(h,h')
+                \Gamma\!\left(1+\frac{1}{b_{t+1}}\right),
+              \]
+              \[
+                \begin{aligned}
+                  \ln\!\frac{p_{jkt}(h)}{p_{0t}(h)}
+                  &=
+                  -\ln\alpha_{jkt}(h)\\
+                  &\quad
+                  -\frac{b_t-1}{b_{t+1}}
+                    \ln p_{0,t+1}[\bar H(h_t)]\\
+                  &\quad
+                  -(b_t-1)
+                    \ln\Gamma\!\left(1+\frac{1}{b_{t+1}}\right)\\
+                  &\quad
+                  -(b_t-1)\ln\E_t[v_{jk,t+1}].
+                \end{aligned}
+              \]
+            </div>
+            <div class="intuition">
+              左邊是選 job \((j,k)\) 相對於 retirement 的 observed log odds。
+              右邊把 odds 分成 nonpecuniary work cost、future retirement probability 所透露的
+              human-capital value、T1EV inclusive-value correction，以及 compensation utility。
+              這就是可直接形成 sample moments 的 structural equation。
+            </div>
+          </div>
+
+          <table class="comparison-table">
+            <thead>
+              <tr><th>資料 variation</th><th>主要識別對象</th><th>直覺</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Job CCPs across \(h,j,k,t\)</td>
+                <td>relative job values、\(\alpha_{jkt}(h)\)</td>
+                <td>實際選擇揭露 nonpecuniary preference 與 investment value</td>
+              </tr>
+              <tr>
+                <td>Compensation schedule</td>
+                <td>certainty equivalent、risk attitude</td>
+                <td>把 utility index 轉成 monetary scale</td>
+              </tr>
+              <tr>
+                <td>Conditional / unconditional abnormal returns</td>
+                <td>\(f_j(\pi),g_{jk}(\pi\mid h)\)</td>
+                <td>辨認 signal quality 與 hidden effort technology</td>
+              </tr>
+              <tr>
+                <td>Career transitions</td>
+                <td>\(H,\bar H\) 與 human-capital returns</td>
+                <td>辨認 work 對 future opportunities 的影響</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="grid-2">
+            <article class="mini-card navy">
+              <h3>Estimator</h3>
+              <p>
+                先以 sample analogs 估 CCPs、compensation schedule 與 return densities，
+                再把 equation (10) 的 residual 與 instruments 組成 moment conditions，
+                用 GMM 估 structural parameters。
+              </p>
+            </article>
+            <article class="mini-card red">
+              <h3>Needed conditions</h3>
+              <p>
+                T1EV taste shocks、正確 state vector、conditional independence、
+                足夠 choice support / overlap、可識別的 compensation 與 return densities、
+                正確 equilibrium beliefs，以及有效的 exclusion / transition variation。
+              </p>
+            </article>
+          </div>
+
+          <div class="warning">
+            投影片 p.36 寫「\(\alpha_{jkt}(h)\) and \(\rho\) are identified」，
+            但前面把 CARA risk-aversion coefficient 記為 \(\gamma\)，且該頁標題談 risk aversion。
+            這裡保留這個 notation mismatch：使用原論文或實作時，應先確認
+            \(\rho\) 是 taste-shock scale、risk parameter，還是講義的符號替換，不能直接與 \(\gamma\) 混用。
+          </div>
+          <a class="back-top" href="#top">回到頁首</a>
+        </section>
+
+        <section class="section" id="evidence">
+          <div class="section-heading">
+            <div class="section-index">13</div>
+            <div>
+              <h2>實證結論與全章總整理</h2>
+              <p>模型的目標不是只 fit wages，而是把 pay differences 分解成有經濟意義的來源。</p>
+            </div>
+          </div>
+
+          <h3>50 years of managerial compensation</h3>
+          <p>
+            講義比較 1944–1977 的 MAS firms 與 1995–2004 COMPUSTAT / CRSP firms。
+            若讓後期 managers 經營與 MAS managers 同樣規模的 firms，薪酬約增加 2.3 倍，
+            大致等於同期 national income per capita 的成長。在調整生活水準的一般上升後，
+            剩餘的薪酬增加幾乎不是 certainty-equivalent wage
+            \(\gamma^{-1}\ln\alpha\)，而是 moral-hazard risk premium \(\Delta_1\)。
+          </p>
+
+          <div class="grid-3">
+            <article class="mini-card gold">
+              <h3>不是 risk preferences</h3>
+              <p>後期 managers 並沒有顯得更願意承擔 gamble，因此不是 risk tolerance 上升。</p>
+            </article>
+            <article class="mini-card navy">
+              <h3>不是 return dispersion</h3>
+              <p>例如 aerospace 的 abnormal returns 反而較不分散，不能用 \(f(x)\) 的 noise 增加解釋。</p>
+            </article>
+            <article class="mini-card red">
+              <h3>主要是 \(\alpha/\beta\)</h3>
+              <p>Firm assets 變大提高 shirking 的效用，放大 work 相對於 shirk 的 incentive problem。</p>
+            </article>
+          </div>
+
+          <h3>Firm-size executive pay premium</h3>
+          <div class="grid-2">
+            <article class="mini-card green">
+              <h3>80%：risk premium</h3>
+              <p>
+                大 firm 中 effort signal 明顯較差、supervision 與 accountability 更困難，
+                因此需要更昂貴的 incentive contract。
+              </p>
+            </article>
+            <article class="mini-card plum">
+              <h3>20%：demand / productivity</h3>
+              <p>
+                大 firm 的 resource base 放大 executive 的 marginal productivity，
+                因而願意支付 demand premium。
+              </p>
+            </article>
+          </div>
+
+          <ul class="clean-list">
+            <li>Large firms employ more talented executives。</li>
+            <li>沒有證據顯示 executives 偏好 small firms；估計上他們甚至願意少拿薪水去 large firms。</li>
+            <li>教育與經驗個別重要，但合計後沒有剩餘的 firm-size human-capital pay premium。</li>
+          </ul>
+
+          <div class="takeaway">
+            <strong>全章核心：</strong>
+            observed compensation = participation 所需的平均價值
+            + hidden effort 所需的 risk premium
+            + job amenities 的 compensating differential
+            + human-capital / career investment value。
+            Structural model 的工作，就是利用 wage、choice 與 return variation 把這四項拆開。
+          </div>
+
+          <table class="comparison-table">
+            <thead>
+              <tr><th>想回答的問題</th><th>應看哪條式子</th><th>不能缺的假設</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Agent 會不會加入？</td>
+                <td>participation constraint</td>
+                <td>outside option 與 utility normalization</td>
+              </tr>
+              <tr>
+                <td>加入後會不會 work？</td>
+                <td>IC constraint</td>
+                <td>effort 對 output / career transition 的 causal effect</td>
+              </tr>
+              <tr>
+                <td>Bonus 為何隨 performance 變？</td>
+                <td>\(w^o(x)\) 或 \(r(\pi)\)</td>
+                <td>likelihood ratio 與 optimal contracting</td>
+              </tr>
+              <tr>
+                <td>Job choice 揭露什麼？</td>
+                <td>CCP inversion \(q[p]\)</td>
+                <td>shock distribution、support、conditional independence</td>
+              </tr>
+              <tr>
+                <td>薪資差異從哪來？</td>
+                <td>\(\Delta^\alpha+\Delta^A+\Delta^q+r\)</td>
+                <td>足夠的 wage、choice、return 與 transition variation</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p class="source">
+            依據：Robert A. Miller, “Principal Agent Models with Asymmetric Information,”
+            DSE at Michigan lecture slides, August 2026，共 38 頁。
+          </p>
+          <a class="back-top" href="#top">回到頁首</a>
+        </section>
+      </main>
+    </div>
+  </div>
+</body>
+</html>
