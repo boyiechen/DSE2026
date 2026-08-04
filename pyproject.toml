@@ -8,11 +8,13 @@ dependencies = [
     "ipykernel>=6.29.5",
     "jupyterlab>=4.3.0",
     "kaggle>=2.2.4",
+    "matplotlib>=3.11.1",
     "numpy>=2.1.0",
     "pandas>=2.2.0",
     "pyarrow>=18.0.0",
     "scikit-learn>=1.6.0",
     "scipy>=1.15.0",
+    "statsmodels>=0.14.6",
 ]
 
 [dependency-groups]
