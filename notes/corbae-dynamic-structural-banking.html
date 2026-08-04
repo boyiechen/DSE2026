@@ -770,9 +770,74 @@
             <div class="slide-rail"><span class="pdf-page">PDF 13</span><span class="deck-page">slide 12/43</span></div>
             <div class="slide-content">
               <div class="slide-title"><h3>Building Block：Why Do Banks Exist?</h3><p>兩個經典答案分別來自 liquidity 與 information。</p></div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>比較面向</th>
+                      <th>Maturity Transformation / Liquidity Services</th>
+                      <th>Delegated Monitoring</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>核心 friction</td><td>消費時點不確定，長期資產提前清算有損失</td><td>Borrower information 不對稱，monitoring 有固定成本</td></tr>
+                    <tr><td>銀行產出</td><td>Liquid claims、跨消費時點的 risk sharing</td><td>Screening、monitoring、契約執行與 information production</td></tr>
+                    <tr><td>主要位置</td><td>Liability/deposit side 與 maturity mismatch</td><td>Asset/loan side 與 information-intensive lending</td></tr>
+                    <tr><td>規模經濟</td><td>Pool 許多 depositor 的 withdrawal timing risk</td><td>避免眾多 lenders 重複監督，並分散 loan risk</td></tr>
+                    <tr><td>主要脆弱性</td><td>Self-fulfilling runs 與 rollover risk</td><td>誰來監督銀行，以及銀行是否誠實回報 portfolio payoff</td></tr>
+                    <tr><td>代表政策</td><td>Deposit insurance、lender of last resort、liquidity rules</td><td>Capital、supervision、disclosure 與 asset-risk regulation</td></tr>
+                  </tbody>
+                </table>
+              </div>
               <div class="reading-grid">
-                <div><span class="reading-label">理論怎麼讀</span><p>Diamond-Dybvig：banks 用 illiquid assets 支持 liquid claims，創造 maturity transformation，也因此脆弱於 runs。Diamond delegated monitoring：集中監督避免眾多小 lenders 重複支付 fixed monitoring cost。</p></div>
-                <div class="intuition"><span class="reading-label">經濟直覺</span><p>銀行的社會價值與脆弱性來自同一結構。Liquidity creation 需要 short-term claims，delegated monitoring 需要 balance-sheet concentration；完全移除風險可能也移除銀行提供的服務。</p></div>
+                <div>
+                  <span class="reading-label">Diamond-Dybvig (1983)</span>
+                  <p>
+                    Depositors 事前不知道自己會早消費或晚消費；長期投資持有到期報酬高，提前清算卻有損失。
+                    個人若自行投資，必須保留大量 liquid assets 自我保險。銀行 pool 許多人的 timing risk，
+                    用 long-term illiquid assets 支持可隨時提領的 deposits，讓 early consumers 取得 liquidity，
+                    late consumers 保留高長期報酬。
+                  </p>
+                  <p>
+                    但 liquid liabilities 對 illiquid assets 的 mismatch 也造成 strategic complementarity：
+                    若預期別人先提款，late consumer 也會搶先提款，於是 solvent bank 仍可能出現
+                    self-fulfilling run。這支理論解釋 deposits、liquidity creation 與 runs，
+                    並不直接解釋銀行為何擅長 screening borrowers。
+                  </p>
+                </div>
+                <div class="intuition">
+                  <span class="reading-label">Diamond (1984)</span>
+                  <p>
+                    Borrower 的行為或 project payoff 難以免費觀察。若眾多小額 savers 各自監督同一 borrower，
+                    會重複支付 monitoring cost；若都等別人監督，又有 free-rider problem。銀行代表所有 savers
+                    集中 screening、monitoring 與 enforcement，使每個 project 只需被專業 intermediary 監督。
+                  </p>
+                  <p>
+                    Delegation 又帶來「誰監督 monitor」的問題。銀行持有許多相對獨立 loans 後，
+                    portfolio average payoff 更可預測，降低銀行 misreport solvency 的誘因與 delegation cost。
+                    所謂 sufficiently diversified 並非字面上不能說謊，而是銀行較能可信地承諾固定 repayment。
+                    這支理論解釋 bank loans 與 relationship lending，不單獨產生 demand-deposit run。
+                  </p>
+                </div>
+              </div>
+              <div class="equation">
+                \[
+                  \underbrace{\text{liquid deposits}}_{\text{Diamond-Dybvig}}
+                  \;\longrightarrow\;
+                  \text{bank}
+                  \;\longrightarrow\;
+                  \underbrace{\text{monitored illiquid loans}}_{\text{Diamond (1984)}}.
+                \]
+              </div>
+              <div class="callout plum">
+                <strong>兩者互補，不是互斥的完整銀行理論。</strong>
+                <p>
+                  Maturity transformation 解釋銀行如何創造 liquidity，以及為什麼容易被擠兌；
+                  delegated monitoring 解釋銀行如何創造 information，以及為什麼 opaque borrowers
+                  不完全由 bond market 融資。合在一起，銀行用 liquid deposits 支應 monitored illiquid loans：
+                  deposit insurance 可消除壞的 run equilibrium，卻也削弱 depositor discipline，
+                  因而需要 capital requirements 與 supervision 約束隱藏的 loan risk。
+                </p>
               </div>
             </div>
           </article>
