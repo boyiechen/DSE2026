@@ -712,9 +712,56 @@
                   a^+ + \ell + \Upsilon = d + a^- + e.
                 \]
               </div>
+              <div class="equation-note">
+                \(a^+\) 是 cash、securities 與借給其他金融機構的 Fed funds，屬於資產；
+                \(a^-\) 是 <strong>Fed Funds Borrowed</strong>，代表銀行從其他金融機構取得的短期
+                wholesale funding，屬於負債。上標的正負號標示資金部位方向，不是報酬的正負。
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Bank group</th>
+                      <th>Fed Funds Borrowed / Assets</th>
+                      <th>Deposits / Assets</th>
+                      <th>Funding interpretation</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>Top 4</td><td>7.93%</td><td>83.80%</td><td>大量使用短期 wholesale borrowing</td></tr>
+                    <tr><td>Top 5-35</td><td>7.53%</td><td>83.25%</td><td>同樣具有多元外部 funding access</td></tr>
+                    <tr><td>Fringe banks</td><td>1.11%</td><td>88.41%</td><td>更依賴 insured retail deposits</td></tr>
+                  </tbody>
+                </table>
+              </div>
               <div class="reading-grid">
-                <div><span class="reading-label">表怎麼讀</span><p>資產包括 liquid securities (a^+)、loans \(\ell\)、fixed/intangible assets \(\Upsilon\)；負債端是 deposits \(d\)、other borrowing \(a^-\)、equity \(e\)。Top banks 的 loans 與 wholesale borrowing shares 較高、deposit share 較低。</p></div>
-                <div class="intuition"><span class="reading-label">經濟直覺</span><p>小銀行更依賴 insured deposits，因 wholesale external funding 對它們較貴；大型銀行有更多 funding margins 可以調整。因此相同 monetary tightening 或 deposit shock 對不同 size banks 的 lending effect 不同。</p></div>
+                <div>
+                  <span class="reading-label">表怎麼讀</span>
+                  <p>
+                    資產包括 liquid securities \(a^+\)、loans \(\ell\)、fixed/intangible assets
+                    \(\Upsilon\)；負債端是 deposits \(d\)、Fed funds borrowing \(a^-\)、equity \(e\)。
+                    每 100 元資產中，Top 4 約有 7.93 元由 Fed funds 支應，Fringe 只有 1.11 元；
+                    即使已除以資產規模，大銀行的比重仍約為小銀行的七倍，所以不是單純的 size effect。
+                  </p>
+                </div>
+                <div class="intuition">
+                  <span class="reading-label">經濟直覺</span>
+                  <p>
+                    Fed Funds Borrowed 衡量銀行對短期、market-priced wholesale funding 的依賴，
+                    不是 Fed discount-window 借款，也不是期間內的借款流量。大銀行因信用、規模、
+                    collateral 與 interbank access 較佳，可在 deposits 流失時改用 \(a^-\)；
+                    小銀行取得外部資金較貴，因而更仰賴較穩定的 insured deposits。
+                  </p>
+                </div>
+              </div>
+              <div class="callout gold">
+                <strong>同一個 funding margin 同時帶來彈性與脆弱性。</strong>
+                <p>
+                  較高的 \(a^-\) 讓銀行吸收 deposit shock、避免立即縮貸，但短天期資金需要 rollover，
+                  成本也會隨貨幣市場利率快速調整。因此它連結 funding flexibility、liquidity risk、
+                  monetary-policy transmission 與 interbank shock propagation；這正是大小銀行面對
+                  相同 tightening 時 lending response 可能不同的原因。
+                </p>
               </div>
             </div>
           </article>
