@@ -1,0 +1,1930 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SMM: The Mechanics and the Mess - 導讀筆記</title>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]],
+        macros: {
+          E: "\\operatorname{E}",
+          Var: "\\operatorname{Var}",
+          Cov: "\\operatorname{Cov}",
+          plim: "\\operatorname*{plim}",
+          argmin: "\\operatorname*{arg\\,min}",
+          rank: "\\operatorname{rank}",
+          IF: "\\operatorname{IF}"
+        }
+      },
+      svg: { fontCache: "global" }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    :root {
+      --paper: #eef1f2;
+      --surface: #ffffff;
+      --surface-2: #f7f9f9;
+      --ink: #18262d;
+      --muted: #5d6b72;
+      --line: #d4dcdf;
+      --blue: #24577a;
+      --blue-soft: #e5eff5;
+      --green: #16705b;
+      --green-soft: #e2f1ec;
+      --red: #b4473f;
+      --red-soft: #f7e7e4;
+      --gold: #86620d;
+      --gold-soft: #f5edd7;
+      --plum: #725371;
+      --plum-soft: #f0e9f0;
+      --shadow: 0 10px 28px rgba(24, 38, 45, 0.07);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      letter-spacing: 0;
+    }
+
+    a {
+      color: var(--blue);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 920px;
+      margin: 0 0 12px;
+      font-size: clamp(2rem, 4vw, 3.1rem);
+      line-height: 1.08;
+      overflow-wrap: anywhere;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.55rem;
+      line-height: 1.25;
+    }
+
+    h3 {
+      margin: 0 0 9px;
+      font-size: 1.08rem;
+      line-height: 1.35;
+    }
+
+    h4 {
+      margin: 0 0 6px;
+      font-size: 0.96rem;
+    }
+
+    p {
+      margin: 0 0 13px;
+    }
+
+    ul,
+    ol {
+      margin: 8px 0 14px;
+      padding-left: 1.35rem;
+    }
+
+    li {
+      margin: 5px 0;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.9em;
+    }
+
+    .shell {
+      width: min(1380px, 100%);
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .masthead {
+      margin-bottom: 22px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .masthead-copy {
+      padding: 32px 36px 27px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      margin: 0 0 7px;
+      color: var(--green);
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .lead {
+      max-width: 960px;
+      margin: 0;
+      color: #33464f;
+      font-size: 1.05rem;
+    }
+
+    .core-map {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      background: var(--surface-2);
+    }
+
+    .core-step {
+      min-width: 0;
+      min-height: 116px;
+      padding: 18px 20px;
+      border-right: 1px solid var(--line);
+    }
+
+    .core-step:last-child {
+      border-right: 0;
+    }
+
+    .core-step span {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .core-step strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--blue);
+      font-size: 1rem;
+    }
+
+    .core-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    .core-step:nth-child(2) strong {
+      color: var(--red);
+    }
+
+    .core-step:nth-child(3) strong {
+      color: var(--green);
+    }
+
+    .core-step:nth-child(4) strong {
+      color: var(--plum);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 248px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .toc {
+      position: sticky;
+      top: 18px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      box-shadow: 0 8px 24px rgba(24, 38, 45, 0.055);
+    }
+
+    .toc strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+    }
+
+    .toc a {
+      display: block;
+      padding: 5px 8px;
+      border-left: 2px solid transparent;
+      color: #40525b;
+      font-size: 0.87rem;
+      text-decoration: none;
+    }
+
+    .toc a:hover,
+    .toc a:focus-visible {
+      border-left-color: var(--green);
+      color: var(--green);
+      background: var(--green-soft);
+    }
+
+    main {
+      min-width: 0;
+      padding: 2px 30px 30px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .section {
+      scroll-margin-top: 18px;
+      padding: 30px 0 32px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section:last-child {
+      border-bottom: 0;
+    }
+
+    .section-heading {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 19px;
+    }
+
+    .section-heading p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .section-number {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--blue);
+      font-size: 0.9rem;
+      font-weight: 850;
+    }
+
+    .section:nth-child(3n + 2) .section-number {
+      background: var(--green);
+    }
+
+    .section:nth-child(3n) .section-number {
+      background: var(--red);
+    }
+
+    .grid-2,
+    .grid-3,
+    .grid-4 {
+      display: grid;
+      gap: 13px;
+      margin: 15px 0;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .card {
+      min-width: 0;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--surface-2);
+    }
+
+    .card p:last-child,
+    .callout p:last-child,
+    .equation-note p:last-child {
+      margin-bottom: 0;
+    }
+
+    .card.blue {
+      border-top: 3px solid var(--blue);
+    }
+
+    .card.green {
+      border-top: 3px solid var(--green);
+    }
+
+    .card.red {
+      border-top: 3px solid var(--red);
+    }
+
+    .card.gold {
+      border-top: 3px solid var(--gold);
+    }
+
+    .card.plum {
+      border-top: 3px solid var(--plum);
+    }
+
+    .callout {
+      margin: 16px 0;
+      padding: 16px 18px;
+      border-left: 4px solid var(--blue);
+      background: var(--blue-soft);
+    }
+
+    .callout.green {
+      border-left-color: var(--green);
+      background: var(--green-soft);
+    }
+
+    .callout.red {
+      border-left-color: var(--red);
+      background: var(--red-soft);
+    }
+
+    .callout.gold {
+      border-left-color: var(--gold);
+      background: var(--gold-soft);
+    }
+
+    .callout.plum {
+      border-left-color: var(--plum);
+      background: var(--plum-soft);
+    }
+
+    .callout strong {
+      color: var(--ink);
+    }
+
+    .equation {
+      max-width: 100%;
+      margin: 14px 0;
+      padding: 16px 18px;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--green);
+      background: #fbfcfc;
+    }
+
+    .equation-note {
+      margin: -7px 0 16px;
+      padding: 10px 14px;
+      color: var(--muted);
+      background: var(--green-soft);
+      font-size: 0.91rem;
+    }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 20px;
+      margin: 18px 0;
+    }
+
+    .pipeline-step {
+      position: relative;
+      min-width: 0;
+      padding: 15px 12px;
+      border: 1px solid var(--line);
+      border-top: 3px solid var(--blue);
+      border-radius: 7px;
+      background: var(--surface-2);
+      text-align: center;
+    }
+
+    .pipeline-step::after {
+      position: absolute;
+      top: 50%;
+      right: -17px;
+      color: var(--muted);
+      content: "→";
+      font-weight: 800;
+      transform: translateY(-50%);
+    }
+
+    .pipeline-step:last-child::after {
+      content: "";
+    }
+
+    .pipeline-step:nth-child(2) {
+      border-top-color: var(--red);
+    }
+
+    .pipeline-step:nth-child(3) {
+      border-top-color: var(--green);
+    }
+
+    .pipeline-step:nth-child(4) {
+      border-top-color: var(--gold);
+    }
+
+    .pipeline-step:nth-child(5) {
+      border-top-color: var(--plum);
+    }
+
+    .pipeline-step strong,
+    .pipeline-step span {
+      display: block;
+    }
+
+    .pipeline-step strong {
+      margin-bottom: 3px;
+      font-size: 0.91rem;
+    }
+
+    .pipeline-step span {
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.45;
+    }
+
+    .matrix-map {
+      display: grid;
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 16px;
+      margin: 16px 0;
+      align-items: stretch;
+    }
+
+    .matrix-visual {
+      display: grid;
+      grid-template-columns: 94px repeat(4, minmax(34px, 1fr));
+      grid-template-rows: 38px repeat(4, 48px);
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--surface);
+    }
+
+    .matrix-visual div {
+      display: grid;
+      min-width: 0;
+      place-items: center;
+      padding: 5px;
+      border-right: 1px solid #e2e7e9;
+      border-bottom: 1px solid #e2e7e9;
+      font-size: 0.75rem;
+      text-align: center;
+    }
+
+    .matrix-visual .head,
+    .matrix-visual .row {
+      color: var(--muted);
+      background: var(--surface-2);
+      font-weight: 750;
+    }
+
+    .heat-pos {
+      color: #124e3f;
+      background: #cce7d8;
+    }
+
+    .heat-neg {
+      color: #71312d;
+      background: #f0ceca;
+    }
+
+    .heat-strong {
+      color: #fff;
+      background: var(--green);
+    }
+
+    .heat-zero {
+      color: #849097;
+      background: #f4f6f6;
+    }
+
+    .table-wrap {
+      margin: 15px 0;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      font-size: 0.91rem;
+    }
+
+    th,
+    td {
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: #33464f;
+      background: #edf2f3;
+      font-size: 0.82rem;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .term {
+      color: var(--blue);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .checklist {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px 18px;
+      margin: 15px 0;
+      padding: 0;
+      list-style: none;
+      counter-reset: checklist;
+    }
+
+    .checklist li {
+      position: relative;
+      min-height: 46px;
+      margin: 0;
+      padding: 9px 10px 9px 43px;
+      border-bottom: 1px solid var(--line);
+      counter-increment: checklist;
+    }
+
+    .checklist li::before {
+      position: absolute;
+      top: 8px;
+      left: 0;
+      display: grid;
+      width: 30px;
+      height: 30px;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--blue);
+      content: counter(checklist);
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .mini {
+      color: var(--muted);
+      font-size: 0.89rem;
+    }
+
+    .tag {
+      display: inline-block;
+      margin: 0 4px 4px 0;
+      padding: 2px 7px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      color: #42545d;
+      background: var(--surface-2);
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .source {
+      margin-top: 24px;
+      padding-top: 17px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    mjx-container[jax="SVG"][display="true"] {
+      max-width: 100%;
+      margin: 0.55em 0 !important;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    @media (max-width: 1080px) {
+      .core-map {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .core-step:nth-child(2) {
+        border-right: 0;
+      }
+
+      .core-step:nth-child(-n + 2) {
+        border-bottom: 1px solid var(--line);
+      }
+
+      .layout {
+        grid-template-columns: 210px minmax(0, 1fr);
+      }
+
+      .grid-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .pipeline {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .pipeline-step:nth-child(3)::after {
+        content: "";
+      }
+
+      .pipeline-step:nth-child(4) {
+        grid-column: 1;
+      }
+
+      .matrix-map {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 780px) {
+      .shell {
+        padding: 12px;
+      }
+
+      .masthead-copy {
+        padding: 24px 20px;
+      }
+
+      .layout {
+        display: block;
+      }
+
+      .toc {
+        position: static;
+        margin-bottom: 14px;
+      }
+
+      .toc strong {
+        margin-bottom: 4px;
+      }
+
+      .toc a {
+        display: inline-block;
+        margin: 2px 2px 2px 0;
+        border: 1px solid var(--line);
+        border-radius: 4px;
+      }
+
+      main {
+        padding: 0 20px 20px;
+      }
+
+      .grid-2,
+      .grid-3,
+      .grid-4,
+      .checklist {
+        grid-template-columns: 1fr;
+      }
+
+      .pipeline {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .pipeline-step:nth-child(4) {
+        grid-column: auto;
+      }
+
+      .pipeline-step::after {
+        top: auto;
+        right: 50%;
+        bottom: -15px;
+        content: "↓";
+        transform: translateX(50%);
+      }
+
+      .pipeline-step:nth-child(3)::after {
+        content: "↓";
+      }
+
+      .pipeline-step:last-child::after {
+        content: "";
+      }
+    }
+
+    @media (max-width: 520px) {
+      body {
+        font-size: 15px;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .core-map {
+        grid-template-columns: 1fr;
+      }
+
+      .core-step,
+      .core-step:nth-child(2) {
+        min-height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .core-step:last-child {
+        border-bottom: 0;
+      }
+
+      .section-heading {
+        grid-template-columns: 36px minmax(0, 1fr);
+      }
+
+      .section-number {
+        width: 33px;
+        height: 33px;
+      }
+
+      .matrix-visual {
+        grid-template-columns: 74px repeat(4, minmax(32px, 1fr));
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+        font-size: 10.5pt;
+      }
+
+      .shell {
+        width: 100%;
+        padding: 0;
+      }
+
+      .masthead,
+      main,
+      .toc {
+        box-shadow: none;
+      }
+
+      .toc {
+        display: none;
+      }
+
+      .layout {
+        display: block;
+      }
+
+      main {
+        padding: 0 22px;
+        border: 0;
+      }
+
+      .section {
+        break-inside: auto;
+      }
+
+      .card,
+      .callout,
+      .equation,
+      .table-wrap,
+      .pipeline-step {
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell" id="top">
+    <header class="masthead">
+      <div class="masthead-copy">
+        <p class="eyebrow">03. Whited · DSE Summer School · August 2026</p>
+        <h1>SMM: The Mechanics and the Mess</h1>
+        <p class="lead">
+          Simulated Method of Moments 的統計原理很短：用加權距離比較真實資料與模型模擬出的 moments。
+          真正困難的是把經濟模型、moment selection、identification、numerical optimization 與 verification
+          接成一條不會默默出錯的估計鏈。
+        </p>
+      </div>
+      <div class="core-map" aria-label="SMM 核心地圖">
+        <div class="core-step">
+          <span>Economic model</span>
+          <strong>\(\theta \to g(k,z;\theta)\)</strong>
+          <p>參數先決定 policy function，不能直接跳到 moments。</p>
+        </div>
+        <div class="core-step">
+          <span>Simulation</span>
+          <strong>policy \(\to\) fake panel</strong>
+          <p>固定 random draws，讓參數變化而非抽樣雜訊推動 objective。</p>
+        </div>
+        <div class="core-step">
+          <span>Estimation</span>
+          <strong>fake moments \(\approx\) data moments</strong>
+          <p>用 inverse covariance 衡量各方向的統計距離。</p>
+        </div>
+        <div class="core-step">
+          <span>Credibility</span>
+          <strong>identify, test, verify</strong>
+          <p>optimizer 回傳數字不代表參數被識別，也不代表程式正確。</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <nav class="toc" aria-label="目錄">
+        <strong>導讀地圖</strong>
+        <a href="#overview">0. 一句話掌握 SMM</a>
+        <a href="#model">1. 從模型到模擬資料</a>
+        <a href="#why">2. 為什麼需要 SMM</a>
+        <a href="#objective">3. Objective function</a>
+        <a href="#inference">4. 推論與 simulation noise</a>
+        <a href="#weight">5. Weight matrix 與 IF</a>
+        <a href="#identification">6. Identification</a>
+        <a href="#engineering">7. Estimation engineering</a>
+        <a href="#verification">8. Verification</a>
+        <a href="#comparison">9. 方法比較與常見誤解</a>
+        <a href="#checklist">10. Preflight checklist</a>
+      </nav>
+
+      <main>
+        <section class="section" id="overview">
+          <div class="section-heading">
+            <span class="section-number">0</span>
+            <div>
+              <h2>一句話掌握 SMM</h2>
+              <p>投影片 pp.14-17 的簡單精神，也是後面所有技術細節的共同起點。</p>
+            </div>
+          </div>
+
+          <div class="callout green">
+            <strong>SMM = 用模型產生假資料，再找出讓假資料統計量最像真實資料統計量的參數。</strong>
+            <p>
+              如果模型直接給得出 likelihood 或解析 moment condition，就用 MLE 或一般 GMM；
+              SMM 的價值出現在 \(\theta\) 到資料分布之間必須經過 Bellman equation、policy function
+              或 equilibrium，無法寫成 closed form，但仍然可以模擬。
+            </p>
+          </div>
+
+          <div class="pipeline" aria-label="SMM 估計流程">
+            <div class="pipeline-step">
+              <strong>真實資料</strong>
+              <span>計算 \(\widehat m_D\)</span>
+            </div>
+            <div class="pipeline-step">
+              <strong>猜一組 \(\theta\)</strong>
+              <span>解 dynamic model</span>
+            </div>
+            <div class="pipeline-step">
+              <strong>模擬資料</strong>
+              <span>計算 \(\widehat m_S(\theta)\)</span>
+            </div>
+            <div class="pipeline-step">
+              <strong>比較 moments</strong>
+              <span>\(\widehat g_n(\theta)=\widehat m_D-\widehat m_S(\theta)\)</span>
+            </div>
+            <div class="pipeline-step">
+              <strong>調整參數</strong>
+              <span>最小化加權距離</span>
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <article class="card blue">
+              <h3>Econometrics</h3>
+              <p>選擇正定的 \(W\)，最小化 \(\widehat g_n(\theta)'W\widehat g_n(\theta)\)。這一部分本質上是 GMM。</p>
+            </article>
+            <article class="card red">
+              <h3>Economics</h3>
+              <p>決定哪些 moments 真正回應研究問題，並解釋每個 parameter-moment comparative static。</p>
+            </article>
+            <article class="card green">
+              <h3>Engineering</h3>
+              <p>確保 solver、simulator、moment code、optimizer 與 inference 沒有各自看似合理的 silent failure。</p>
+            </article>
+          </div>
+
+          <p>
+            這門課的核心立場是：今天解模型與寫 simulator 已相對便宜，但「程式能跑」和「估計可信」
+            仍是完全不同的標準。AI 可以加速 coding、parallelization 與 testing，研究者仍須負責
+            question、moments、identification 與經濟合理性。
+          </p>
+        </section>
+
+        <section class="section" id="model">
+          <div class="section-heading">
+            <span class="section-number">1</span>
+            <div>
+              <h2>從投資模型到模擬資料</h2>
+              <p>pp.7-12：SMM 不是直接模擬 moments，而是先解出行為規則。</p>
+            </div>
+          </div>
+
+          <h3>1.1 經濟環境</h3>
+          <p>
+            風險中立經理人在離散時間、無限期模型中選擇投資。當期 shareholder cash flow 為
+          </p>
+          <div class="equation">
+            \[
+              e(k,I,z)=\pi(k,z)-I,\qquad \pi(k,z)=zk^\alpha,\quad \alpha<1,
+            \]
+            \[
+              k'=(1-\delta)k+I.
+            \]
+          </div>
+          <div class="equation-note">
+            <p>
+              \(k\) 是已安裝資本，\(I\) 是當期投資，\(\delta\) 是折舊率，\(z\) 是遵循
+              \(q(z'|z)\) 的 Markov profitability shock。報酬遞減 \(\alpha&lt;1\) 防止企業無限擴張。
+            </p>
+          </div>
+
+          <p>以 \(I=k'-(1-\delta)k\) 代回，可以直接把控制變數寫成明期資本：</p>
+          <div class="equation">
+            \[
+              V(k,z)=\max_{k'}\left\{
+                zk^\alpha-\big[k'-(1-\delta)k\big]
+                +\frac{1}{1+r}\int V(k',z')\,dq(z'|z)
+              \right\}.
+            \]
+          </div>
+
+          <div class="grid-2">
+            <article class="card blue">
+              <h3>Value function \(V(k,z)\)</h3>
+              <p>回答「企業處在 \((k,z)\) 時值多少錢」。較高資本與較高生產力通常提高 firm value。</p>
+            </article>
+            <article class="card green">
+              <h3>Policy function \(k'=g(k,z;\theta)\)</h3>
+              <p>回答「處在 \((k,z)\) 時選擇多少明期資本」。它才是模擬資料時真正反覆呼叫的行為預測。</p>
+            </article>
+          </div>
+
+          <div class="callout gold">
+            <strong>為什麼投影片中的 policy function 對 \(k\) 幾乎是水平線？</strong>
+            <p>
+              這個極簡模型沒有 convex adjustment costs；當期既有資本主要透過
+              \((1-\delta)k\) 形成已給定的資源。選擇最適 \(k'\) 時，關鍵是目前 \(z\) 對未來
+              \(z'\) 的預測與 future marginal value，因此相同 \(z\) 下的 target capital
+              可以幾乎不依賴目前 \(k\)。加入 adjustment costs 後，投資會更平滑，\(g(k,z)\)
+              通常會明顯依賴 \(k\)。
+            </p>
+          </div>
+
+          <h3>1.2 模擬就是反覆執行 policy</h3>
+          <ol>
+            <li>指定初始狀態 \((k_{i0},z_{i0})\)。</li>
+            <li>用 \(k_{i,t+1}=g(k_{it},z_{it};\theta)\) 決定明期資本。</li>
+            <li>依 \(q(z_{t+1}|z_t)\) 與預先抽好的 random shock 產生 \(z_{i,t+1}\)。</li>
+            <li>對許多 firms、許多 periods 重複，並丟棄 burn-in observations。</li>
+            <li>從模擬 panel 建立與真實資料完全相同的變數與 moments。</li>
+          </ol>
+
+          <p>
+            因此 structural parameter \(\theta\) 並不直接對應一個 moment；它先改變 Bellman
+            problem，再改變整張 policy surface，接著改變 simulated paths，最後才改變 moments。
+            這條長映射正是 closed-form estimation 困難、也正是 SMM 有用的原因。
+          </p>
+        </section>
+
+        <section class="section" id="why">
+          <div class="section-heading">
+            <span class="section-number">2</span>
+            <div>
+              <h2>為什麼需要 simulation estimator？</h2>
+              <p>pp.14-17：當 restriction 存在但無法解析寫出時，用 simulation 評估它。</p>
+            </div>
+          </div>
+
+          <h3>2.1 從一個故意繞遠路的 mean estimator 看全部方法</h3>
+          <p>
+            若 \(y_i\) i.i.d. 且只想估計 \(\mu\)，一般 method of moments 直接使用
+            \(\E[y-\mu]=0\)，得到 \(\widehat\mu=\bar y\)。SMM 可以故意採取更麻煩的做法：
+          </p>
+          <ol>
+            <li>給定候選 \(\mu\)，模擬一組平均數為 \(\mu\) 的資料並算出 \(\widehat\mu_s\)。</li>
+            <li>重複 \(S\) 次，令 \(\widetilde\mu(\mu)=S^{-1}\sum_s\widehat\mu_s\)。</li>
+            <li>選擇讓 \(\widetilde\mu(\mu)-\bar y\) 最接近零的 \(\mu\)。</li>
+          </ol>
+          <p>
+            這裡因為 closed form 已知，所以 simulation 是浪費；但若把「生成 mean-\(\mu\) 的隨機數」
+            換成「用 \(\theta\) 解出並模擬 dynamic model」，同一邏輯就變得有價值。
+          </p>
+
+          <div class="grid-2">
+            <article class="card red">
+              <h3>何時不必用 SMM？</h3>
+              <p>restriction 可解析計算、likelihood 可可靠評估，或 sufficient statistics 已知時，直接 GMM/MLE 通常更精確、更便宜。</p>
+            </article>
+            <article class="card green">
+              <h3>何時適合用 SMM？</h3>
+              <p>模型可解、可模擬，但 likelihood 或 parameter-to-moment mapping 因動態決策、異質性或 equilibrium 而難以積分時。</p>
+            </article>
+          </div>
+
+          <div class="callout">
+            <strong>選擇 SMM 不是因為模型「很 structural」。</strong>
+            <p>
+              真正判準是研究問題是否需要一個可做 counterfactual 的完整模型，以及模型 implied
+              restrictions 是否只能透過 simulation 評估。先問問題，再決定是否值得承擔 structural
+              estimation 的識別與工程成本。
+            </p>
+          </div>
+        </section>
+
+        <section class="section" id="objective">
+          <div class="section-heading">
+            <span class="section-number">3</span>
+            <div>
+              <h2>Objective function：SMM 是 simulation-based GMM</h2>
+              <p>pp.19-23：把「假資料看起來像真資料」寫成可估計的統計問題。</p>
+            </div>
+          </div>
+
+          <h3>3.1 Data moments 與 simulated moments</h3>
+          <p>
+            令 \(w_i\) 是真實資料 observation，\(y_{is}(\theta)\) 是第 \(s\) 次 simulation
+            的第 \(i\) 個 observation，\(g(\cdot)\) 回傳要匹配的 \(m\times1\) 統計向量。定義
+          </p>
+          <div class="equation">
+            \[
+              \widehat m_D=\frac{1}{n}\sum_{i=1}^{n}g(w_i),
+            \]
+            \[
+              \widehat m_S(\theta)
+              =\frac{1}{S}\sum_{s=1}^{S}
+                \left[\frac{1}{n}\sum_{i=1}^{n}g\big(y_{is}(\theta)\big)\right],
+            \]
+            \[
+              \widehat g_n(\theta)=\widehat m_D-\widehat m_S(\theta).
+            \]
+          </div>
+          <p>
+            若模型與參數正確，population 中兩邊應產生相同 moments，故
+            \(\E[\widehat g_n(\theta_0)]=0\)。估計量是
+          </p>
+          <div class="equation">
+            \[
+              \widehat\theta
+              =\argmin_{\theta\in\Theta}Q_n(\theta),
+              \qquad
+              Q_n(\theta)=\widehat g_n(\theta)' \widehat W_n\widehat g_n(\theta),
+            \]
+          </div>
+          <div class="equation-note">
+            <p>
+              \(\widehat W_n\) 必須 positive definite。它定義 moment error 空間中的距離：
+              哪些差異統計上嚴重、哪些差異大多只是資料本身估得不準。
+            </p>
+          </div>
+
+          <h3>3.2 為什麼「完全相同的 calculations」是統計條件？</h3>
+          <p>
+            SMM 比較的是同一個 estimand 在 data 與 model 下的值。只要兩邊的 variable definition、
+            trimming、fixed effects、winsorization、sample selection、frequency aggregation 或 regression
+            specification 不同，\(\widehat g_n(\theta)\) 就不再代表模型 miss，而混入 measurement mismatch。
+          </p>
+
+          <div class="callout red">
+            <strong>最佳實作：只寫一個 moment-calculating function。</strong>
+            <p>
+              同一個函數分別接受 real dataset 與 simulated dataset。兩套「看起來一樣」的程式碼會隨時間
+              drift，是最常見且不會造成 crash 的錯誤來源。
+            </p>
+          </div>
+
+          <h3>3.3 模擬樣本要多大？</h3>
+          <p>
+            投影片引用 Michaelides and Ng (2000) 的 finite-sample 經驗：總模擬樣本 \(Sn\)
+            約為真實樣本的十倍往往有良好表現。這是有用的起點，不是 universal law；
+            最終仍要用不同 \(S\)、不同 panel length 與 Monte Carlo 檢查 estimates 是否穩定。
+          </p>
+        </section>
+
+        <section class="section" id="inference">
+          <div class="section-heading">
+            <span class="section-number">4</span>
+            <div>
+              <h2>推論：linearization 與 simulation noise</h2>
+              <p>pp.24-37：複雜 argmin 的一階近似，決定 standard errors 與 specification tests。</p>
+            </div>
+          </div>
+
+          <h3>4.1 用統一記號避開 transpose 混亂</h3>
+          <p>以下定義 moment Jacobian</p>
+          <div class="equation">
+            \[
+              D_0
+              \equiv
+              \left.
+              \frac{\partial \E[\widehat g_n(\theta)]}{\partial\theta'}
+              \right|_{\theta=\theta_0},
+              \qquad D_0\in\mathbb R^{m\times k}.
+            \]
+          </div>
+          <p>
+            \(m\) 是 moments 數量，\(k\) 是 parameters 數量。投影片有時以
+            \(G=D'\) 表示 \(k\times m\) 矩陣；只要全程維度一致，兩種寫法完全相同。
+          </p>
+
+          <h3>4.2 FOC linearization 的直覺</h3>
+          <p>
+            在 \(\theta_0\) 附近，
+            \(\widehat g_n(\widehat\theta)
+            \approx\widehat g_n(\theta_0)+D_0(\widehat\theta-\theta_0)\)。
+            將它代入 quadratic objective 的 FOC 並解出參數誤差：
+          </p>
+          <div class="equation">
+            \[
+              \sqrt n(\widehat\theta-\theta_0)
+              \approx
+              -\big(D_0'WD_0\big)^{-1}D_0'W
+              \sqrt n\,\widehat g_n(\theta_0).
+            \]
+          </div>
+          <div class="equation-note">
+            <p>
+              左邊原本是 complicated optimizer 的輸出；右邊把它改寫成 moment sampling errors
+              的線性函數。這個線性 loading 就是 estimator 的 influence-function skeleton。
+            </p>
+          </div>
+
+          <h3>4.3 \((1+1/S)\) 從哪裡來？</h3>
+          <p>moment discrepancy 同時包含兩個獨立誤差來源：</p>
+          <div class="grid-2">
+            <article class="card blue">
+              <h3>Data sampling error</h3>
+              <p>真實 moments 的 variance 與 \(1/n\) 成正比。</p>
+            </article>
+            <article class="card red">
+              <h3>Simulation error</h3>
+              <p>平均 \(S\) 個、各長度 \(n\) 的 simulated samples 後，variance 與 \(1/(Sn)\) 成正比。</p>
+            </article>
+          </div>
+          <div class="equation">
+            \[
+              \frac{\Lambda}{n}+\frac{\Lambda}{Sn}
+              =\frac{1}{n}\left(1+\frac1S\right)\Lambda.
+            \]
+          </div>
+          <p>
+            若使用 efficient weight \(W=\Lambda^{-1}\)，則
+          </p>
+          <div class="equation">
+            \[
+              \operatorname{Avar}(\widehat\theta)
+              =
+              \frac{1}{n}\left(1+\frac1S\right)
+              \big(D_0'\Lambda^{-1}D_0\big)^{-1}.
+            \]
+          </div>
+
+          <div class="callout green">
+            <strong>固定 \(S\) 仍可 asymptotically normal。</strong>
+            <p>
+              每個 simulated panel 的長度隨 \(n\) 增加，simulation error 仍以
+              \(n^{-1/2}\) 收斂；固定 \(S\) 只是留下 \((1+1/S)\) 的效率成本。
+              例如 \(S=10\) 讓 variance 比無 simulation noise 時多 10%，而非讓 estimator 不一致。
+            </p>
+          </div>
+
+          <h3>4.4 Numerical Jacobian</h3>
+          <p>由於 moments 來自 simulation，通常沒有解析 derivative。對 parameter \(j\)：</p>
+          <div class="equation">
+            \[
+              \frac{\partial \widehat g_{n,\ell}(\widehat\theta)}
+                   {\partial\theta_j}
+              \approx
+              \frac{
+                \widehat g_{n,\ell}(\widehat\theta+h_je_j)
+                -
+                \widehat g_{n,\ell}(\widehat\theta-h_je_j)
+              }{2h_j}.
+            \]
+          </div>
+          <div class="grid-2">
+            <article class="card red">
+              <h3>\(h_j\) 太小</h3>
+              <p>兩次 objective 的真實差異小於 numerical 或 simulation noise，得到的是 noise derivative。</p>
+            </article>
+            <article class="card gold">
+              <h3>\(h_j\) 太大</h3>
+              <p>局部線性近似失效，產生 truncation error，無法代表 estimate 附近的 sensitivity。</p>
+            </article>
+          </div>
+          <p>
+            1% of estimate 可當初始值，但正確做法是對每一組 parameter-moment 畫
+            \(\widehat g_\ell(\widehat\theta+he_j)\) 對 \(h\) 的 stability plot，尋找 slope 穩定區間。
+            計算左右差分時必須使用相同 random draws。
+          </p>
+
+          <h3>4.5 Overidentification 與 individual moment errors</h3>
+          <p>若 \(m&gt;k\) 且 \(W=\Lambda^{-1}\)，SMM 的 \(J\)-statistic 為</p>
+          <div class="equation">
+            \[
+              J
+              =\frac{nS}{1+S}Q_n(\widehat\theta)
+              \overset{d}{\longrightarrow}
+              \chi^2_{m-k}.
+            \]
+          </div>
+          <p>
+            在 deliberately simplified 的 structural model 中，樣本夠大時常會 reject。
+            這不表示 test 沒用；它把問題從「模型是否 literally true」轉向「哪些 moments 沒有 fit，
+            而這些 miss 揭示模型少了什麼 channel」。除了 aggregate \(J\)，也應報告 individual
+            moment errors 與對應 \(t\)-statistics。
+          </p>
+
+          <h3>4.6 Indirect inference</h3>
+          <p>
+            Indirect inference 不是另一套完全不同的機器。它把 \(g(\cdot)\) 換成 auxiliary model
+            的估計係數，例如 regression slopes、VAR coefficients 或 probit coefficients。
+            這些係數本身仍是資料 moments 的函數，因此 objective、weighting、IF covariance
+            與 verification 原理都相同。
+          </p>
+        </section>
+
+        <section class="section" id="weight">
+          <div class="section-heading">
+            <span class="section-number">5</span>
+            <div>
+              <h2>Weight matrix 與 influence functions</h2>
+              <p>pp.39-56：如何衡量多種統計量之間的聯合距離。</p>
+            </div>
+          </div>
+
+          <h3>5.1 Weight matrix 到底在做什麼？</h3>
+          <p>
+            若兩個 moments 單位、sampling precision 與 correlation 不同，raw squared errors
+            不能直接相加。設資料 moment estimator 的 asymptotic covariance 為
+            \(\Lambda\)，efficient choice 是
+          </p>
+          <div class="equation">
+            \[
+              W=\Lambda^{-1}.
+            \]
+          </div>
+          <p>
+            它會 downweight noisy directions，並避免把高度 correlated moments 當成兩份獨立資訊。
+            在這個 SMM setup 中，simulation covariance 在真值處只是多一個 scalar
+            \((1+1/S)\)，不改變最適權重的相對方向，所以 \(\Lambda\) 可完全由真實資料離線計算。
+          </p>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>選擇</th>
+                  <th>實際含義</th>
+                  <th>問題</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="term">\(W=I\)</td>
+                  <td>最小化 raw moment errors。</td>
+                  <td>機械地偏重數值尺度大的 moments，換單位就可能改變估計。</td>
+                </tr>
+                <tr>
+                  <td class="term">diag\((1/\widehat m_j^2)\)</td>
+                  <td>最小化 percentage errors。</td>
+                  <td>反向偏重接近零的小 moments，仍是任意尺度規則。</td>
+                </tr>
+                <tr>
+                  <td class="term">diag\((1/\widehat\Lambda_{jj})\)</td>
+                  <td>依個別 moment precision 加權。</td>
+                  <td>忽略跨 moments covariance，可能重複計算同一方向資訊。</td>
+                </tr>
+                <tr>
+                  <td class="term">\(\widehat\Lambda^{-1}\)</td>
+                  <td>使用完整 clustered covariance。</td>
+                  <td>需要穩定、positive-definite 的 covariance estimate，但統計上最有根據。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>5.2 Influence function：把 estimator 攤回 observations</h3>
+          <p>
+            若某統計量 \(\widehat\tau\) 可以線性化為
+          </p>
+          <div class="equation">
+            \[
+              \sqrt n(\widehat\tau-\tau_0)
+              =
+              \frac{1}{\sqrt n}\sum_{i=1}^n\phi_\tau(w_i)
+              +o_p(1),
+              \qquad \E[\phi_\tau(w_i)]=0,
+            \]
+          </div>
+          <p>
+            則 \(\phi_\tau(w_i)\) 是 observation \(i\) 對 estimate 的一階貢獻。
+            原本「mean 和 regression slope 的 covariance 怎麼算」這類複雜問題，
+            會變成「兩欄 observation-level contributions 的 inner product」。
+          </p>
+
+          <div class="grid-3">
+            <article class="card blue">
+              <h3>Mean</h3>
+              <p>\(\phi_{\mu,i}=z_i-\widehat\mu\)。離平均越遠的 observation，對 mean 的推動越大。</p>
+            </article>
+            <article class="card green">
+              <h3>Variance</h3>
+              <p>\(\phi_{\sigma^2,i}=(z_i-\bar z)^2-\widehat\sigma^2\)。極端 observations 推高 variance。</p>
+            </article>
+            <article class="card plum">
+              <h3>OLS slope</h3>
+              <p>\(\phi_{\beta,i}=(n^{-1}\sum x_i'x_i)^{-1}x_i'u_i\)，就是 robust sandwich 的 observation-level summand。</p>
+            </article>
+          </div>
+
+          <h3>5.3 Stacking：一個 \(n\times m\) 矩陣解決 joint covariance</h3>
+          <p>
+            把每個 matched statistic 的 sample IF 放成一欄：
+          </p>
+          <div class="equation">
+            \[
+              \Phi=
+              \begin{bmatrix}
+                \phi_{11}&\phi_{12}&\cdots&\phi_{1m}\\
+                \phi_{21}&\phi_{22}&\cdots&\phi_{2m}\\
+                \vdots&\vdots&\ddots&\vdots\\
+                \phi_{n1}&\phi_{n2}&\cdots&\phi_{nm}
+              \end{bmatrix}.
+            \]
+          </div>
+          <p>兩種常見的 scaling convention 要分清楚：</p>
+          <div class="equation">
+            \[
+              \widehat{\operatorname{Avar}}
+              \big(\sqrt n\,\widehat m_D\big)
+              =\frac{\Phi'\Phi}{n}
+              \equiv\widehat\Lambda,
+            \]
+            \[
+              \widehat{\Var}(\widehat m_D)
+              =\frac{\Phi'\Phi}{n^2}
+              =\frac{\widehat\Lambda}{n}.
+            \]
+          </div>
+          <div class="equation-note">
+            <p>
+              兩者只差整體 scalar \(n\)，不改變 SMM argmin；但寫 standard errors 與
+              \(J\)-test scaling 時必須明確說自己使用哪一個 convention。
+            </p>
+          </div>
+
+          <h3>5.4 Clustering</h3>
+          <p>
+            若 observations 在 firm \(c\) 內相關，先把同一 cluster 的 IF rows 加總：
+            \(\widetilde\phi_c=\sum_{i\in c}\phi_i\)，再計算
+          </p>
+          <div class="equation">
+            \[
+              \widehat{\Var}(\widehat m_D)
+              =\frac{1}{n^2}\sum_{c=1}^{C}
+                \widetilde\phi_c'\widetilde\phi_c.
+            \]
+          </div>
+          <p>
+            Firm clustering 容許 firm 內 serial dependence；time clustering 容許同一期 cross-sectional
+            common shocks。若兩者都重要，需 two-way clustering。資料不是 i.i.d. 時，
+            不能只在最後 parameter SE 補救；資料 moments 的 covariance 一開始就必須反映 dependence。
+          </p>
+
+          <h3>5.5 不同 samples 與 frequencies</h3>
+          <ul>
+            <li>獨立資料來源的 moments：joint covariance 為 block diagonal。</li>
+            <li>部分 observations 重疊：對不存在的 observation-moment pair 補零後 stack。</li>
+            <li>aggregate time-series 與 panel moments 共用期間：依 time cluster 以保留共同 shocks。</li>
+            <li>只有文獻提供的 standard errors、沒有 covariance：worst-case procedures 是最後手段；先設法重建 IF stack。</li>
+          </ul>
+        </section>
+
+        <section class="section" id="identification">
+          <div class="section-heading">
+            <span class="section-number">6</span>
+            <div>
+              <h2>Identification：moments 是否真的釘得住 parameters？</h2>
+              <p>pp.58-67：optimizer 的唯一答案可能只是演算法答案，不一定是經濟上的唯一答案。</p>
+            </div>
+          </div>
+
+          <h3>6.1 這裡的 identification 不是 causality</h3>
+          <div class="grid-2">
+            <article class="card blue">
+              <h3>Structural identification</h3>
+              <p>population objective 是否只在真實 \(\theta_0\) 有唯一 minimum？它是 parameter-to-distribution mapping 的唯一性問題。</p>
+            </article>
+            <article class="card red">
+              <h3>Causal identification</h3>
+              <p>某個 empirical variation 是否能隔離 treatment 對 outcome 的 causal effect？它是 counterfactual comparison 的可信度問題。</p>
+            </article>
+          </div>
+          <p>
+            Exogenous variation 對 causal claim 通常必要，但不自動識別偏好、固定成本、資訊精度等 structural
+            primitives；後者仍需模型把 observables 映射回 parameters。反過來，某些 structural parameters
+            可以靠 distributional shape、dynamic transition 或跨 moments restrictions 識別，而不必依賴自然實驗。
+          </p>
+
+          <h3>6.2 Global 與 local identification</h3>
+          <div class="equation">
+            \[
+              \text{Global:}\qquad
+              \E[\widehat g_n(\theta)]=0
+              \iff \theta=\theta_0,
+            \]
+            \[
+              \text{Local:}\qquad
+              \rank(D_0)=k.
+            \]
+          </div>
+          <p>
+            Global identification 排除遠處另一組 observationally equivalent parameters；
+            local full rank 只保證 \(\theta_0\) 附近沒有某個 parameter combination 能在一階上完全不改變 moments。
+            非線性 simulation model 很難解析證明 global uniqueness，因此實務上要累積證據，而不是把 full-rank
+            Jacobian 當成完整證明。
+          </p>
+
+          <h3>6.3 Moment selection 的經濟學</h3>
+          <p>
+            最理想的教科書敘事是「moment 1 identifies parameter 1」，但若真的一對一，
+            往往不需 SMM。現實中每個 parameter 影響許多 moments；關鍵是不同 parameter
+            在 moment space 中產生不同方向，而非只是「moment 數量至少等於 parameter 數量」。
+          </p>
+
+          <div class="matrix-map">
+            <div class="matrix-visual" aria-label="parameter moment sensitivity 示意圖">
+              <div class="head"></div>
+              <div class="head">\(\theta_1\)</div>
+              <div class="head">\(\theta_2\)</div>
+              <div class="head">\(\theta_3\)</div>
+              <div class="head">\(\theta_4\)</div>
+
+              <div class="row">mean</div>
+              <div class="heat-strong">++</div>
+              <div class="heat-zero">0</div>
+              <div class="heat-neg">-</div>
+              <div class="heat-zero">0</div>
+
+              <div class="row">variance</div>
+              <div class="heat-zero">0</div>
+              <div class="heat-pos">+</div>
+              <div class="heat-strong">++</div>
+              <div class="heat-neg">-</div>
+
+              <div class="row">autocorr.</div>
+              <div class="heat-neg">-</div>
+              <div class="heat-strong">++</div>
+              <div class="heat-zero">0</div>
+              <div class="heat-pos">+</div>
+
+              <div class="row">covariance</div>
+              <div class="heat-pos">+</div>
+              <div class="heat-neg">-</div>
+              <div class="heat-zero">0</div>
+              <div class="heat-strong">++</div>
+            </div>
+            <div class="callout plum">
+              <strong>想要的是有結構的 sensitivity pattern。</strong>
+              <p>
+                每一欄至少要有 moments 對該 parameter 明顯反應；各欄還要有不同 pattern。
+                若兩欄成比例，資料只能識別兩個 parameters 的某個 combination。若整欄近零，
+                objective 對該 parameter 幾乎平坦。
+              </p>
+            </div>
+          </div>
+
+          <p>
+            因此估計前應 sweep 每個 parameter，畫出每個 simulated moment 的 comparative statics。
+            好的關係通常 steep、穩定、最好 monotonic，且能以模型機制解釋。例如 persistence
+            parameter 應主要改變 autocorrelation，而 volatility parameter 應明顯改變 variance；
+            若圖形方向令人意外，先理解或修正模型，不要交給 optimizer 掩蓋。
+          </p>
+
+          <h3>6.4 四層 identification diagnostics</h3>
+          <div class="grid-4">
+            <article class="card blue">
+              <h3>Comparative statics</h3>
+              <p>看完整 parameter range，檢查 monotonicity、nonlinearity 與可能的遠端第二組解。</p>
+            </article>
+            <article class="card green">
+              <h3>Standard errors</h3>
+              <p>巨大 SE 常表示 moments 對某方向反應太弱，但也可能來自 noisy numerical derivative。</p>
+            </article>
+            <article class="card red">
+              <h3>Jacobian rank</h3>
+              <p>rank deficiency 是 local underidentification 的直接警訊；也要查看 singular values 與 condition number。</p>
+            </article>
+            <article class="card gold">
+              <h3>Repeated searches</h3>
+              <p>不同起始值到不同 minima，可能表示 local minima、coding bug 或 global nonidentification。</p>
+            </article>
+          </div>
+
+          <h3>6.5 Andrews-Gentzkow-Shapiro sensitivity</h3>
+          <p>parameter estimate 對 estimated data moments 的局部 sensitivity 為</p>
+          <div class="equation">
+            \[
+              \mathcal S
+              =
+              -\big(D'WD\big)^{-1}D'W,
+              \qquad \mathcal S\in\mathbb R^{k\times m}.
+            \]
+          </div>
+          <p>
+            \(\mathcal S_{j\ell}\) 表示 data moment \(\ell\) 小幅上升時 parameter \(j\) 會移動多少。
+            乘上 \(\sqrt{\Lambda_{\ell\ell}}\) 可把「一單位 moment」改成「一個 sampling-standard-deviation
+            的 moment shock」，較容易跨 moments 比較。這個診斷同時反映 gradient steepness 與 moment precision。
+          </p>
+
+          <div class="callout red">
+            <strong>敏感度圖也可能只是 step-size 圖。</strong>
+            <p>
+              \(\mathcal S\) 完全依賴 numerical \(D\)。若 derivative step 太小，heatmap 中的大數、符號翻轉
+              或近零欄位可能來自 simulation noise，而不是 economics。必須先通過 Jacobian stability checks。
+            </p>
+          </div>
+        </section>
+
+        <section class="section" id="engineering">
+          <div class="section-heading">
+            <span class="section-number">7</span>
+            <div>
+              <h2>SMM 作為 estimation engineering project</h2>
+              <p>pp.69-82：公式簡單，但六個能 silent-fail 的模組必須被分開設計。</p>
+            </div>
+          </div>
+
+          <h3>7.1 模組化 architecture</h3>
+          <div class="pipeline" aria-label="SMM 軟體架構">
+            <div class="pipeline-step">
+              <strong>Data layer</strong>
+              <span>moments + \(\widehat W\)</span>
+            </div>
+            <div class="pipeline-step">
+              <strong>Solver</strong>
+              <span>\(\theta\to V,g\)</span>
+            </div>
+            <div class="pipeline-step">
+              <strong>Simulator</strong>
+              <span>\(g+\) shocks \(\to\) panel</span>
+            </div>
+            <div class="pipeline-step">
+              <strong>Moments</strong>
+              <span>same function as data</span>
+            </div>
+            <div class="pipeline-step">
+              <strong>Optimizer</strong>
+              <span>\(\min Q_n(\theta)\)</span>
+            </div>
+          </div>
+          <p>
+            推論模組再使用 estimates、\(\widehat\Lambda\) 與 numerical \(D\) 產生 SE、\(J\)-test
+            和 sensitivity diagnostics。每一個 link 應有獨立 interface、unit test 與 log；
+            不要把整個 estimator 寫成無法單獨檢查的 black box。
+          </p>
+
+          <h3>7.2 固定 random numbers 的真正理由</h3>
+          <div class="equation">
+            \[
+              X_r=(aX_{r-1}+c)\bmod M.
+            \]
+          </div>
+          <p>
+            pseudo-random draws 是 seed \(X_0\) 決定的 deterministic sequence。估計時應在外部先抽好所有
+            shocks，之後每一次 objective evaluation 都傳入同一陣列。這是 common random numbers：
+            比較 \(Q(\theta_a)\) 與 \(Q(\theta_b)\) 時，差異主要來自 parameters，而不是兩批不同 draws。
+          </p>
+          <div class="callout red">
+            <strong>以下做法都會讓 objective function 抖動：</strong>
+            <p>
+              在 simulation loop 內重新 seed、用系統時鐘 seed、或讓 thread scheduling 決定 random stream。
+              optimizer 會追逐 simulation noise，仍可能回報「converged」與一組看似正常的 estimates。
+            </p>
+          </div>
+
+          <h3>7.3 Optimizer selection</h3>
+          <p>
+            SMM objective 通常沒有可靠 analytic gradient，可能不平滑且有 local minima。單次 local search
+            或預設參數的 Nelder-Mead 不足以建立 global minimum 的可信度。投影片建議考慮
+            simulated annealing、particle swarm、differential evolution，或 Tiktak 類 global-plus-local strategy。
+          </p>
+          <div class="grid-3">
+            <article class="card blue">
+              <h3>Global exploration</h3>
+              <p>廣泛搜尋 parameter bounds，避免只在某個初值附近找到局部解。</p>
+            </article>
+            <article class="card green">
+              <h3>Multiple starts</h3>
+              <p>不同 initial guesses 應收斂到相同 estimate 與 objective value。</p>
+            </article>
+            <article class="card gold">
+              <h3>Local refinement</h3>
+              <p>global search 找到 promising basin 後，再用 deterministic local method 精修。</p>
+            </article>
+          </div>
+          <p>
+            演算法沒有 global-minimum certificate。若不同 starts 得到不同答案，可能是 local minima、
+            bounds 不適當、underidentification、simulation noise 或 code error，不能只挑 objective 最低的一次。
+          </p>
+
+          <h3>7.4 先手動 calibration，再 optimization</h3>
+          <p>
+            手動改變 parameters 並觀察 moments，會迫使研究者理解 model mechanism、找出有辨識力的 moments、
+            發現 misspecification，並取得合理 starting values。optimizer 只能自動化已定義的 criterion，
+            無法告訴你某個經濟參數雖能 fit data 卻荒謬。
+          </p>
+
+          <h3>7.5 Model complexity 的成本轉移</h3>
+          <p>
+            AI 讓新增一個 state、friction 或 parameter 的 coding cost 下降，但 complexity 並未消失，
+            而是轉成 identification、interpretability、runtime 與 verification cost。可靠流程是：
+            simple model \(\to\) 驗證 \(\to\) 診斷 miss \(\to\) 加入直接回答研究問題的 feature \(\to\) 再驗證。
+          </p>
+
+          <h3>7.6 Speed 與 heterogeneity</h3>
+          <div class="grid-2">
+            <article class="card plum">
+              <h3>Speed</h3>
+              <p>
+                一次 estimation 可能解模型約 50,000 次。先用透明 prototype 驗證，再移植 inner loop
+                至 Julia/C/C++/Fortran 或平行化；新舊 solver 應在相同 inputs 下達到 machine-precision agreement。
+              </p>
+            </article>
+            <article class="card red">
+              <h3>Agent heterogeneity</h3>
+              <p>
+                標準 SMM model 往往沒有 discrete-choice error 提供 flexible heterogeneity。需用 firm/time FE、
+                sample splits 或明確的 type distribution 處理，而且對 simulated data 執行完全相同的 demeaning。
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="verification">
+          <div class="section-heading">
+            <span class="section-number">8</span>
+            <div>
+              <h2>Verification：如何相信一個不會 crash 的錯誤程式？</h2>
+              <p>pp.84-91：structural estimation 的 bug 往往只把 0.61 變成 0.43。</p>
+            </div>
+          </div>
+
+          <h3>8.1 Silent-failure field guide</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Failure</th>
+                  <th>表面上為何合理</th>
+                  <th>檢查方式</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="term">Timing mismatch</td>
+                  <td>solver 與 simulator 各自都能跑，但一邊讓 \(k_t\) 當期 productive，另一邊從 \(t+1\) 才 productive。</td>
+                  <td>寫 timing spec；用手算的短路徑逐期比對。</td>
+                </tr>
+                <tr>
+                  <td class="term">Moment mismatch</td>
+                  <td>data 用 logs，simulation 用 levels；或只有一邊 demean。</td>
+                  <td>一個 moment function；保存 intermediate transformed variables。</td>
+                </tr>
+                <tr>
+                  <td class="term">Burn-in error</td>
+                  <td>初始狀態影響被誤認為 stationary distribution 的模型預測。</td>
+                  <td>增加 burn-in，確認 moments 不再改變。</td>
+                </tr>
+                <tr>
+                  <td class="term">Random-stream error</td>
+                  <td>每次 evaluation 都產生合理 panel，但 objective 無法平滑比較。</td>
+                  <td>hash 預抽 shock array；每次 evaluation 驗證相同。</td>
+                </tr>
+                <tr>
+                  <td class="term">Wrong clustering</td>
+                  <td>point estimates 正常，只有 uncertainty 與 weights 被扭曲。</td>
+                  <td>依資料 dependence structure 設計 cluster，與簡單 closed forms 對照。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>8.2 Link-by-link test battery</h3>
+          <div class="grid-3">
+            <article class="card blue">
+              <h3>Solver test</h3>
+              <p>關閉 adjustment costs、taxes 等 frictions，與可解析的 frictionless solution 比到 machine precision。</p>
+            </article>
+            <article class="card green">
+              <h3>Simulator test</h3>
+              <p>模擬大 panel，逐期確認 choices 真的等於 policy function 在當期 states 的輸出。</p>
+            </article>
+            <article class="card red">
+              <h3>Moment test</h3>
+              <p>用人工構造的小資料檢查 mean、variance、FE、trimming 與 regression coefficients。</p>
+            </article>
+            <article class="card gold">
+              <h3>Weight test</h3>
+              <p>IF code 先對 mean 與 OLS sandwich closed form；檢查 \(\widehat\Lambda\) symmetric positive definite。</p>
+            </article>
+            <article class="card plum">
+              <h3>Inference test</h3>
+              <p>畫 Jacobian step-size stability plots，並用 alternative steps 驗證 SE 與 sensitivity 不翻轉。</p>
+            </article>
+            <article class="card blue">
+              <h3>Optimizer test</h3>
+              <p>記錄完整 path，從多個 starts 搜尋，並在 estimate 附近畫 objective slices。</p>
+            </article>
+          </div>
+
+          <h3>8.3 End-to-end Monte Carlo</h3>
+          <ol>
+            <li>在已知 \(\theta_0\) 下由模型模擬一份 fake dataset。</li>
+            <li>把它當成真資料，跑完整的 moments、weights、optimizer 與 SE pipeline。</li>
+            <li>檢查 \(\widehat\theta\) 是否回復 \(\theta_0\)。</li>
+            <li>重複 \(M\) 次，比較 across-replication SD 與平均 reported SE。</li>
+            <li>檢查 nominal confidence intervals 的 empirical coverage。</li>
+          </ol>
+          <div class="callout green">
+            <strong>這是最有價值的完整測試。</strong>
+            <p>
+              單次 parameter recovery 驗證 point-estimation pipeline；多次 Monte Carlo 的 SD 與 coverage
+              進一步驗證 inference。若連模型自己生成的資料都無法回復已知真值，不應解讀 real-data estimates。
+            </p>
+          </div>
+
+          <h3>8.4 Babysit estimation</h3>
+          <p>
+            每次 objective evaluation 都應 log parameter vector、objective value、simulated moments、
+            moment errors、solver status 與 seed identifier。parameter 長期貼著 bound、劇烈跳動或只有少數
+            moments 主導 objective，都是 identification、model misspecification 或 bug 的訊號。
+            Algorithmic convergence 只表示停止規則成立，不表示收斂到真值。
+          </p>
+
+          <h3>8.5 與 AI 協作的責任分工</h3>
+          <ul>
+            <li>先寫 human-readable spec：variable definitions、timing、sample filters、moments 與 seeds。</li>
+            <li>一次只委派一個可驗證模組，要求同步產生 tests。</li>
+            <li>要求 AI 解釋 code；若解釋與你的模型不同，先停止 estimation。</li>
+            <li>整條 pipeline 應 version-controlled，並能用單一 reproducible command 重跑。</li>
+            <li>AI 適合產生 tests、monitoring、plots 與 fast-language translation；研究者負責經濟含義與驗證標準。</li>
+          </ul>
+        </section>
+
+        <section class="section" id="comparison">
+          <div class="section-heading">
+            <span class="section-number">9</span>
+            <div>
+              <h2>方法比較與常見誤解</h2>
+              <p>把 SMM 放回 GMM、indirect inference、calibration 與一般 optimization 的關係中。</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>方法</th>
+                  <th>比較的 object</th>
+                  <th>適用情境</th>
+                  <th>主要代價</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="term">GMM</td>
+                  <td>解析 sample moment restrictions。</td>
+                  <td>\(g(w_i,\theta)\) 可直接計算。</td>
+                  <td>需要能解析評估 parameter-dependent moments。</td>
+                </tr>
+                <tr>
+                  <td class="term">SMM / MSM</td>
+                  <td>data moments 與 simulated moments。</td>
+                  <td>模型可模擬但 moment mapping 無 closed form。</td>
+                  <td>simulation noise、global optimization 與大型驗證工程。</td>
+                </tr>
+                <tr>
+                  <td class="term">Indirect inference</td>
+                  <td>data 與 simulation 的 auxiliary-model estimates。</td>
+                  <td>reduced-form coefficients 能濃縮模型的重要行為。</td>
+                  <td>auxiliary model 的選擇也決定 identification。</td>
+                </tr>
+                <tr>
+                  <td class="term">Calibration</td>
+                  <td>少數 targeted statistics 或外部 estimates。</td>
+                  <td>探索模型、建立 benchmark、缺乏完整 sampling framework。</td>
+                  <td>通常不自動提供 efficient weighting 與 sampling uncertainty。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>常見誤解</h3>
+          <div class="grid-2">
+            <article class="card red">
+              <h3>「固定 seed 會忽略 simulation uncertainty」</h3>
+              <p>
+                錯。固定 draws 是為了讓 objective 對 \(\theta\) 可比較；推論仍透過
+                \((1+1/S)\) 納入 simulation noise。optimization control 與 sampling uncertainty 是不同問題。
+              </p>
+            </article>
+            <article class="card gold">
+              <h3>「moments 越多，identification 越強」</h3>
+              <p>
+                錯。新增高度 correlated 或對 parameters 不敏感的 moments 幾乎不增加 rank，
+                卻可能放大 covariance estimation 與 specification-test 問題。
+              </p>
+            </article>
+            <article class="card blue">
+              <h3>「optimizer 找到唯一數字，所以 point identified」</h3>
+              <p>
+                錯。bounds、starting values 或演算法路徑都可能人工選出單一 solution。
+                Identification 是 population mapping 的唯一性，不是軟體輸出的唯一性。
+              </p>
+            </article>
+            <article class="card green">
+              <h3>「\(J\)-test reject，所以模型毫無用處」</h3>
+              <p>
+                不必然。大型樣本會偵測 deliberate simplification。應定位哪些 moments 被拒絕，
+                再判斷 miss 是否破壞研究中的 counterfactual channel。
+              </p>
+            </article>
+          </div>
+
+          <div class="callout plum">
+            <strong>SMM 的核心不是把資料 fit 得越好越好。</strong>
+            <p>
+              一個過度彈性的模型可以用許多 parameters fit moments，卻沒有清楚 identification。
+              好的 structural estimate 需要「有限但與研究問題相關的機制、可解釋的 comparative statics、
+              足夠而非任意多的 moments，以及透明的 miss diagnostics」。
+            </p>
+          </div>
+        </section>
+
+        <section class="section" id="checklist">
+          <div class="section-heading">
+            <span class="section-number">10</span>
+            <div>
+              <h2>Preflight checklist</h2>
+              <p>pp.93-94：開始相信 estimates 以前，逐項回答。</p>
+            </div>
+          </div>
+
+          <ol class="checklist">
+            <li>真實與模擬資料使用同一個 moment function、FE、trimming 與 definitions。</li>
+            <li>Weight matrix 來自 stacked IF 的完整 clustered covariance，且通過 closed-form checks。</li>
+            <li>每一組 parameter-moment comparative static 都已畫圖，且能說明經濟機制。</li>
+            <li>關閉 frictions 時，solver 與 closed-form special case 達 machine precision。</li>
+            <li>Shocks 只預抽一次，每次 objective evaluation 使用完全相同的 draws。</li>
+            <li>Global search 與多個 starting values 得到相同 estimate 和 objective value。</li>
+            <li>Fake-data Monte Carlo 能回復 parameters，reported SE 具有合理 coverage。</li>
+            <li>Jacobian step sizes 來自 stability plots，而非未檢查的 defaults。</li>
+            <li>SE 包含 \((1+1/S)\)，並報告 \(J\)-test 與 individual moment fit。</li>
+            <li>不看筆記也能說明哪些 data features 識別每個 parameter，以及哪些 assumptions 支撐該映射。</li>
+          </ol>
+
+          <div class="callout">
+            <strong>最後的讀法</strong>
+            <p>
+              這份投影片不是要把 SMM 描述成一個難懂的 estimator，而是要反轉注意力：
+              quadratic objective 很簡單；真正的研究貢獻與風險都在 objective 之前和之後。
+              之前是 economic question、model 與 moments，之後是 identification、optimization、
+              inference 與 verification。Coding 變便宜，只會讓「你是否真的理解 estimator」更成為限制。
+            </p>
+          </div>
+
+          <p class="source">
+            依據：Toni M. Whited, “SMM: The Mechanics and the Mess,” DSE Summer School,
+            August 2026，共 95 個 PDF pages（投影片標示 1/94 至 94/94）。
+            主要文獻包括 Pakes and Pollard (1989)、Lee and Ingram (1991)、Duffie and Singleton (1993)、
+            Newey and McFadden (1994)、Erickson and Whited (2002, 2012)、
+            Andrews, Gentzkow and Shapiro (2017)，以及 Bazdresch, Kahn and Whited (2018)。
+          </p>
+          <p><a href="#top">回到頁首</a></p>
+        </section>
+      </main>
+    </div>
+  </div>
+</body>
+</html>
