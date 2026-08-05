@@ -32,6 +32,8 @@ PRACTICUM1_DIR = REPO_ROOT / "practicum" / "practicum1"
 DEFAULT_DATA_DIR = PRACTICUM1_DIR / "data"
 DEFAULT_OUTPUT = SCRIPT_DIR / "practicum1_submission.csv"
 EXPECTED_ROWS = 51
+SIZE_CENTER = 12.0
+DEFAULT_COUNTERFACTUAL_SEEDS = (0, 1, 7, 42)
 
 # Import the official toolkit by absolute repository path so the script does
 # not depend on the caller's current working directory.
@@ -84,6 +86,10 @@ class PanelDiagnostics:
     gmm_j: float
     gmm_pvalue: float
     gmm_dof: int
+    gmm_condition: float
+    sigma_equity_only: float
+    sigma_unemp_only: float
+    political_change_rate: float
 
 
 def parse_args() -> argparse.Namespace:
@@ -111,20 +117,27 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--expectation-draws",
         type=int,
-        default=256,
-        help="Scrambled Sobol draws for E[log p(close next)|x] (default: 256)",
+        default=512,
+        help="Scrambled Sobol draws for E[log p(close next)|x] (default: 512)",
     )
     parser.add_argument(
         "--counterfactual-draws",
         type=int,
-        default=300,
-        help="Monte Carlo draws per S3 counterfactual fixed point (default: 300)",
+        default=512,
+        help="Monte Carlo draws per S3 counterfactual fixed point (default: 512)",
     )
     parser.add_argument(
         "--counterfactual-anchor",
         type=int,
-        default=6_000,
-        help="S3 states used in each fixed-point projection (default: 6000)",
+        default=8_000,
+        help="S3 states used in each fixed-point projection (default: 8000)",
+    )
+    parser.add_argument(
+        "--counterfactual-seeds",
+        type=int,
+        nargs="+",
+        default=list(DEFAULT_COUNTERFACTUAL_SEEDS),
+        help="Seeds averaged for final S3 counterfactuals (default: 0 1 7 42)",
     )
     parser.add_argument("--seed", type=int, default=7)
     return parser.parse_args()
@@ -215,10 +228,59 @@ def _fit_monetary_cost(panel: pd.DataFrame, spec: list[str]) -> dict[str, float]
     return {key: float(value) for key, value in result.items()}
 
 
-def _fit_transitions(panel: pd.DataFrame) -> dict[str, tuple[float, float, float]]:
-    """Fit the Markov AR(1) transition used by klw.py's fixed-point solver."""
+def _fit_pooled_monetary_cost(
+    panels: dict[str, pd.DataFrame],
+) -> tuple[dict[str, dict[str, float]], float, float]:
+    """Fit the cumulative S1/S2/S3 monetary-cost design jointly."""
 
-    transitions: dict[str, tuple[float, float, float]] = {}
+    resolved_frames: list[pd.DataFrame] = []
+    for label, panel in panels.items():
+        resolved = panel.loc[
+            panel["failed"].eq(1) & panel["estimated_cost"].notna()
+        ].copy()
+        resolved["_rich_npf2"] = (
+            resolved["npf_a"].pow(2) if label in {"S2", "S3"} else 0.0
+        )
+        resolved_frames.append(resolved)
+    resolved = pd.concat(resolved_frames, ignore_index=True)
+    pooled_spec = [*MC_SPECS["S1"], "_rich_npf2"]
+    design = np.column_stack(
+        [
+            np.ones(len(resolved)),
+            *[
+                resolved[term].to_numpy(float)
+                for term in pooled_spec
+                if term != "const"
+            ],
+        ]
+    )
+    outcome = resolved["estimated_cost"].to_numpy(float)
+    coefficient, *_ = np.linalg.lstsq(design, outcome, rcond=None)
+    residual = outcome - design @ coefficient
+    r2 = 1.0 - float(
+        residual @ residual
+        / ((outcome - outcome.mean()) @ (outcome - outcome.mean()))
+    )
+    rmse = float(np.sqrt(np.mean(residual**2)))
+    shared = dict(zip(pooled_spec, coefficient, strict=True))
+
+    result: dict[str, dict[str, float]] = {}
+    for label in ("S1", "S2", "S3"):
+        values = {
+            term: float(shared[term])
+            for term in MC_SPECS[label]
+            if term != "npf_a^2"
+        }
+        if "npf_a^2" in MC_SPECS[label]:
+            values["npf_a^2"] = float(shared["_rich_npf2"])
+        result[label] = values
+    return result, r2, rmse
+
+
+def _fit_transitions(panel: pd.DataFrame) -> dict[str, object]:
+    """Fit continuous AR(1)s and a joint House/Senate Markov chain."""
+
+    transitions: dict[str, object] = {}
     for variable in FIN_VARS:
         lag = panel.groupby("rssd_id", sort=False)[variable].shift(1)
         valid = lag.notna().to_numpy()
@@ -241,6 +303,21 @@ def _fit_transitions(panel: pd.DataFrame) -> dict[str, tuple[float, float, float
         float(coefficient[1]),
         float(np.var(residual)),
     )
+
+    house_lag = panel.groupby("rssd_id", sort=False)["house"].shift(1)
+    senate_lag = panel.groupby("rssd_id", sort=False)["senate"].shift(1)
+    valid = house_lag.notna() & senate_lag.notna()
+    origin = (
+        house_lag[valid].to_numpy(int) * 3
+        + senate_lag[valid].to_numpy(int)
+    )
+    destination = (
+        panel.loc[valid, "house"].to_numpy(int) * 3
+        + panel.loc[valid, "senate"].to_numpy(int)
+    )
+    counts = np.full((12, 12), 0.5)
+    np.add.at(counts, (origin, destination), 1.0)
+    transitions["political_joint"] = counts / counts.sum(axis=1, keepdims=True)
     return transitions
 
 
@@ -283,7 +360,7 @@ def _fit_ccp(
 
 def _conditional_mean_state(
     panel: pd.DataFrame,
-    transitions: dict[str, tuple[float, float, float]],
+    transitions: dict[str, object],
 ) -> dict[str, np.ndarray]:
     arr = {column: panel[column].to_numpy(float) for column in panel.columns}
     result = dict(arr)
@@ -296,7 +373,7 @@ def _conditional_mean_state(
 
 def _expected_log_ccp(
     panel: pd.DataFrame,
-    transitions: dict[str, tuple[float, float, float]],
+    transitions: dict[str, object],
     basis: list[str],
     gamma: np.ndarray,
     *,
@@ -312,8 +389,12 @@ def _expected_log_ccp(
     if draws < 2:
         raise ValueError("--expectation-draws must be at least 2")
     variables = [*FIN_VARS, "unemp"]
-    unit_draws = qmc.Sobol(d=len(variables), scramble=True, seed=seed).random(draws)
-    normal_draws = ndtri(np.clip(unit_draws, 1e-12, 1.0 - 1e-12))
+    has_political_transition = "political_joint" in transitions
+    dimension = len(variables) + int(has_political_transition)
+    unit_draws = qmc.Sobol(d=dimension, scramble=True, seed=seed).random(draws)
+    normal_draws = ndtri(
+        np.clip(unit_draws[:, : len(variables)], 1e-12, 1.0 - 1e-12)
+    )
     standard_deviations = np.array(
         [np.sqrt(max(transitions[variable][2], 0.0)) for variable in variables]
     )
@@ -326,16 +407,35 @@ def _expected_log_ccp(
             variable: innovations[index, position]
             for position, variable in enumerate(variables)
         }
+        if has_political_transition:
+            shock["__political_u"] = unit_draws[index, -1]
         next_state = next_state_arr(arr, shock, transitions, bounds)
         next_index = build_design(next_state, basis) @ gamma
         total += -np.logaddexp(0.0, -next_index)
     return total / draws
 
 
+def _size_center_transform(spec: list[str]) -> np.ndarray:
+    """Map raw [1, logA, logA^2] columns to a centered polynomial basis."""
+
+    if spec[:3] != ["const", "log_assets", "log_assets^2"]:
+        raise ValueError("NMC specification must start with const/log_assets/log_assets^2")
+    transform = np.eye(len(spec))
+    transform[:3, :3] = np.array(
+        [
+            [1.0, -SIZE_CENTER, SIZE_CENTER**2],
+            [0.0, 1.0, -2.0 * SIZE_CENTER],
+            [0.0, 0.0, 1.0],
+        ]
+    )
+    return transform
+
+
 def _fit_structural_panel(
     label: str,
     panel: pd.DataFrame,
     *,
+    cost_coef: dict[str, float] | None = None,
     expectation_draws: int,
     seed: int,
 ) -> tuple[Result, PanelDiagnostics, list[str]]:
@@ -343,7 +443,13 @@ def _fit_structural_panel(
     nmc_spec = NMC_SPECS[label]
     ccp_spec = CCP_SPECS[label]
 
-    cost_coef = _fit_monetary_cost(panel, mc_spec)
+    if cost_coef is None:
+        cost_coef = _fit_monetary_cost(panel, mc_spec)
+    if list(cost_coef) != mc_spec:
+        raise ValueError(
+            f"{label}: monetary-cost coefficient order {list(cost_coef)} "
+            f"does not match {mc_spec}"
+        )
     transitions = _fit_transitions(panel)
     gamma, p_close, ccp_log_likelihood = _fit_ccp(panel, ccp_spec)
 
@@ -361,8 +467,9 @@ def _fit_structural_panel(
         variable: transitions[variable][2] for variable in [*FIN_VARS, "unemp"]
     }
 
-    x_now = build_design(arr, nmc_spec)
-    x_next = expected_design(arr, nmc_spec, transitions)
+    size_transform = _size_center_transform(nmc_spec)
+    x_now = build_design(arr, nmc_spec) @ size_transform
+    x_next = expected_design(arr, nmc_spec, transitions) @ size_transform
     mc_now = monetary_cost(arr, cost_coef)
     mc_next = monetary_cost(mean_next, cost_coef, var=next_variance)
     log_continue_close = np.log1p(-p_close) - np.log(p_close)
@@ -378,8 +485,9 @@ def _fit_structural_panel(
     # The paper's instruments are the NMC index plus excluded state variables.
     # These simulated panels omit asset_growth_1y, so equity and unemployment
     # provide the two exclusion terms in addition to the complete NMC design.
-    instrument_spec = [*nmc_spec, "equity_a", "unemp"]
-    instruments = build_design(arr, instrument_spec)
+    nmc_instruments = build_design(arr, nmc_spec) @ size_transform
+    excluded_instruments = build_design(arr, ["equity_a", "unemp"])
+    instruments = np.column_stack([nmc_instruments, excluded_instruments])
     gmm = gmm_fit(c_matrix, d_vector, instruments, maxiter=2)
     if not np.all(np.isfinite(gmm.params)):
         raise RuntimeError(f"{label}: structural GMM returned non-finite estimates")
@@ -387,11 +495,47 @@ def _fit_structural_panel(
     sigma = float(gmm.params[0])
     if sigma <= 0:
         raise RuntimeError(f"{label}: estimated sigma must be positive, got {sigma}")
+    raw_theta = size_transform @ np.asarray(gmm.params[1:], float)
     theta = {
         term: float(value)
-        for term, value in zip(nmc_spec, gmm.params[1:], strict=True)
+        for term, value in zip(nmc_spec, raw_theta, strict=True)
     }
     j_stat, j_pvalue, j_dof = gmm.jtest()
+    column_scale = np.sqrt(np.mean(c_matrix**2, axis=0))
+    instrument_scale = np.sqrt(np.mean(instruments**2, axis=0))
+    scaled_cross_moment = (
+        (instruments / instrument_scale).T
+        @ (c_matrix / column_scale)
+        / len(panel)
+    )
+    gmm_condition = float(np.linalg.cond(scaled_cross_moment))
+    sigma_equity_only = float(
+        gmm_fit(
+            c_matrix,
+            d_vector,
+            np.column_stack([nmc_instruments, excluded_instruments[:, 0]]),
+            maxiter=2,
+        ).params[0]
+    )
+    sigma_unemp_only = float(
+        gmm_fit(
+            c_matrix,
+            d_vector,
+            np.column_stack([nmc_instruments, excluded_instruments[:, 1]]),
+            maxiter=2,
+        ).params[0]
+    )
+    political_lag = panel.groupby("rssd_id", sort=False)[["house", "senate"]].shift(1)
+    valid_political = political_lag.notna().all(axis=1)
+    political_change_rate = float(
+        np.mean(
+            np.any(
+                panel.loc[valid_political, ["house", "senate"]].to_numpy()
+                != political_lag.loc[valid_political].to_numpy(),
+                axis=1,
+            )
+        )
+    )
     result = Result(
         beta=BETA,
         sigma=sigma,
@@ -411,6 +555,10 @@ def _fit_structural_panel(
         gmm_j=float(j_stat),
         gmm_pvalue=float(j_pvalue),
         gmm_dof=int(j_dof),
+        gmm_condition=gmm_condition,
+        sigma_equity_only=sigma_equity_only,
+        sigma_unemp_only=sigma_unemp_only,
+        political_change_rate=political_change_rate,
     )
     return result, diagnostics, ccp_spec
 
@@ -497,15 +645,30 @@ def main() -> None:
     print(f"Using submission template: {template_path} ({len(template)} rows)")
 
     started = time.perf_counter()
+    panels = {
+        label: _load_panel(data_dir / f"set_{label}.parquet")
+        for label in ("S1", "S2", "S3")
+    }
+    pooled_cost, pooled_cost_r2, pooled_cost_rmse = _fit_pooled_monetary_cost(
+        panels
+    )
+    print(
+        "Pooled cumulative monetary-cost model: "
+        f"R2={pooled_cost_r2:.6f}, RMSE={pooled_cost_rmse:.3f}"
+    )
+    print(f"Shared S1 coefficients: {pooled_cost['S1']}")
+    print(f"Shared S2/S3 quadratic coefficient: {pooled_cost['S2']['npf_a^2']}")
+
     results: dict[str, Result] = {}
     ccp_specs: dict[str, list[str]] = {}
     for offset, label in enumerate(("S1", "S2", "S3")):
         panel_path = data_dir / f"set_{label}.parquet"
-        print(f"\n[{label}] Loading {panel_path}")
-        panel = _load_panel(panel_path)
+        print(f"\n[{label}] Estimating {panel_path}")
+        panel = panels[label]
         result, diagnostics, ccp_spec = _fit_structural_panel(
             label,
             panel,
+            cost_coef=pooled_cost[label],
             expectation_draws=args.expectation_draws,
             seed=args.seed + offset,
         )
@@ -514,24 +677,49 @@ def main() -> None:
         print(
             f"[{label}] n={diagnostics.n_rows:,}, failures={diagnostics.n_failures:,}, "
             f"mean CCP={diagnostics.ccp_mean:.6f}, sigma={result.sigma:.6f}, "
-            f"J={diagnostics.gmm_j:.3f} (p={diagnostics.gmm_pvalue:.3f})"
+            f"J/N={diagnostics.gmm_j / diagnostics.n_rows:.6f}, "
+            f"condition={diagnostics.gmm_condition:.1f}"
+        )
+        print(
+            f"[{label}] exact-ID sigma sensitivity: "
+            f"equity={diagnostics.sigma_equity_only:.3f}, "
+            f"unemp={diagnostics.sigma_unemp_only:.3f}; "
+            f"political transition rate={diagnostics.political_change_rate:.3%}"
         )
         print(f"[{label}] monetary cost: {result.cost_coef}")
         print(f"[{label}] nonmonetary theta: {result.theta}")
 
-    print("\n[S3] Solving the three fixed-point counterfactuals...")
+    if not args.counterfactual_seeds:
+        raise ValueError("--counterfactual-seeds requires at least one seed")
+    print(
+        "\n[S3] Solving converged fixed-point counterfactuals for seeds "
+        f"{args.counterfactual_seeds}..."
+    )
     grid: dict[tuple[str, str], float] = {}
-    for scenario in SCENARIOS:
-        value = counterfactual(
-            results["S3"],
-            scenario,
-            seed=args.seed,
-            R=args.counterfactual_draws,
-            n_anchor=args.counterfactual_anchor,
-            basis=ccp_specs["S3"],
+    counterfactual_draws: dict[str, list[float]] = {
+        scenario: [] for scenario in SCENARIOS
+    }
+    for counterfactual_seed in args.counterfactual_seeds:
+        seed_values: dict[str, float] = {}
+        for scenario in SCENARIOS:
+            value = counterfactual(
+                results["S3"],
+                scenario,
+                seed=counterfactual_seed,
+                R=args.counterfactual_draws,
+                n_anchor=args.counterfactual_anchor,
+                basis=ccp_specs["S3"],
+            )
+            counterfactual_draws[scenario].append(float(value))
+            seed_values[scenario] = float(value)
+        print(f"[S3] seed={counterfactual_seed}: {seed_values}")
+    for scenario, values in counterfactual_draws.items():
+        average = float(np.mean(values))
+        grid[("S3", scenario)] = average
+        print(
+            f"[S3] {scenario}: mean={average:.6f}%, "
+            f"range=({min(values):.6f}, {max(values):.6f})"
         )
-        grid[("S3", scenario)] = float(value)
-        print(f"[S3] {scenario}: {value:.6f}%")
 
     estimates = _collect_estimates(results, grid)
     submission = _write_and_validate_submission(

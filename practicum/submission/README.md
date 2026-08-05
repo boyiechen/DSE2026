@@ -33,10 +33,15 @@ writes:
 practicum/submission/practicum1_submission.csv
 ```
 
-The script must end with `SUCCESS` and report 51 validated rows before the CSV
-is submitted. The intended final run uses the script defaults: 256 scrambled
-Sobol expectation draws and 300 draws with a 6,000-state anchor for each
-fixed-point counterfactual.
+The refined estimator pools the cumulative monetary-cost coefficients across
+the three panels, estimates a joint discrete Markov transition for House and
+Senate, centers the size polynomial internally for numerical stability, and
+back-transforms it to the template's raw coefficient names. The script must end
+with `SUCCESS` and report 51 validated rows before the CSV is submitted.
+
+The intended final run uses the script defaults: 512 scrambled Sobol
+expectation draws, 512 draws with an 8,000-state anchor for every fixed point,
+and averages converged counterfactuals over seeds `0 1 7 42`.
 
 If the official template is stored elsewhere, pass it explicitly:
 
