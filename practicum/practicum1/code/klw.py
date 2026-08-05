@@ -626,7 +626,7 @@ def build_design(data, spec):
     return np.column_stack([_term(arr, t) for t in spec])
 
 
-# ---- transitions: one AR(1) per state variable, trans[v] = (const, rho, var) ----
+# ---- transitions: continuous AR(1)s plus an optional joint political Markov chain ----
 def cond_mean(arr, v, trans):
     """E[v' | x] under the AR(1) transition for state variable v."""
     c, rho, _ = trans[v]
@@ -634,16 +634,18 @@ def cond_mean(arr, v, trans):
 
 
 def make_innovation_draws(trans, R, seed):
-    """R shared innovation draws per financial var + unemp (for forward Monte-Carlo)."""
+    """R shared innovation draws for every stochastic transition."""
     rng = default_rng(seed)
     d = {v: rng.normal(0.0, np.sqrt(max(trans[v][2], 0.0)), R) for v in FIN_VARS}
     d["unemp"] = rng.normal(0.0, np.sqrt(max(trans["unemp"][2], 0.0)), R)
+    if "political_joint" in trans:
+        d["__political_u"] = rng.random(R)
     return d
 
 
 def next_state_arr(arr, eps_r, trans, bounds):
     """One draw of next-period states: AR(1) mean + innovation (clipped), trend advances,
-    everything else (political, decoys) carried forward unchanged."""
+    an optional joint Markov transition advances House/Senate, and decoys are carried."""
     out = {}
     for v in FIN_VARS:
         lo, hi = bounds[v]
@@ -651,6 +653,21 @@ def next_state_arr(arr, eps_r, trans, bounds):
     lo, hi = bounds["unemp"]
     out["unemp"] = np.clip(cond_mean(arr, "unemp", trans) + eps_r["unemp"], lo, hi)
     out["trend"] = np.clip(arr["trend"] + TREND_STEP, 0.0, 1.0)
+    if "political_joint" in trans:
+        political = np.asarray(trans["political_joint"], float)
+        if political.shape != (12, 12):
+            raise ValueError("political_joint must be a 12-by-12 transition matrix")
+        current = arr["house"].astype(int) * 3 + arr["senate"].astype(int)
+        destination = np.empty(len(current), dtype=int)
+        draw = float(eps_r["__political_u"])
+        cdf = np.cumsum(political, axis=1)
+        for state in range(12):
+            destination[current == state] = np.searchsorted(
+                cdf[state], draw, side="right"
+            )
+        destination = np.minimum(destination, 11)
+        out["house"] = (destination // 3).astype(float)
+        out["senate"] = (destination % 3).astype(float)
     for c in arr:
         if c not in out:
             out[c] = arr[c]
@@ -666,6 +683,18 @@ def expected_design(arr, spec, trans):
         Vv[v] = trans[v][2]
     Em["trend"] = np.clip(arr["trend"] + TREND_STEP, 0.0, 1.0)
     Vv["trend"] = 0.0
+    if "political_joint" in trans:
+        political = np.asarray(trans["political_joint"], float)
+        if political.shape != (12, 12):
+            raise ValueError("political_joint must be a 12-by-12 transition matrix")
+        destination = np.arange(12)
+        expected_house = political @ (destination // 3)
+        expected_senate = political @ (destination % 3)
+        current = arr["house"].astype(int) * 3 + arr["senate"].astype(int)
+        Em["house"] = expected_house[current]
+        Em["senate"] = expected_senate[current]
+        Vv["house"] = 0.0
+        Vv["senate"] = 0.0
     for c in arr:
         if c not in Em:
             Em[c] = arr[c]
@@ -820,7 +849,7 @@ def _ccp_precompute(anchor, cost_fn, trans, bounds, basis, R, seed):
 
 
 def solve_ccp_gamma(states, cost_fn, beta, sigma, trans, *, R=400, n_anchor=8000, seed=0,
-                    tol=1e-7, max_iter=150, basis=None):
+                    tol=1e-7, max_iter=500, basis=None):
     """Solve the KLW eq.-6 fixed point: the closure CCP consistent with the continuation value
     it itself generates.  Iterate log-odds(p1) = -(c + beta*E[V'])/sigma, projecting each
     Bellman target onto `basis`, until the index stops moving.  Returns (gamma, p1_on_states)
@@ -843,6 +872,8 @@ def solve_ccp_gamma(states, cost_fn, beta, sigma, trans, *, R=400, n_anchor=8000
 
     gamma = np.zeros(B.shape[1])
     idx_prev = B @ gamma
+    converged = False
+    final_difference = np.inf
     for _ in range(max_iter):
         idx = np.tensordot(Bnext, gamma, axes=([2], [0]))         # (R, Na)
         # why -logaddexp(0,-idx): ln expit(idx) computed without ever forming expit, so a
@@ -854,10 +885,17 @@ def solve_ccp_gamma(states, cost_fn, beta, sigma, trans, *, R=400, n_anchor=8000
         idx_new = B @ g_new
         # why the INDEX and not the coefficients: the index drives p1 and reaches tolerance
         # well within max_iter, whereas a near-collinear coefficient mode converges slowly.
-        if np.max(np.abs(idx_new - idx_prev)) < tol:
+        final_difference = float(np.max(np.abs(idx_new - idx_prev)))
+        if final_difference < tol:
             gamma = g_new
+            converged = True
             break
         gamma, idx_prev = g_new, idx_new
+    if not converged:
+        raise RuntimeError(
+            "CCP fixed point did not converge: "
+            f"max index change={final_difference:.3e} after {max_iter} iterations"
+        )
     return gamma, expit(build_design(arr, basis) @ gamma)
 
 
@@ -994,6 +1032,22 @@ def _selftest():
     assert [i for i, _ in submission_rows("S3", 1., {"const": 2.}, ["const"], {"myopic": 3.},
                                           {"const": 4., "npf_a^2": 5.})] \
            == ["S3_sigma", "S3_theta_const", "S3_mc_const", "S3_mc_npf_a^2", "S3_cf_myopic"]
+
+    # ---- the optional political chain advances House/Senate jointly --------------------
+    political = np.eye(12)
+    political[0] = 0.0
+    political[0, 11] = 1.0                 # state (House=0, Senate=0) -> (3, 2)
+    trans = {v: (0.0, 1.0, 0.0) for v in FIN_VARS + ["unemp"]}
+    trans["political_joint"] = political
+    state = {v: np.array([0.1]) for v in FIN_VARS + ["unemp"]}
+    state.update({"house": np.array([0.0]), "senate": np.array([0.0]),
+                  "trend": np.array([0.0])})
+    bounds = {v: (-1.0, 1.0) for v in FIN_VARS + ["unemp"]}
+    shocks = {v: 0.0 for v in FIN_VARS + ["unemp"]}
+    shocks["__political_u"] = 0.5
+    advanced = next_state_arr(state, shocks, trans, bounds)
+    assert advanced["house"][0] == 3.0 and advanced["senate"][0] == 2.0
+    assert np.allclose(expected_design(state, ["house", "senate"], trans), [[3.0, 2.0]])
 
     # ---- the basis partitions unity, inside AND outside the frozen range -----------------
     for deg, inter in ((3, ()), (3, (0.4,)), (2, ())):
