@@ -1,0 +1,1680 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Charles Parry：Start-up Financing, Entry and Innovation 導讀筆記">
+  <title>Start-up Financing, Entry and Innovation｜導讀筆記</title>
+  <style>
+    :root {
+      --canvas: #f0f1ef;
+      --paper: #ffffff;
+      --paper-2: #f7f8f7;
+      --ink: #202725;
+      --muted: #65706c;
+      --line: #d9dddb;
+      --blue: #2457d6;
+      --blue-dark: #183e9c;
+      --blue-soft: #e9eefc;
+      --orange: #d66700;
+      --orange-dark: #a74f00;
+      --orange-soft: #fbeadb;
+      --green: #39795a;
+      --green-soft: #e5f1eb;
+      --red: #ad3d41;
+      --red-soft: #f8e7e7;
+      --purple: #6f547c;
+      --purple-soft: #f0e8f3;
+      --gold: #9b7723;
+      --gold-soft: #f7efd9;
+      --grey: #7d8381;
+      --shadow: 0 14px 36px rgba(32, 39, 37, 0.075);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--canvas);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.72;
+    }
+    a {
+      color: var(--blue-dark);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+    h1, h2, h3, h4 { letter-spacing: 0; }
+    h1 {
+      max-width: 1050px;
+      margin: 0 0 13px;
+      font-size: clamp(2rem, 4.2vw, 3.25rem);
+      line-height: 1.08;
+      overflow-wrap: anywhere;
+    }
+    h2 {
+      margin: 0;
+      font-size: 1.56rem;
+      line-height: 1.28;
+    }
+    h3 {
+      margin: 0 0 8px;
+      font-size: 1.08rem;
+      line-height: 1.42;
+    }
+    h4 {
+      margin: 0 0 6px;
+      font-size: 0.96rem;
+    }
+    p { margin: 0 0 12px; }
+    ul, ol { margin: 8px 0 14px; padding-left: 1.35rem; }
+    li { margin: 5px 0; }
+    strong { font-weight: 800; }
+    code, .math {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    code {
+      padding: 1px 5px;
+      border-radius: 4px;
+      color: var(--blue-dark);
+      background: var(--blue-soft);
+      font-size: 0.9em;
+    }
+    .shell {
+      width: min(1420px, 100%);
+      min-width: 0;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .masthead {
+      overflow: hidden;
+      margin-bottom: 22px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+    .masthead-copy {
+      padding: 37px 40px 31px;
+      border-top: 6px solid var(--blue);
+      border-bottom: 1px solid var(--line);
+      background:
+        radial-gradient(circle at 95% 6%, rgba(214, 103, 0, 0.13), transparent 27%),
+        var(--paper);
+    }
+    .eyebrow {
+      margin: 0 0 7px;
+      color: var(--orange);
+      font-size: 0.78rem;
+      font-weight: 850;
+      letter-spacing: 0.045em;
+      text-transform: uppercase;
+    }
+    .lead {
+      max-width: 1080px;
+      margin: 0;
+      color: #3c4945;
+      font-size: 1.06rem;
+    }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 18px;
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+    .meta span {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+    .thesis-map {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      background: var(--paper-2);
+    }
+    .thesis-step {
+      min-width: 0;
+      min-height: 143px;
+      padding: 19px 21px;
+      border-right: 1px solid var(--line);
+    }
+    .thesis-step:last-child { border-right: 0; }
+    .thesis-step span {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 0.73rem;
+      font-weight: 850;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .thesis-step strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--blue);
+    }
+    .thesis-step:nth-child(2) strong { color: var(--orange); }
+    .thesis-step:nth-child(3) strong { color: var(--green); }
+    .thesis-step:nth-child(4) strong { color: var(--purple); }
+    .thesis-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.87rem;
+      line-height: 1.52;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 270px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+    .toc {
+      position: sticky;
+      top: 18px;
+      max-height: calc(100vh - 36px);
+      overflow-y: auto;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: var(--paper);
+      box-shadow: 0 8px 24px rgba(32, 39, 37, 0.055);
+    }
+    .toc strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+    }
+    .toc a {
+      display: block;
+      padding: 6px 8px;
+      border-left: 2px solid transparent;
+      color: #485450;
+      font-size: 0.85rem;
+      line-height: 1.45;
+      text-decoration: none;
+    }
+    .toc a:hover,
+    .toc a:focus-visible {
+      border-left-color: var(--blue);
+      color: var(--blue-dark);
+      background: var(--blue-soft);
+    }
+    main {
+      min-width: 0;
+      padding: 2px 31px 30px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+    .chapter {
+      scroll-margin-top: 18px;
+      padding: 31px 0 36px;
+      border-bottom: 1px solid var(--line);
+    }
+    .chapter:last-child { border-bottom: 0; }
+    .chapter-heading {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 20px;
+    }
+    .chapter-number {
+      display: grid;
+      width: 40px;
+      height: 40px;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--blue);
+      font-size: 0.88rem;
+      font-weight: 850;
+    }
+    .chapter:nth-child(3n + 2) .chapter-number { background: var(--orange); }
+    .chapter:nth-child(3n) .chapter-number { background: var(--green); }
+    .chapter-heading p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 0.93rem;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin: 16px 0;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin: 16px 0;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .card {
+      min-width: 0;
+      padding: 16px 17px;
+      border: 1px solid var(--line);
+      border-top: 3px solid var(--blue);
+      border-radius: 8px;
+      background: var(--paper-2);
+    }
+    .card.orange { border-top-color: var(--orange); }
+    .card.green { border-top-color: var(--green); }
+    .card.red { border-top-color: var(--red); }
+    .card.purple { border-top-color: var(--purple); }
+    .card.gold { border-top-color: var(--gold); }
+    .card p:last-child,
+    .card ul:last-child { margin-bottom: 0; }
+    .label {
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 0.74rem;
+      font-weight: 850;
+      letter-spacing: 0.035em;
+      text-transform: uppercase;
+    }
+    .callout {
+      margin: 16px 0;
+      padding: 15px 18px;
+      border-left: 4px solid var(--blue);
+      background: var(--blue-soft);
+    }
+    .callout.orange { border-left-color: var(--orange); background: var(--orange-soft); }
+    .callout.green { border-left-color: var(--green); background: var(--green-soft); }
+    .callout.red { border-left-color: var(--red); background: var(--red-soft); }
+    .callout.purple { border-left-color: var(--purple); background: var(--purple-soft); }
+    .callout.gold { border-left-color: var(--gold); background: var(--gold-soft); }
+    .callout p:last-child,
+    .callout ul:last-child,
+    .callout ol:last-child { margin-bottom: 0; }
+    .equation {
+      overflow-x: auto;
+      margin: 15px 0;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fbfbfc;
+      text-align: center;
+    }
+    .equation .math {
+      display: inline-block;
+      min-width: max-content;
+      color: #233d87;
+      font-size: clamp(0.89rem, 2vw, 1.05rem);
+    }
+    .equation p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 21px;
+      margin: 18px 0;
+    }
+    .flow.five { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .flow-item {
+      position: relative;
+      min-width: 0;
+      padding: 15px 13px;
+      border: 1px solid var(--line);
+      border-top: 3px solid var(--blue);
+      border-radius: 8px;
+      background: var(--paper-2);
+      text-align: center;
+    }
+    .flow-item::after {
+      position: absolute;
+      top: 50%;
+      right: -19px;
+      color: var(--muted);
+      content: "→";
+      font-weight: 850;
+      transform: translateY(-50%);
+    }
+    .flow-item:last-child::after { content: ""; }
+    .flow-item:nth-child(2) { border-top-color: var(--orange); }
+    .flow-item:nth-child(3) { border-top-color: var(--green); }
+    .flow-item:nth-child(4) { border-top-color: var(--purple); }
+    .flow-item:nth-child(5) { border-top-color: var(--gold); }
+    .flow-item strong,
+    .flow-item span { display: block; }
+    .flow-item span {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.83rem;
+      line-height: 1.48;
+    }
+    .lifecycle {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 18px 0;
+    }
+    .life-state {
+      position: relative;
+      min-width: 0;
+      padding: 16px 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper-2);
+      text-align: center;
+    }
+    .life-state::after {
+      position: absolute;
+      top: 50%;
+      right: -11px;
+      z-index: 2;
+      width: 20px;
+      color: var(--blue);
+      background: var(--paper);
+      content: "→";
+      font-weight: 900;
+      transform: translateY(-50%);
+    }
+    .life-state:last-child::after { content: ""; }
+    .life-state strong,
+    .life-state span { display: block; }
+    .life-state strong { color: var(--blue-dark); }
+    .life-state:nth-child(2) strong { color: var(--orange-dark); }
+    .life-state:nth-child(3) strong { color: var(--green); }
+    .life-state:nth-child(4) strong { color: var(--purple); }
+    .life-state span {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+    .hazards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin: 12px 0 18px;
+    }
+    .hazard {
+      padding: 12px 14px;
+      border-left: 3px solid var(--red);
+      background: var(--red-soft);
+    }
+    .hazard:nth-child(2) { border-color: var(--orange); background: var(--orange-soft); }
+    .hazard:nth-child(3) { border-color: var(--blue); background: var(--blue-soft); }
+    .hazard strong { display: block; }
+    .hazard span { color: var(--muted); font-size: 0.84rem; }
+    .table-wrap {
+      overflow-x: auto;
+      margin: 16px 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--paper);
+      font-size: 0.9rem;
+    }
+    caption {
+      padding: 11px 13px;
+      color: var(--muted);
+      background: var(--paper-2);
+      font-size: 0.82rem;
+      text-align: left;
+    }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+    }
+    th {
+      color: #3d4743;
+      background: #f3f4f4;
+      font-weight: 800;
+    }
+    tr:last-child td { border-bottom: 0; }
+    td.num, th.num {
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      white-space: nowrap;
+    }
+    .tag {
+      display: inline-block;
+      margin: 1px 3px 1px 0;
+      padding: 2px 7px;
+      border-radius: 999px;
+      color: var(--blue-dark);
+      background: var(--blue-soft);
+      font-size: 0.75rem;
+      font-weight: 800;
+    }
+    .tag.orange { color: var(--orange-dark); background: var(--orange-soft); }
+    .tag.green { color: var(--green); background: var(--green-soft); }
+    .tag.red { color: var(--red); background: var(--red-soft); }
+    .tag.purple { color: var(--purple); background: var(--purple-soft); }
+    .result-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      overflow: hidden;
+      margin: 17px 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    .result {
+      padding: 16px;
+      border-right: 1px solid var(--line);
+      background: var(--paper-2);
+    }
+    .result:last-child { border-right: 0; }
+    .result b {
+      display: block;
+      color: var(--blue);
+      font-size: 1.42rem;
+      line-height: 1.2;
+    }
+    .result:nth-child(2) b { color: var(--orange); }
+    .result:nth-child(3) b { color: var(--green); }
+    .result:nth-child(4) b { color: var(--purple); }
+    .result span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+    .small {
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+    .refs {
+      padding-left: 1.25rem;
+      font-size: 0.9rem;
+    }
+    .refs li { margin-bottom: 8px; }
+    footer {
+      padding: 0 0 8px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-align: center;
+    }
+
+    @media (max-width: 1120px) {
+      .thesis-map { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .thesis-step:nth-child(2) { border-right: 0; }
+      .thesis-step:nth-child(-n + 2) { border-bottom: 1px solid var(--line); }
+      .layout { grid-template-columns: 1fr; }
+      .toc {
+        position: static;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        max-height: none;
+      }
+      .toc strong { grid-column: 1 / -1; }
+      .flow,
+      .flow.five { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+      .flow-item::after { content: ""; }
+      .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .result-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .result:nth-child(2) { border-right: 0; }
+      .result:nth-child(-n + 2) { border-bottom: 1px solid var(--line); }
+    }
+    @media (max-width: 720px) {
+      html, body { max-width: 100%; overflow-x: clip; }
+      .shell { padding: 12px; }
+      .masthead, .layout, main { max-width: 100%; }
+      .masthead-copy { padding: 25px 22px; }
+      .thesis-map,
+      .grid-2,
+      .grid-3,
+      .grid-4,
+      .flow,
+      .flow.five,
+      .toc,
+      .result-strip,
+      .lifecycle,
+      .hazards { grid-template-columns: 1fr; }
+      .thesis-step {
+        min-height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .thesis-step:last-child { border-bottom: 0; }
+      .result {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .result:last-child { border-bottom: 0; }
+      .life-state::after {
+        top: auto;
+        right: 50%;
+        bottom: -17px;
+        transform: translateX(50%) rotate(90deg);
+      }
+      main { padding: 2px 20px 22px; }
+      .chapter-heading { grid-template-columns: 38px minmax(0, 1fr); }
+      .chapter-number { width: 34px; height: 34px; }
+    }
+    @media print {
+      body { background: #fff; }
+      .shell { width: 100%; padding: 0; }
+      .masthead, main, .toc { box-shadow: none; }
+      .toc { display: none; }
+      .layout { display: block; }
+      main { border: 0; padding: 0; }
+      .chapter { break-inside: avoid; }
+      a { color: inherit; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="masthead">
+      <div class="masthead-copy">
+        <p class="eyebrow">DSE 2026 Conference Reading Note</p>
+        <h1>Start-up Financing, Entry and Innovation</h1>
+        <p class="lead">
+          Charles Parry 問：start-up 高失敗率與英美 VC 差距究竟代表「ideas 不夠好」，
+          還是「好 ideas 沒有及時拿到下一輪資金」？文章利用 staged-financing histories
+          區分 project fundamentals 與 financing conditions。
+        </p>
+        <div class="meta">
+          <span><strong>作者：</strong>Charles Parry（conference affiliation：Imperial Business School）</span>
+          <span><strong>版本：</strong>DSE 2026，6 August 2026</span>
+          <span><strong>方法：</strong>Equilibrium search-and-matching + staged contracts + SMM</span>
+          <span><strong>原始投影片：</strong><a href="../../Conference/17%20Charles%20Parry.pdf">Conference/17 Charles Parry.pdf</a></span>
+        </div>
+      </div>
+
+      <div class="thesis-map" aria-label="文章核心邏輯">
+        <div class="thesis-step">
+          <span>Problem</span>
+          <strong>Failure 不等於 bad project</strong>
+          <p>Viable start-up 也可能在等待 follow-on funding 時被迫關閉。</p>
+        </div>
+        <div class="thesis-step">
+          <span>Contract</span>
+          <strong>Staging 是雙面刃</strong>
+          <p>短 runway 限制 founders 隱瞞失敗造成的浪費，卻增加 refinancing risk。</p>
+        </div>
+        <div class="thesis-step">
+          <span>Measurement</span>
+          <strong>Funding histories 揭露 primitives</strong>
+          <p>Round 數量、間隔、burn 與 exits 在模型內區分 quality 和 finance。</p>
+        </div>
+        <div class="thesis-step">
+          <span>Policy</span>
+          <strong>資本配置比總量更重要</strong>
+          <p>英國把少量 early-stage capital 移到 late stage，可提升成功與總 surplus。</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <nav class="toc" aria-label="目錄">
+        <strong>閱讀路線</strong>
+        <a href="#summary">1. 一分鐘摘要</a>
+        <a href="#questions">2. Core questions</a>
+        <a href="#importance">3. 為什麼重要？</a>
+        <a href="#motivation">4. Staging 與 empirical motivation</a>
+        <a href="#data">5. Data</a>
+        <a href="#model">6. Model setup</a>
+        <a href="#contract">7. Optimal staging contract</a>
+        <a href="#identification">8. Identification</a>
+        <a href="#estimation">9. Estimation 與 model fit</a>
+        <a href="#us">10. 美國結果與 misallocation</a>
+        <a href="#uk">11. 英美差異與 policy</a>
+        <a href="#literature">12. 與前人有何不同？</a>
+        <a href="#limits">13. 限制與討論題</a>
+      </nav>
+
+      <main>
+        <section class="chapter" id="summary">
+          <div class="chapter-heading">
+            <div class="chapter-number">1</div>
+            <div>
+              <h2>一分鐘摘要</h2>
+              <p>文章把 fundraising history 從「描述性 outcome」變成可識別 latent project quality 與 financing conditions 的資料。</p>
+            </div>
+          </div>
+
+          <div class="callout">
+            <h3>Core answer</h3>
+            <p>
+              Venture capital staging 是對 hidden failure 的 optimal response：
+              VC 不一次給完資金，可以及早停止已失敗的 projects；但每次資金到期，
+              仍然 viable 的 start-up 必須重新 matching。若新投資者來得太慢，
+              firm 會在技術 uncertainty 尚未解開前 premature shutdown。
+              因此更多、更短的 rounds 可能表示更嚴重的 agency problem，
+              較少、更久的 rounds 則可能表示融資市場太緊，不能只看 round count 判斷 quality。
+            </p>
+          </div>
+
+          <div class="result-strip" aria-label="文章 headline results">
+            <div class="result">
+              <b>40.6%</b>
+              <span>US VC-backed start-ups 的 model-implied premature termination rate</span>
+            </div>
+            <div class="result">
+              <b>23%</b>
+              <span>Viable firms 尚未獲得資金、停留在 search state</span>
+            </div>
+            <div class="result">
+              <b>2/3</b>
+              <span>英美 start-up creation-incentive gap 由 financing conditions 解釋</span>
+            </div>
+            <div class="result">
+              <b>+16–30%</b>
+              <span>UK 將 5% capital 從 early 移到 late stage 的 total-surplus gain</span>
+            </div>
+          </div>
+
+          <div class="callout orange">
+            <h3>本文最反直覺的地方</h3>
+            <p>
+              「更長 runway」不必然代表市場更慷慨。模型中，當 follow-on funding 很難取得時，
+              entrepreneurs 會要求一次拿更久的 runway，因為回市場 refinance 太危險。
+              因此 UK 的 rounds 較少、間隔較長，反而可以是 tighter financing 的 footprint。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="questions">
+          <div class="chapter-heading">
+            <div class="chapter-number">2</div>
+            <div>
+              <h2>Core research questions</h2>
+              <p>主問題是 fundamentals versus finance，延伸到 entry、failure、acquisition 與 cross-country allocation。</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="card">
+              <p class="label">Question 1</p>
+              <h3>VC-backed firms 為什麼大量失敗？</h3>
+              <p>
+                是 project 本身沒有技術／商業價值，還是 viable firm 在等待下一輪資金時耗盡 runway？
+                Empirically，失敗後看不到 continued funding 的 counterfactual。
+              </p>
+            </article>
+            <article class="card orange">
+              <p class="label">Question 2</p>
+              <h3>Funding history 告訴我們什麼？</h3>
+              <p>
+                Number of rounds、time between rounds 與 syndication pattern
+                能否分別識別 project arrival/success、burn rate、matching 與 search failure？
+              </p>
+            </article>
+            <article class="card green">
+              <p class="label">Question 3</p>
+              <h3>為何 UK VC activity 較低？</h3>
+              <p>
+                是 UK projects 品質較差、較不 novel，還是 VC meeting rate 與 acquisition opportunities 較低？
+              </p>
+            </article>
+            <article class="card purple">
+              <p class="label">Question 4</p>
+              <h3>Public capital 應該投在哪個 stage？</h3>
+              <p>
+                若總 VC capital 不增加，從 early-stage entry 移到 late-stage follow-on
+                是否能減少 scale-up bottleneck、改善 success 與 welfare？
+              </p>
+            </article>
+          </div>
+
+          <div class="callout red">
+            <h3>真正的 identification challenge</h3>
+            <p>
+              低 entry、少 funding rounds、低 success 可以同時由
+              <strong>bad projects</strong> 或 <strong>tight capital supply</strong> 造成。
+              作者的貢獻不是找到單一外生 instrument，而是建立一個讓不同 mechanisms
+              對完整 funding history 產生不同 joint distribution 的模型。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="importance">
+          <div class="chapter-heading">
+            <div class="chapter-number">3</div>
+            <div>
+              <h2>為什麼重要？</h2>
+              <p>若把 premature failure 當作 bad selection，政策可能在錯誤的 margin 上補貼。</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="card">
+              <h3>Innovation 與 aggregate growth</h3>
+              <p>
+                High-growth start-ups 通常缺乏 collateral、predictable cash flow 與 retained earnings，
+                無法像成熟 firms 透過 debt 或 self-financing 等待 project 成熟。
+              </p>
+            </article>
+            <article class="card orange">
+              <h3>Failure statistics 的解讀</h3>
+              <p>
+                高失敗率未必表示 VC 有效淘汰 bad ideas。若 firms 在 uncertainty resolved
+                之前因 runway 到期而關閉，failure 同時包含 financing inefficiency。
+              </p>
+            </article>
+            <article class="card green">
+              <h3>Europe–US innovation gap</h3>
+              <p>
+                若差距來自 project quality，增加 capital 的效果有限；若來自 matching
+                與 scale-up finance，改善 late-stage market 可以提高 entry incentives 和 outcomes。
+              </p>
+            </article>
+            <article class="card purple">
+              <h3>Policy targeting</h3>
+              <p>
+                Seed funding 增加 firms 數量；growth capital 讓既有 firms 抵達 success。
+                兩者在固定 budget 下有直接取捨，不能只用「funded firms 數量」評估政策。
+              </p>
+            </article>
+          </div>
+
+          <div class="callout gold">
+            <h3>為什麼 retained earnings literature 不足以回答？</h3>
+            <p>
+              對許多一般 entrepreneurs，profits 可以逐步放鬆 financial constraint；
+              high-growth R&amp;D start-ups 卻常到 IPO 仍為 cash-flow negative。
+              它們必須反覆依賴 external equity，所以每個 follow-on round 都是一個新的生存風險。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="motivation">
+          <div class="chapter-heading">
+            <div class="chapter-number">4</div>
+            <div>
+              <h2>Staging、syndication 與 empirical motivation</h2>
+              <p>現實 VC funding 不是一次性的 investment，而是一連串需重新找資金的 contracts。</p>
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <article class="card">
+              <p class="label">Number of rounds</p>
+              <h3>大多 firms 很快停止</h3>
+              <p>Round-count distribution 明顯右偏；約三分之一只有一輪，少數 firms 經歷很多 rounds。</p>
+            </article>
+            <article class="card orange">
+              <p class="label">Syndication</p>
+              <h3>Investor count 持續增加</h3>
+              <p>每輪 total investors 上升，且 new investors 約持續加入，支持 repeated matching 的建模。</p>
+            </article>
+            <article class="card green">
+              <p class="label">Persistence</p>
+              <h3>舊 investors 不一定續投</h3>
+              <p>All/lead investor 延續至下一輪的比例隨 round 下降，follow-on 並非由單一 insider 自動承接。</p>
+            </article>
+          </div>
+
+          <div class="callout orange">
+            <h3>Staging 的 fundamental trade-off</h3>
+            <ul>
+              <li><strong>Discipline benefit：</strong>短 runway 讓 failed project 較快失去資金，減少 hidden-failure waste。</li>
+              <li><strong>Refinancing cost：</strong>短 runway 讓 viable project 更常返回 matching market，增加找不到新 VC 的機率。</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="chapter" id="data">
+          <div class="chapter-heading">
+            <div class="chapter-number">5</div>
+            <div>
+              <h2>Data：funding events、capital use 與 exits</h2>
+              <p>主要資料是 Thomson Reuters，將每家 firm 的 rounds、stage、amount 與 exit 串成一條 lifecycle。</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <caption>樣本與觀察單位</caption>
+              <thead>
+                <tr>
+                  <th>項目</th>
+                  <th>United States</th>
+                  <th>United Kingdom</th>
+                  <th>用途</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Entry cohort</strong></td>
+                  <td>First VC funding in 2005–2015</td>
+                  <td>Comparable cohort</td>
+                  <td>讓 firms 有足夠 outcome window，避免只看到近年未結案 firms</td>
+                </tr>
+                <tr>
+                  <td><strong>Outcomes through</strong></td>
+                  <td>End-2022</td>
+                  <td>End-2022</td>
+                  <td>IPO/success、acquisition、failure/active</td>
+                </tr>
+                <tr>
+                  <td><strong>Firms</strong></td>
+                  <td>約 11,000</td>
+                  <td>1,066</td>
+                  <td>SMM estimation 與英美 comparison</td>
+                </tr>
+                <tr>
+                  <td><strong>Funding rounds</strong></td>
+                  <td>約 33,158</td>
+                  <td>2,218</td>
+                  <td>Number、timing、early/late stage、capital raised</td>
+                </tr>
+                <tr>
+                  <td><strong>Censoring</strong></td>
+                  <td colspan="2">Baseline 於 first funding 後 7 年 censor；另做較長 window robustness</td>
+                  <td>統一不同 cohorts 的觀察期限</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p class="small">
+            Main quantitative slide 報告 11,022 家 US firms；appendix sample overview 報告 11,030。
+            這個小差異應來自最終 estimation filters。導讀以「約 11,000」表示。
+          </p>
+
+          <h3>5.1 Targeted moments</h3>
+          <div class="grid-3">
+            <article class="card">
+              <h3>Funding histories</h3>
+              <p>Mean early/late rounds、one-round share、duration between rounds、funding continuation。</p>
+            </article>
+            <article class="card orange">
+              <h3>Capital intensity</h3>
+              <p>Cumulative capital raised 與 burn-rate distribution，區分 capital need 與 matching delay。</p>
+            </article>
+            <article class="card green">
+              <h3>Outcomes</h3>
+              <p>Success/acquisition、time-to-exit、exit multiple 與 high-multiple acquisitions。</p>
+            </article>
+          </div>
+
+          <div class="callout red">
+            <h3>Censored data 與 model-implied outcomes 不要混在一起</h3>
+            <p>
+              Appendix raw sample 中 US success 約 3.6%、acquisition 約 18.4%；
+              headline decomposition 的 4.9% success、24.5% acquisition 與 70.6% failure
+              來自 estimated model 的完整、uncensored lifecycle。兩組數字回答不同問題。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="model">
+          <div class="chapter-heading">
+            <div class="chapter-number">6</div>
+            <div>
+              <h2>Model setup：search、private information 與 repeated financing</h2>
+              <p>Baseline 是 continuous-time Markov environment；quantitative model 再加入 early/late stages 與 acquisitions。</p>
+            </div>
+          </div>
+
+          <div class="lifecycle" aria-label="Start-up lifecycle">
+            <div class="life-state">
+              <strong>Entry</strong>
+              <span>Entrepreneur 支付 entry cost，沒有自身財富</span>
+            </div>
+            <div class="life-state">
+              <strong>Search for capital</strong>
+              <span>以 rate ν 遇到 VC；以 rate λ 在等待中失敗</span>
+            </div>
+            <div class="life-state">
+              <strong>Funded development</strong>
+              <span>Flow investment k；contract 以 rate ω 到期</span>
+            </div>
+            <div class="life-state">
+              <strong>Exit or repeat</strong>
+              <span>Success、acquisition，或回到 search 找新 investor</span>
+            </div>
+          </div>
+
+          <div class="hazards">
+            <div class="hazard">
+              <strong>λ：search failure</strong>
+              <span>Viable project 在尚未 matched 時被迫退出，代表 financing risk。</span>
+            </div>
+            <div class="hazard">
+              <strong>κ(1−p)：hidden failure</strong>
+              <span>Entrepreneur 私下得知 bad news，但因 private benefits 不揭露。</span>
+            </div>
+            <div class="hazard">
+              <strong>ω：contract expiry</strong>
+              <span>Funding commitment 結束；expected runway 為 1/ω。</span>
+            </div>
+          </div>
+
+          <h3>6.1 Project primitives</h3>
+          <div class="table-wrap">
+            <table>
+              <caption>Notation 與經濟意義</caption>
+              <thead>
+                <tr>
+                  <th>Parameter</th>
+                  <th>Meaning</th>
+                  <th>主要資料 footprint</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>κ</code></td>
+                  <td>R&amp;D information / milestone arrival rate</td>
+                  <td>Development duration、time-to-exit</td>
+                </tr>
+                <tr>
+                  <td><code>p</code></td>
+                  <td>Signal 到達時為 success 的 probability</td>
+                  <td>Success rate、round continuation</td>
+                </tr>
+                <tr>
+                  <td><code>π</code></td>
+                  <td>Successful project payoff</td>
+                  <td>Exit multiples</td>
+                </tr>
+                <tr>
+                  <td><code>k</code></td>
+                  <td>Flow development cost / burn rate</td>
+                  <td>Capital raised per unit time</td>
+                </tr>
+                <tr>
+                  <td><code>ν</code></td>
+                  <td>Entrepreneur–VC meeting rate</td>
+                  <td>Search duration、round gaps</td>
+                </tr>
+                <tr>
+                  <td><code>λ</code></td>
+                  <td>Failure hazard while searching for finance</td>
+                  <td>Funding discontinuation、success distortion</td>
+                </tr>
+                <tr>
+                  <td><code>ω</code></td>
+                  <td>Endogenous contract termination rate</td>
+                  <td>Number of rounds 與 time between rounds</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>6.2 Information and contracting assumptions</h3>
+          <ul>
+            <li>在 matching 時，VC 能 screen 已失敗 projects；對仍 viable projects 的 <code>(k, κ, p, π)</code> 為 common knowledge。</li>
+            <li>開始投資後，R&amp;D signal 只由 entrepreneur 觀察；founder 從持續經營得到 private benefit。</li>
+            <li>Positive result 可透過足夠 skin in the game 誠實揭露；negative result 不會揭露，造成 inefficient continuation。</li>
+            <li>Equity contract 為 <code>(ς, ω)</code>：VC 得到 equity share ς，並承諾提供 flow cost k 直到隨機 expiry。</li>
+            <li>每次 follow-on funding 需要新的 investor；單一 round 沒有外生 capital cap。</li>
+          </ul>
+
+          <div class="callout green">
+            <h3>Quantitative extensions</h3>
+            <p>
+              實證版本加入 early-stage 與 late-stage 兩個 hurdles，分別有
+              <code>ν<sub>e</sub></code>、<code>ν<sub>l</sub></code>、burn rates 與 success probabilities；
+              late-stage firms 也可能以 rate <code>ϕ</code> 遇到 acquirer。
+              Acquisition 是 financing 的 substitute，特別是當 firm 正在 search、continuation value 較低時。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="contract">
+          <div class="chapter-heading">
+            <div class="chapter-number">7</div>
+            <div>
+              <h2>Optimal staging contract：runway 要多長？</h2>
+              <p>ω 同時控制 hidden-failure waste 與 exposure to follow-on financing risk。</p>
+            </div>
+          </div>
+
+          <h3>7.1 Funded firm 的 gross value</h3>
+          <div class="equation">
+            <span class="math">
+              ρV<sub>d</sub>(ω) =
+              κ[pπ − V<sub>d</sub>(ω)] +
+              ω[V<sub>s</sub> − V<sub>d</sub>(ω)]
+            </span>
+            <p>
+              Project 以 rate κ 成功並產生 π；若 contract 以 rate ω 到期，
+              firm 從 funded value V<sub>d</sub> 掉回 search value V<sub>s</sub>。
+            </p>
+          </div>
+
+          <h3>7.2 VC 的 expected capital commitment</h3>
+          <div class="equation">
+            <span class="math">
+              K(ω) =
+              [k/(ρ+κ+ω)] × [1 + κ(1−p)/(ρ+ω)]
+            </span>
+            <p>
+              第一部分是 productive capital；第二部分是 negative signal 已到達、但 entrepreneur
+              隱瞞 failure 後仍繼續投入的 unproductive capital。
+            </p>
+          </div>
+
+          <div class="grid-2">
+            <article class="card orange">
+              <h3>ω ↑：更短 runway</h3>
+              <ul>
+                <li>較快停止 hidden-failure projects。</li>
+                <li>External-finance premium 下降。</li>
+                <li>Firm 更常回到 search market。</li>
+                <li>Premature closure risk 上升。</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>ω ↓：更長 runway</h3>
+              <ul>
+                <li>Viable firm 較少需要 refinance。</li>
+                <li>對 tight financing market 較安全。</li>
+                <li>Failed entrepreneur 可消耗資金更久。</li>
+                <li>Overinvestment / hidden-failure waste 上升。</li>
+              </ul>
+            </article>
+          </div>
+
+          <h3>7.3 Contract choice</h3>
+          <div class="equation">
+            <span class="math">
+              V<sub>M</sub> =
+              sup<sub>ω≥0</sub> {(1−ς)V<sub>d</sub>(ω)}
+              &nbsp; s.t. &nbsp; ςV<sub>d</sub>(ω)=K(ω)
+            </span>
+            <p>Baseline 中 entrepreneur 選擇 ω 與 equity share，使 VC participation constraint 恰好成立。</p>
+          </div>
+
+          <div class="callout purple">
+            <h3>Equilibrium feedback</h3>
+            <p>
+              Market tightness <code>ν</code> 影響 optimal contract <code>ω</code>；
+              contract duration 又決定 firms 多常回到市場、占用多少 VCs，反過來影響 matching rate。
+              Individual entrepreneurs 不 internalize 這個 matching externality，
+              所以 decentralized equilibrium 未必等於 planner allocation。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="identification">
+          <div class="chapter-heading">
+            <div class="chapter-number">8</div>
+            <div>
+              <h2>Identification：funding histories 如何區分 quality 與 finance？</h2>
+              <p>Proposition 1 是一個 structural identification result，不是 regression discontinuity 或 IV。</p>
+            </div>
+          </div>
+
+          <div class="callout">
+            <h3>Proposition 1</h3>
+            <p>
+              給定 funding-history、outcome 與 investment moments
+              <code>M</code>，baseline structural parameters
+              <code>θ = (κ, p, π, k, ν, λ)</code> 可以被 uniquely recovered。
+              Endogenous <code>ω</code> 則由 optimal contract problem 決定。
+            </p>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <caption>Moment-to-parameter mapping 的直覺</caption>
+              <thead>
+                <tr>
+                  <th>Observed moments</th>
+                  <th>主要識別內容</th>
+                  <th>為什麼？</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>E[number of rounds]</strong></td>
+                  <td>Staging intensity ω、matching ν、search failure λ</td>
+                  <td>更短 contracts 增加 round 次數；但若 search 太困難，firms 也可能在下一輪前消失。</td>
+                </tr>
+                <tr>
+                  <td><strong>E[time between rounds]</strong></td>
+                  <td>Development versus search duration</td>
+                  <td>Round gap 是等待 contract expiry／milestone 與等待新 investor 的 convolution。</td>
+                </tr>
+                <tr>
+                  <td><strong>Success rate</strong></td>
+                  <td>p、κ 與 premature-failure wedge</td>
+                  <td>同一 project quality 下，較常進 search 或較高 λ 會壓低 realized success。</td>
+                </tr>
+                <tr>
+                  <td><strong>Time-to-exit</strong></td>
+                  <td>Milestone arrival κ 與 lifecycle hazards</td>
+                  <td>κ 控制 uncertainty resolve 的速度，ν/λ/ω 控制中間 interruptions。</td>
+                </tr>
+                <tr>
+                  <td><strong>Burn rate</strong></td>
+                  <td>Flow investment cost k</td>
+                  <td>Capital raised 相對於 runway 直接限制 development intensity。</td>
+                </tr>
+                <tr>
+                  <td><strong>Exit multiple</strong></td>
+                  <td>Success payoff π</td>
+                  <td>控制 capital commitment 後，exit payoff 的 scale pin down π。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>8.1 為什麼只看 rounds 不夠？</h3>
+          <div class="grid-2">
+            <article class="card orange">
+              <h3>Severe agency friction</h3>
+              <p>
+                VCs 需要頻繁重新審查，產生<strong>更多 rounds、較短間隔</strong>。
+                這是高 ω 的 footprint。
+              </p>
+            </article>
+            <article class="card red">
+              <h3>Tight financing</h3>
+              <p>
+                因下一輪很難取得，funded firms 最適地要求較長 runway；
+                survivors 呈現<strong>較少 rounds、較長間隔</strong>。
+              </p>
+            </article>
+          </div>
+          <p>
+            真正區分兩者的是 joint behavior：round counts、durations、success、exit timing、
+            burn 與 multiples 必須由同一組 parameters 同時解釋。
+          </p>
+
+          <div class="callout red">
+            <h3>這種 identification 的條件性</h3>
+            <p>
+              Unique recovery 是在 exponential hazards、baseline contract、project homogeneity、
+              screening 與新 investor requirement 等 model assumptions 下成立。
+              它不是一個不依賴模型的 causal estimate；若未觀察 heterogeneity
+              也能產生相同 funding histories，parameter interpretation 可能改變。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="estimation">
+          <div class="chapter-heading">
+            <div class="chapter-number">9</div>
+            <div>
+              <h2>Estimation 與 model fit</h2>
+              <p>作者用 simulated method of moments，同時 fit histories、capital intensity 與 outcomes。</p>
+            </div>
+          </div>
+
+          <div class="flow">
+            <div class="flow-item">
+              <strong>Choose θ</strong>
+              <span>Project、matching、acquisition 與 entry parameters</span>
+            </div>
+            <div class="flow-item">
+              <strong>Solve equilibrium</strong>
+              <span>Contracts、entry、meeting rates 與 lifecycle stocks</span>
+            </div>
+            <div class="flow-item">
+              <strong>Simulate firms</strong>
+              <span>Apply same seven-year censoring as data</span>
+            </div>
+            <div class="flow-item">
+              <strong>Match moments</strong>
+              <span>Funding, capital, exits 與 cross-country activity</span>
+            </div>
+          </div>
+
+          <h3>9.1 Fit 做得好的地方</h3>
+          <ul>
+            <li>Replicates declining distribution of number of rounds。</li>
+            <li>Captures full shape of time-between-rounds 與 average time-to-round。</li>
+            <li>Tracks funding continuation through seven years。</li>
+            <li>Matches median cumulative capital path 與 skewed burn-rate distribution。</li>
+            <li>Reasonably fits exit-multiple distribution 與 time-to-exit CDF。</li>
+            <li>Untargeted success、acquisition 與 round-count moments 也接近 data。</li>
+          </ul>
+
+          <h3>9.2 Fit 不完美的地方</h3>
+          <ul>
+            <li>Model 的 within-stage round amount variation 太少，無法重現 cumulative capital 的 widening dispersion。</li>
+            <li>Successes 在 model 中發生得偏早。</li>
+            <li>Ex ante homogeneous firms 把 outcome dispersion 全部歸因於 post-funding shocks，而不是 observable/unobservable type heterogeneity。</li>
+          </ul>
+
+          <div class="callout green">
+            <h3>第一個 substantive takeaway</h3>
+            <p>
+              即使所有 start-ups ex ante homogeneous，估計模型仍能產生高度 skewed
+              funding histories 和 exits。這提供一個 structural counterpart：
+              early-stage investors 難以預測 winners，不一定是資料不足，
+              也可能是大量 heterogeneity 真正在投資後才被 shocks 與 information 產生。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="us">
+          <div class="chapter-heading">
+            <div class="chapter-number">10</div>
+            <div>
+              <h2>美國結果：premature failure 與雙向 misallocation</h2>
+              <p>即使在成熟的 US VC market，search 與 staging interaction 仍造成大量 viable closures。</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <caption>Model-implied uncensored US lifecycle decomposition</caption>
+              <thead>
+                <tr>
+                  <th>Outcome</th>
+                  <th class="num">Share</th>
+                  <th>Interpretation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Success</strong></td>
+                  <td class="num">4.9%</td>
+                  <td>Project 完成並取得成功 exit</td>
+                </tr>
+                <tr>
+                  <td><strong>Acquisition</strong></td>
+                  <td class="num">24.5%</td>
+                  <td>在 fully independent success 前被 incumbent 收購</td>
+                </tr>
+                <tr>
+                  <td><strong>Total failure</strong></td>
+                  <td class="num">70.6%</td>
+                  <td>包含 genuine project failure 與 financing-driven closure</td>
+                </tr>
+                <tr>
+                  <td>Early-stage development failure</td>
+                  <td class="num">18.2%</td>
+                  <td>Project signal 在 funded development 中失敗</td>
+                </tr>
+                <tr>
+                  <td>Early-stage search failure</td>
+                  <td class="num">25.7%</td>
+                  <td>仍 viable，但找下一筆資金時關閉</td>
+                </tr>
+                <tr>
+                  <td>Late-stage development failure</td>
+                  <td class="num">11.6%</td>
+                  <td>Late-stage technical/commercial failure</td>
+                </tr>
+                <tr>
+                  <td>Late-stage search failure</td>
+                  <td class="num">15.1%</td>
+                  <td>Late-stage financing bottleneck</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout orange">
+            <h3>40.6% 從哪裡來？</h3>
+            <p>
+              Premature termination 是 early- 與 late-stage search failures 的合計，
+              約 25.7% + 15.1% ≈ 40.8%（headline 報告 40.6%，差異來自 rounding）。
+              這些 firms 在 uncertainty resolve 前因 follow-on funding 未到而退出，
+              所以 continuation value 仍為正。
+            </p>
+          </div>
+
+          <h3>10.1 Frictionless-financing counterfactual</h3>
+          <div class="result-strip" aria-label="移除 financing-driven failure 的結果">
+            <div class="result">
+              <b>5% → 11%</b>
+              <span>Success rate，提高約 6 percentage points</span>
+            </div>
+            <div class="result">
+              <b>25% → 39%</b>
+              <span>Acquisition rate，提高約 14 percentage points</span>
+            </div>
+            <div class="result">
+              <b>55.5%</b>
+              <span>Estimated success distortion Δp</span>
+            </div>
+            <div class="result">
+              <b>71.5%</b>
+              <span>Estimated entry-value distortion ΔNPV</span>
+            </div>
+          </div>
+
+          <h3>10.2 Underinvestment 與 overinvestment 同時存在</h3>
+          <div class="grid-2">
+            <article class="card">
+              <p class="label">Underinvestment</p>
+              <h3>23% viable firms 在 search</h3>
+              <p>
+                有正 continuation value 的 firms 沒有拿到資金，production/innovation 被延後，
+                並暴露於 λ search-failure hazard。
+              </p>
+            </article>
+            <article class="card orange">
+              <p class="label">Overinvestment</p>
+              <h3>12% capital 投在 hidden failures</h3>
+              <p>
+                Entrepreneur 已私下知道 project 失敗，但 contract 尚未到期，
+                VC 仍支付 flow cost k。
+              </p>
+            </article>
+          </div>
+
+          <div class="callout purple">
+            <h3>為什麼「多給總資本」不是唯一答案？</h3>
+            <p>
+              Agency friction 造成 failed projects 消耗資金，matching friction 又讓 viable projects 挨餓。
+              所以 planner 必須同時調整 entry、contract duration 與 capital allocation；
+              只增加 aggregate VC supply 可能同時放大 entry 與 inefficient continuation。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="uk">
+          <div class="chapter-heading">
+            <div class="chapter-number">11</div>
+            <div>
+              <h2>英美差異：是 projects 不好，還是 finance 較緊？</h2>
+              <p>Funding histories 可由多種 fundamentals 解釋，但加入 activity 與 exits 後，tight finance 最符合 joint facts。</p>
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <article class="card">
+              <p class="label">Rounds</p>
+              <h3>UK 2.1 vs US 3.0</h3>
+              <p>七年內 UK firms 募得較少 rounds。</p>
+            </article>
+            <article class="card orange">
+              <p class="label">Round interval</p>
+              <h3>UK 17 vs US 14 months</h3>
+              <p>UK first-to-second round 等待更久。</p>
+            </article>
+            <article class="card green">
+              <p class="label">Activity & exits</p>
+              <h3>UK/US：0.48 / 0.67 / 0.48</h3>
+              <p>Entry 約一半、success 約三分之二、acquisition 約一半。</p>
+            </article>
+          </div>
+
+          <h3>11.1 Structural estimates</h3>
+          <div class="table-wrap">
+            <table>
+              <caption>英美顯著不同的 market parameters</caption>
+              <thead>
+                <tr>
+                  <th>Parameter</th>
+                  <th class="num">US</th>
+                  <th class="num">UK</th>
+                  <th>Interpretation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Early-stage meeting <code>ν<sub>e</sub></code></td>
+                  <td class="num">2.54</td>
+                  <td class="num">1.09</td>
+                  <td>UK founders 更久才遇到 early-stage VC</td>
+                </tr>
+                <tr>
+                  <td>Late-stage meeting <code>ν<sub>l</sub></code></td>
+                  <td class="num">5.20</td>
+                  <td class="num">2.28</td>
+                  <td>UK scale-up market 的 gap 更大</td>
+                </tr>
+                <tr>
+                  <td>Acquisition offers <code>ϕ</code></td>
+                  <td class="num">0.65</td>
+                  <td class="num">0.33</td>
+                  <td>UK market for ideas / exits 較薄</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            其他 project primitives <code>(κ, p<sub>e</sub>, p<sub>l</sub>, k, π)</code>
+            在統計上無法區分。作者因此認為 cross-country gap 主要來自 capital allocation
+            與 acquisition opportunities，而不是 funded projects 的 intrinsic quality。
+          </p>
+
+          <div class="callout red">
+            <h3>為什麼較低 acquisition rate 也指向 financing problem？</h3>
+            <p>
+              在模型中 acquisition 是 financing 的 substitute。若 UK 只有 financing 較緊，
+              firms 應更常尋求出售；但實際 UK acquisitions 也更少，
+              表示 acquisition market 本身同樣較薄，而不是單純 preference for independence。
+            </p>
+          </div>
+
+          <h3>11.2 Counterfactuals</h3>
+          <div class="grid-2">
+            <article class="card">
+              <p class="label">Decomposition</p>
+              <h3>Financing 解釋 2/3 entry gap</h3>
+              <p>
+                將 US projects 放到 UK 的 <code>(ν<sub>e</sub>,ν<sub>l</sub>)</code>
+                financing conditions，可解釋 creation-incentive gap 的約三分之二。
+              </p>
+            </article>
+            <article class="card orange">
+              <p class="label">Budget-neutral policy</p>
+              <h3>5% capital：early → late stage</h3>
+              <p>
+                Holding total investment fixed，將少量資本移向 late stage：
+                初始 funded firms 變少，但更多 high-value projects 完成 scale-up。
+              </p>
+            </article>
+          </div>
+
+          <div class="flow five">
+            <div class="flow-item">
+              <strong>Fixed budget</strong>
+              <span>不是增加 total VC capital</span>
+            </div>
+            <div class="flow-item">
+              <strong>Less seed breadth</strong>
+              <span>Early-stage funded firms 減少</span>
+            </div>
+            <div class="flow-item">
+              <strong>More late support</strong>
+              <span>減少 follow-on bottleneck</span>
+            </div>
+            <div class="flow-item">
+              <strong>Better completions</strong>
+              <span>Success firms 與 payoff quality 上升</span>
+            </div>
+            <div class="flow-item">
+              <strong>+16–30%</strong>
+              <span>Total surplus improvement</span>
+            </div>
+          </div>
+
+          <div class="callout gold">
+            <h3>政策含義不是「停止 early-stage support」</h3>
+            <p>
+              這是一個 5% marginal reallocation，反映 UK 現況的 late-stage scarcity。
+              Late-stage rounds 資本密集，所以同一 budget 會資助較少 firms；
+              welfare gain 來自把 capital 放到已通過 early hurdle、expected payoff 較高的 firms，
+              不是因為 seed funding 沒有價值。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="literature">
+          <div class="chapter-heading">
+            <div class="chapter-number">12</div>
+            <div>
+              <h2>跟前人有什麼不同？</h2>
+              <p>作者稱它為 operational theory：理論 objects 直接映射到 standard VC microdata，可估計、可做 counterfactual。</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <caption>文獻位置與本文增量</caption>
+              <thead>
+                <tr>
+                  <th>Literature</th>
+                  <th>前人回答</th>
+                  <th>本文不同之處</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Entrepreneurial finance / VC contracts</strong><br>Sahlman；Admati–Pfleiderer；Gompers；Kaplan–Strömberg 等</td>
+                  <td>Staging、monitoring、syndication 與 control rights 如何處理 agency problems。</td>
+                  <td>把 staging 變成可由 funding histories 識別的 hazard <code>ω</code>，進而量化 premature closure 與 policy。</td>
+                </tr>
+                <tr>
+                  <td><strong>Theoretical equilibrium VC models</strong><br>Inderst–Müller；Michelacci–Suarez；Jovanovic–Szentes；Hellmann–Thiele；Sannino</td>
+                  <td>Matching、intermediation、contracting 與 innovation incentives 的 equilibrium properties。</td>
+                  <td>明確讓 staged contracts 與 market tightness 雙向互動，並分析 decentralized versus planner allocation。</td>
+                </tr>
+                <tr>
+                  <td><strong>Quantitative innovation / entrepreneurship</strong><br>Ates；Akcigit et al.；Greenwood et al.；Ando</td>
+                  <td>Financial frictions 如何影響 firm dynamics、entry 與 aggregate innovation。</td>
+                  <td>把 VC intermediary、repeated matching 與 round-level financing histories 放到 structural identification 中。</td>
+                </tr>
+                <tr>
+                  <td><strong>Finance and development</strong><br>King–Levine；Rajan–Zingales；Buera et al.；Moll</td>
+                  <td>Limited external finance 限制 entry/investment，但 retained earnings 可逐步放鬆 constraints。</td>
+                  <td>研究 self-financing 在很長時間內不可行的 cash-flow-negative start-ups，強調 follow-on financing risk。</td>
+                </tr>
+                <tr>
+                  <td><strong>Cross-country VC comparisons</strong></td>
+                  <td>比較投資額、tax、institutions、returns 或 exit markets。</td>
+                  <td>利用 joint funding histories 估出 financing meeting rates 與 project primitives，分解 opportunity versus allocation。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="grid-3">
+            <article class="card">
+              <h3>1. Staging 的 downside 內生化</h3>
+              <p>前人多強調 staging 控制 agency；本文把 repeated refinancing 導致的 firm death 放在同一 contract choice。</p>
+            </article>
+            <article class="card orange">
+              <h3>2. Funding history 是 measurement device</h3>
+              <p>不是只把 rounds 當 control variable，而是用完整 distribution 回推 latent primitives。</p>
+            </article>
+            <article class="card green">
+              <h3>3. Allocation 與 total capital 分開</h3>
+              <p>Underinvestment 與 overinvestment 並存，使 stage targeting 即使在固定 aggregate budget 下也重要。</p>
+            </article>
+          </div>
+
+          <div class="callout purple">
+            <h3>最精確的 contribution statement</h3>
+            <p>
+              本文不是第一篇說 VC 有 matching friction，也不是第一篇說 staging 解決 moral hazard；
+              它的特色是把兩者整合成一個 tractable equilibrium model，
+              證明 standard funding-history moments 能識別 primitives，
+              再用同一模型回答 premature failure、英美差距與 stage-allocation policy。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="limits">
+          <div class="chapter-heading">
+            <div class="chapter-number">13</div>
+            <div>
+              <h2>限制、可能混淆與 seminar 討論題</h2>
+              <p>Structural clarity 很強，但 headline decomposition 高度依賴哪些退出被解讀為 search failure。</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="card red">
+              <h3>Ex ante homogeneity</h3>
+              <p>
+                Baseline 把 firms 設為同質，model 才能把 funding/outcome dispersion 歸因於 shocks。
+                若 founders、ideas 或 investor quality 有 persistent heterogeneity，premature-failure share 可能改變。
+              </p>
+            </article>
+            <article class="card orange">
+              <h3>New-investor requirement</h3>
+              <p>
+                Model 規定每輪需新 investor；資料確實顯示 syndication 擴張，
+                但約 35–55% investors 仍延續到下一輪，insider bridge finance 與 VC networks 被簡化。
+              </p>
+            </article>
+            <article class="card">
+              <h3>Poisson timing</h3>
+              <p>
+                κ、λ、ν、ω 都是 constant hazards，帶來 closed-form identification；
+                真實 milestones、runway 與 fundraising windows 可能依 age、macro cycle 和 firm news 改變。
+              </p>
+            </article>
+            <article class="card green">
+              <h3>Cross-country interpretation</h3>
+              <p>
+                US–UK 沒有 quasi-experimental shock。較低 ν 與 ϕ 是模型對 joint moments 的最佳解釋，
+                也可能吸收資料 coverage、sector mix、geography 或 investor-type heterogeneity。
+              </p>
+            </article>
+            <article class="card purple">
+              <h3>Acquisition technology</h3>
+              <p>
+                Offer arrival ϕ 外生、synergy iid，entrepreneur 做 take-it-or-leave-it offer。
+                Strategic acquirers、bargaining、competition 與 acqui-hire motives 都被壓縮成少數 parameters。
+              </p>
+            </article>
+            <article class="card gold">
+              <h3>Policy implementation</h3>
+              <p>
+                Counterfactual 假設能把資本精準移到 late-stage firms。
+                現實政府需處理 selection、crowd-out、VC entry、political targeting 與 dynamic general-equilibrium response。
+              </p>
+            </article>
+          </div>
+
+          <h3>13.1 Seminar 中值得追問</h3>
+          <ol>
+            <li>哪些 observed firm closures 被模型判為 positive continuation value？有沒有外部 validation，例如 patents、restarts 或 founder reports？</li>
+            <li>若引入 ex ante observable/unobservable project types，Proposition 1 的 unique recovery 是否仍成立？</li>
+            <li>Existing lead investors 的 certification、network 與 bridge rounds 會如何改變 ν 與 ω 的 interpretation？</li>
+            <li>Macro funding cycles 是否同時推動 ν、valuations 與 acquisition demand？模型目前的 steady state 如何處理 2008/2020 shocks？</li>
+            <li>UK firms 是否轉向 US investors 或 relocate/list abroad？Cross-border matching 會使 national ν 不易定義。</li>
+            <li>Late-stage subsidy 的 +16–30% surplus 對 acquisition bargaining、public selection error 與 VC entry 有多敏感？</li>
+            <li>Fewer early-stage firms 可能降低 option value 與 idea diversity；planner 是否充分計入 tail innovations？</li>
+          </ol>
+
+          <div class="callout">
+            <h3>建議閱讀順序</h3>
+            <p>
+              先讀 slide 3–4 掌握 question/results；slides 6–10 是 baseline mechanism；
+              slide 11 是 identification 核心；slides 12–17 看 SMM fit 與 US decomposition；
+              slides 18–19 看 UK counterfactual。Appendix 中最值得回看的是
+              identification formulas、parameter estimates、misallocation 與 5% reallocation Sankey。
+            </p>
+          </div>
+
+          <h3>13.2 Sources</h3>
+          <ul class="refs">
+            <li>
+              Parry, Charles,
+              <a href="../../Conference/17%20Charles%20Parry.pdf"><em>Start-up Financing, Entry and Innovation</em></a>,
+              DSE 2026 conference slides, 6 August 2026.
+            </li>
+            <li>
+              <a href="https://cparry96.github.io/website/parry_jmp.pdf">December 2025 working paper</a>：
+              提供完整 model、estimation 與額外 sectoral application；本 note 的數字以較新的 conference slides 為準。
+            </li>
+            <li>
+              <a href="https://sites.google.com/view/charles-parry/research">Charles Parry research page</a>。
+            </li>
+          </ul>
+        </section>
+      </main>
+    </div>
+
+    <footer>
+      Conference reading note · DSE 2026 · model-based identification and counterfactual assumptions are labeled explicitly
+    </footer>
+  </div>
+</body>
+</html>
