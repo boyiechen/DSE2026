@@ -1,0 +1,1245 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Barry、Lyman 與 Zhao：Human Capital, Competition, and Mobility in the Managerial Labor Market 研討會筆記">
+  <title>Human Capital, Competition, and Mobility：研討會筆記</title>
+  <style>
+    :root {
+      --paper: #edf1f2;
+      --surface: #ffffff;
+      --surface-2: #f7f9f9;
+      --ink: #18282f;
+      --muted: #607078;
+      --line: #d4dcdf;
+      --navy: #315a73;
+      --navy-soft: #e6eef3;
+      --teal: #197568;
+      --teal-soft: #e3f2ef;
+      --orange: #b46029;
+      --orange-soft: #faecdf;
+      --plum: #71516f;
+      --plum-soft: #f1e8ef;
+      --red: #a94b42;
+      --red-soft: #f8e8e5;
+      --gold: #8a6818;
+      --gold-soft: #f7efd8;
+      --shadow: 0 14px 34px rgba(24, 40, 47, 0.075);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.72;
+    }
+    a {
+      color: var(--navy);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+    h1, h2, h3 { letter-spacing: 0; }
+    h1 {
+      max-width: 980px;
+      margin: 0 0 13px;
+      font-size: clamp(2rem, 4.2vw, 3.25rem);
+      line-height: 1.08;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    h2 {
+      margin: 0;
+      font-size: 1.55rem;
+      line-height: 1.28;
+    }
+    h3 {
+      margin: 0 0 8px;
+      font-size: 1.08rem;
+      line-height: 1.4;
+    }
+    p { margin: 0 0 12px; }
+    ul, ol { margin: 8px 0 14px; padding-left: 1.35rem; }
+    li { margin: 5px 0; }
+    strong { font-weight: 800; }
+    code, .math {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    code {
+      padding: 1px 5px;
+      border-radius: 4px;
+      color: #284c60;
+      background: var(--navy-soft);
+      font-size: 0.9em;
+    }
+    .shell {
+      width: min(1420px, 100%);
+      min-width: 0;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .masthead {
+      overflow: hidden;
+      margin-bottom: 22px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .masthead-copy {
+      padding: 36px 40px 30px;
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow {
+      margin: 0 0 7px;
+      color: var(--teal);
+      font-size: 0.78rem;
+      font-weight: 850;
+      letter-spacing: 0.045em;
+      text-transform: uppercase;
+    }
+    .lead {
+      max-width: 1080px;
+      margin: 0;
+      color: #344850;
+      font-size: 1.06rem;
+    }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 18px;
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+    .meta span {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+    .thesis-map {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      background: var(--surface-2);
+    }
+    .thesis-step {
+      min-width: 0;
+      min-height: 135px;
+      padding: 19px 21px;
+      border-right: 1px solid var(--line);
+    }
+    .thesis-step:last-child { border-right: 0; }
+    .thesis-step span {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 0.73rem;
+      font-weight: 850;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .thesis-step strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--navy);
+    }
+    .thesis-step:nth-child(2) strong { color: var(--orange); }
+    .thesis-step:nth-child(3) strong { color: var(--teal); }
+    .thesis-step:nth-child(4) strong { color: var(--plum); }
+    .thesis-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.87rem;
+      line-height: 1.52;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 255px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+    .toc {
+      position: sticky;
+      top: 18px;
+      max-height: calc(100vh - 36px);
+      overflow-y: auto;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: var(--surface);
+      box-shadow: 0 8px 24px rgba(24, 40, 47, 0.055);
+    }
+    .toc strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+    }
+    .toc a {
+      display: block;
+      padding: 6px 8px;
+      border-left: 2px solid transparent;
+      color: #40545d;
+      font-size: 0.86rem;
+      line-height: 1.45;
+      text-decoration: none;
+    }
+    .toc a:hover,
+    .toc a:focus-visible {
+      border-left-color: var(--teal);
+      color: var(--teal);
+      background: var(--teal-soft);
+    }
+    main {
+      min-width: 0;
+      padding: 2px 31px 30px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .chapter {
+      scroll-margin-top: 18px;
+      padding: 31px 0 36px;
+      border-bottom: 1px solid var(--line);
+    }
+    .chapter:last-child { border-bottom: 0; }
+    .chapter-heading {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 20px;
+    }
+    .chapter-number {
+      display: grid;
+      width: 40px;
+      height: 40px;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--navy);
+      font-size: 0.88rem;
+      font-weight: 850;
+    }
+    .chapter:nth-child(3n + 2) .chapter-number { background: var(--teal); }
+    .chapter:nth-child(3n) .chapter-number { background: var(--orange); }
+    .chapter-heading p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 0.93rem;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin: 16px 0;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin: 16px 0;
+    }
+    .card {
+      min-width: 0;
+      padding: 16px 17px;
+      border: 1px solid var(--line);
+      border-top: 3px solid var(--navy);
+      border-radius: 8px;
+      background: var(--surface-2);
+    }
+    .card.teal { border-top-color: var(--teal); }
+    .card.orange { border-top-color: var(--orange); }
+    .card.plum { border-top-color: var(--plum); }
+    .card.red { border-top-color: var(--red); }
+    .card.gold { border-top-color: var(--gold); }
+    .card p:last-child,
+    .card ul:last-child { margin-bottom: 0; }
+    .label {
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 0.74rem;
+      font-weight: 850;
+      letter-spacing: 0.035em;
+      text-transform: uppercase;
+    }
+    .callout {
+      margin: 16px 0;
+      padding: 15px 18px;
+      border-left: 4px solid var(--navy);
+      background: var(--navy-soft);
+    }
+    .callout.teal { border-left-color: var(--teal); background: var(--teal-soft); }
+    .callout.orange { border-left-color: var(--orange); background: var(--orange-soft); }
+    .callout.red { border-left-color: var(--red); background: var(--red-soft); }
+    .callout.gold { border-left-color: var(--gold); background: var(--gold-soft); }
+    .callout.plum { border-left-color: var(--plum); background: var(--plum-soft); }
+    .callout p:last-child,
+    .callout ul:last-child { margin-bottom: 0; }
+    .equation {
+      overflow-x: auto;
+      margin: 15px 0;
+      padding: 15px 18px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fbfcfc;
+      text-align: center;
+    }
+    .equation .math {
+      display: inline-block;
+      min-width: max-content;
+      color: #203c4b;
+      font-size: clamp(0.92rem, 2vw, 1.08rem);
+    }
+    .equation p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+    .states {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin: 17px 0;
+    }
+    .state {
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface-2);
+      text-align: center;
+    }
+    .state b {
+      display: inline-grid;
+      width: 36px;
+      height: 36px;
+      margin-bottom: 5px;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--navy);
+    }
+    .state:nth-child(2) b { background: var(--teal); }
+    .state:nth-child(3) b { background: var(--orange); }
+    .state span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+    .threshold-wrap {
+      margin: 21px 0;
+      padding: 20px 18px 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface-2);
+    }
+    .threshold {
+      display: grid;
+      grid-template-columns: 1.1fr 1.35fr 1.15fr;
+      overflow: hidden;
+      min-width: 580px;
+      border: 1px solid #aebbc0;
+      border-radius: 6px;
+    }
+    .threshold-wrap-inner { overflow-x: auto; }
+    .zone {
+      padding: 14px 12px;
+      border-right: 1px solid rgba(24, 40, 47, 0.18);
+      text-align: center;
+    }
+    .zone:last-child { border-right: 0; }
+    .zone.ignore { background: #eceff0; }
+    .zone.renegotiate { background: var(--teal-soft); }
+    .zone.switch { background: var(--plum-soft); }
+    .zone strong { display: block; }
+    .zone span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+    .threshold-labels {
+      display: grid;
+      grid-template-columns: 1.1fr 1.35fr 1.15fr;
+      min-width: 580px;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+    .threshold-labels span:nth-child(1) { grid-column: 1; text-align: right; transform: translateX(13px); }
+    .threshold-labels span:nth-child(2) { grid-column: 2; text-align: right; transform: translateX(13px); }
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 21px;
+      margin: 18px 0;
+    }
+    .flow-item {
+      position: relative;
+      min-width: 0;
+      padding: 15px 13px;
+      border: 1px solid var(--line);
+      border-top: 3px solid var(--navy);
+      border-radius: 8px;
+      background: var(--surface-2);
+      text-align: center;
+    }
+    .flow-item::after {
+      position: absolute;
+      top: 50%;
+      right: -19px;
+      color: var(--muted);
+      content: "→";
+      font-weight: 850;
+      transform: translateY(-50%);
+    }
+    .flow-item:last-child::after { content: ""; }
+    .flow-item:nth-child(2) { border-top-color: var(--orange); }
+    .flow-item:nth-child(3) { border-top-color: var(--teal); }
+    .flow-item:nth-child(4) { border-top-color: var(--plum); }
+    .flow-item strong,
+    .flow-item span { display: block; }
+    .flow-item span {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.48;
+    }
+    .table-wrap {
+      overflow-x: auto;
+      margin: 16px 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      font-size: 0.92rem;
+    }
+    caption {
+      padding: 11px 13px;
+      color: var(--muted);
+      background: var(--surface-2);
+      font-size: 0.82rem;
+      text-align: left;
+    }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+    }
+    th {
+      color: #31464f;
+      background: #f3f6f7;
+      font-weight: 800;
+    }
+    tr:last-child td { border-bottom: 0; }
+    td.num, th.num {
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      white-space: nowrap;
+    }
+    .tag {
+      display: inline-block;
+      margin: 1px 3px 1px 0;
+      padding: 2px 7px;
+      border-radius: 999px;
+      color: var(--teal);
+      background: var(--teal-soft);
+      font-size: 0.75rem;
+      font-weight: 800;
+    }
+    .tag.orange { color: var(--orange); background: var(--orange-soft); }
+    .tag.plum { color: var(--plum); background: var(--plum-soft); }
+    .result-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      overflow: hidden;
+      margin: 17px 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    .result {
+      padding: 16px;
+      border-right: 1px solid var(--line);
+      background: var(--surface-2);
+    }
+    .result:last-child { border-right: 0; }
+    .result b {
+      display: block;
+      color: var(--navy);
+      font-size: 1.45rem;
+      line-height: 1.2;
+    }
+    .result:nth-child(2) b { color: var(--teal); }
+    .result:nth-child(3) b { color: var(--orange); }
+    .result:nth-child(4) b { color: var(--plum); }
+    .result span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+    .rank {
+      display: grid;
+      grid-template-columns: 38px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+      margin: 11px 0;
+      padding: 13px 15px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface-2);
+    }
+    .rank-number {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--navy);
+      font-weight: 850;
+    }
+    .rank:nth-of-type(2) .rank-number { background: var(--teal); }
+    .rank:nth-of-type(3) .rank-number { background: var(--orange); }
+    .rank:nth-of-type(4) .rank-number { background: var(--plum); }
+    .rank p { margin: 3px 0 0; color: var(--muted); }
+    .small {
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+    footer {
+      padding: 0 0 8px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-align: center;
+    }
+
+    @media (max-width: 1040px) {
+      .thesis-map { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .thesis-step:nth-child(2) { border-right: 0; }
+      .thesis-step:nth-child(-n + 2) { border-bottom: 1px solid var(--line); }
+      .layout { grid-template-columns: 1fr; }
+      .toc {
+        position: static;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        max-height: none;
+      }
+      .toc strong { grid-column: 1 / -1; }
+      .flow { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+      .flow-item::after { content: ""; }
+      .result-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .result:nth-child(2) { border-right: 0; }
+      .result:nth-child(-n + 2) { border-bottom: 1px solid var(--line); }
+    }
+    @media (max-width: 720px) {
+      html, body { max-width: 100%; overflow-x: clip; }
+      .shell { padding: 12px; }
+      .masthead, .layout, main { max-width: 100%; }
+      .masthead-copy { padding: 25px 22px; }
+      .thesis-map,
+      .grid-2,
+      .grid-3,
+      .states,
+      .flow,
+      .toc,
+      .result-strip { grid-template-columns: 1fr; }
+      .thesis-step {
+        min-height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .thesis-step:last-child { border-bottom: 0; }
+      .result {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .result:last-child { border-bottom: 0; }
+      main { padding: 2px 20px 22px; }
+      .chapter-heading { grid-template-columns: 38px minmax(0, 1fr); }
+      .chapter-number { width: 34px; height: 34px; }
+    }
+    @media print {
+      body { background: #fff; }
+      .shell { width: 100%; padding: 0; }
+      .masthead, main, .toc { box-shadow: none; }
+      .toc { display: none; }
+      .layout { display: block; }
+      main { border: 0; padding: 0; }
+      .chapter { break-inside: avoid; }
+      a { color: inherit; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="masthead">
+      <div class="masthead-copy">
+        <p class="eyebrow">DSE 2026 Conference Notes · Executive Labor Market</p>
+        <h1>Human Capital, Competition, and Mobility in the Managerial Labor Market</h1>
+        <p class="lead">
+          John W. Barry、Noah Lyman 與 Lin Zhao 建立一個包含外部 offer、incumbent counteroffer、
+          firm-specific human capital 與動態合約的 CEO 勞動市場模型。文章的核心訊息是：
+          CEO 很少跳槽，不代表雇主之間缺乏競爭；競爭往往由現任公司的留任加薪吸收，
+          因此表現在薪資而不是流動率。
+        </p>
+        <div class="meta">
+          <span><strong>作者：</strong>John W. Barry · Noah Lyman · Lin Zhao</span>
+          <span><strong>簡報日期：</strong>2026-08-06</span>
+          <span><strong>資料：</strong>ExecuComp，S&amp;P 1500，1992–2023</span>
+          <span><strong>來源：</strong><a href="../../Conference/14%20Noah%20Lyman.pdf">Conference/14 Noah Lyman.pdf</a></span>
+        </div>
+      </div>
+
+      <div class="thesis-map" aria-label="文章主旨摘要">
+        <div class="thesis-step">
+          <span>Question</span>
+          <strong>高薪來自 power 還是 competition？</strong>
+          <p>CEO 超過保留價值的所得，有多少是雙邊議價，又有多少是其他雇主競標造成？</p>
+        </div>
+        <div class="thesis-step">
+          <span>Identification problem</span>
+          <strong>低流動率有兩種相反解釋</strong>
+          <p>可能是 offer 根本沒來，也可能是 offer 來了但 incumbent 加薪留人。</p>
+        </div>
+        <div class="thesis-step">
+          <span>Model innovation</span>
+          <strong>合約記住競爭歷史</strong>
+          <p>不可觀察的 piece rate 在 matched offer 後上升，成為經理人過去競爭經歷的 state variable。</p>
+        </div>
+        <div class="thesis-step">
+          <span>Answer</span>
+          <strong>競爭主要變成加薪</strong>
+          <p>約 42% 的 managerial rents 來自競爭；72.8% 的合約性薪資成長來自重新談判。</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <nav class="toc" aria-label="目錄">
+        <strong>目錄</strong>
+        <a href="#question">1. 研究問題與重要性</a>
+        <a href="#gap">2. 前人文獻的識別缺口</a>
+        <a href="#setup">3. Model setup</a>
+        <a href="#offers">4. Outside offers 與 job lock</a>
+        <a href="#identification">5. Identification</a>
+        <a href="#unique">6. Unique contribution</a>
+        <a href="#results">7. 主要結果</a>
+        <a href="#limits">8. 解讀與限制</a>
+      </nav>
+
+      <main>
+        <section class="chapter" id="question">
+          <div class="chapter-heading">
+            <div class="chapter-number">1</div>
+            <div>
+              <h2>研究問題與重要性</h2>
+              <p>同一個低流動率，可以支持完全相反的市場判斷。</p>
+            </div>
+          </div>
+
+          <div class="callout">
+            <h3>核心 research question</h3>
+            <p>
+              CEO 薪資高於其保留價值的部分，究竟有多少來自經理人的
+              <strong>雙邊議價權力</strong>，又有多少來自其他雇主的
+              <strong>競爭性出價</strong>？
+            </p>
+          </div>
+
+          <div class="grid-2">
+            <article class="card orange">
+              <p class="label">Competition absent</p>
+              <h3>市場很少提供有效 offer</h3>
+              <p>
+                CEO 不跳槽是因為外部機會少或不值得接受。薪資主要由 CEO 與董事會談判；
+                高薪較可能反映 captured board 或 governance failure。
+              </p>
+            </article>
+            <article class="card teal">
+              <p class="label">Competition invisible</p>
+              <h3>Offer 來了，但 incumbent 留人</h3>
+              <p>
+                外部雇主確實競爭，但現任公司透過 matching、benchmarking 或 retention raise
+                把 CEO 留下。競爭最後出現在薪資，而不是 job switch。
+              </p>
+            </article>
+          </div>
+
+          <p>
+            S&amp;P 1500 中超過 70% 的 CEO 由內部晉升，每年橫向移動不到 1%。
+            但 mobility alone 無法區分上述兩個世界。若把所有高於保留價值的所得都視為
+            managerial power，就可能高估董事會讓步與代理問題，並錯誤解讀高薪與低流動率。
+          </p>
+        </section>
+
+        <section class="chapter" id="gap">
+          <div class="chapter-heading">
+            <div class="chapter-number">2</div>
+            <div>
+              <h2>前人文獻不能回答什麼？</h2>
+              <p>問題不只是資料少，而是關鍵競爭通常發生在研究者看不到的地方。</p>
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <article class="card">
+              <p class="label">Mobility data</p>
+              <h3>只看到 realized moves</h3>
+              <p>
+                資料看得到誰真的換公司，卻看不到被忽略的 offer、失敗的挖角，
+                以及 incumbent matching 後沒有發生的移動。
+              </p>
+            </article>
+            <article class="card orange">
+              <p class="label">Compensation data</p>
+              <h3>高薪來源不唯一</h3>
+              <p>
+                相同薪資可能來自生產力、雙邊 bargaining 或雇主 bidding。
+                僅觀察 pay level 無法把三者分開。
+              </p>
+            </article>
+            <article class="card teal">
+              <p class="label">Standard regressions</p>
+              <h3>遺漏 endogenous contract</h3>
+              <p>
+                傳統 Mincer–AKM/TWFE 迴歸沒有記錄經理人過去的外部 offer；
+                遺漏的合約項與能力、公司、tenure 和 mobility 都相關。
+              </p>
+            </article>
+          </div>
+
+          <div class="callout red">
+            <h3>關鍵 observational equivalence</h3>
+            <p>
+              「沒有外部 offer」與「有外部 offer，但現任公司成功 counter」都會產生
+              <strong>沒有跳槽</strong>。只用 mobility rate，無法識別 competition 是否存在。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="setup">
+          <div class="chapter-heading">
+            <div class="chapter-number">3</div>
+            <div>
+              <h2>Model setup</h2>
+              <p>一個 continuous-time、具有搜尋摩擦、工作階層與動態合約的 executive labor market。</p>
+            </div>
+          </div>
+
+          <h3>3.1 勞動市場狀態與工作機會</h3>
+          <p>
+            經理人與公司存在於 continuous time。工作 offer、退休，以及進出未依附狀態的事件，
+            都依 Poisson process 發生。經理人位於以下三種狀態之一：
+          </p>
+
+          <div class="states" aria-label="經理人三種勞動市場狀態">
+            <div class="state">
+              <b>C</b>
+              <strong>CEO</strong>
+              <span>在某家公司擔任執行長</span>
+            </div>
+            <div class="state">
+              <b>E</b>
+              <strong>Executive</strong>
+              <span>非 CEO 高階主管</span>
+            </div>
+            <div class="state">
+              <b>U</b>
+              <strong>Unattached</strong>
+              <span>目前未依附於特定公司</span>
+            </div>
+          </div>
+
+          <p>
+            Offer 可能是原公司的內部晉升，也可能來自另一家公司。每次 offer 都觸發一個
+            bargaining game，同時決定「誰雇用經理人」以及「新的合約價格」。
+          </p>
+
+          <h3>3.2 生產力：portable 與 non-portable human capital</h3>
+
+          <div class="equation">
+            <span class="math">y = a + g(t) + f + k(&tau;)</span>
+            <p>經理人在當前公司的 log output</p>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <caption>生產力的四個組成</caption>
+              <thead>
+                <tr>
+                  <th>項目</th>
+                  <th>經濟意義</th>
+                  <th>換公司後</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>a</code></td>
+                  <td>經理人的固有能力，模型中服從常態分配</td>
+                  <td><span class="tag">保留</span></td>
+                </tr>
+                <tr>
+                  <td><code>g(t)</code></td>
+                  <td>隨總工作經驗 <code>t</code> 累積的一般人力資本</td>
+                  <td><span class="tag">保留</span></td>
+                </tr>
+                <tr>
+                  <td><code>f</code></td>
+                  <td>公司生產力、規模、文化或 match quality</td>
+                  <td><span class="tag orange">重新抽取 f′</span></td>
+                </tr>
+                <tr>
+                  <td><code>k(&tau;)</code></td>
+                  <td>隨當前公司 tenure <code>&tau;</code> 累積的 firm-specific human capital</td>
+                  <td><span class="tag plum">歸零</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p>
+            外部公司的生產力是新抽樣 <code>f′ ~ &Psi;(&middot; | a)</code>。
+            分配依賴經理人能力，因此較好的經理人可以較常遇到高生產力公司，
+            容許 assortative matching。
+          </p>
+
+          <h3>3.3 薪資：piece-rate contract</h3>
+
+          <div class="equation">
+            <span class="math">W = R &times; Y,&nbsp; R &isin; (0,1]&nbsp;&nbsp; &Longrightarrow;&nbsp;&nbsp;
+              w = a + g(t) + f + k(&tau;) + r,&nbsp; r = log(R) &le; 0</span>
+          </div>
+
+          <p>
+            <code>R</code> 是經理人取得的 output share，<code>r</code> 是其 log。
+            <code>r = 0</code> 表示經理人取得全部 marginal product，為完全競爭基準。
+            <code>r</code> 越接近零，經理人分得的 surplus 越多。
+          </p>
+
+          <div class="callout plum">
+            <h3>模型最關鍵的 state variable</h3>
+            <p>
+              <code>r<sub>it</sub></code> 不只是當期薪資殘差，而是經理人的
+              <strong>競爭歷史</strong>：matched offer 會把它往上推；換公司後舊合約歷史被重設。
+              因此兩位能力相同、任職同一公司的經理人，也可能因過去 offers 不同而領取不同薪資。
+            </p>
+          </div>
+
+          <h3>3.4 內部晉升：純雙邊 bargaining</h3>
+
+          <div class="equation">
+            <span class="math">V<sub>C</sub>(r′,&tau;,f) =
+              V<sub>E</sub>(r,&tau;,f) +
+              &beta;[V<sub>C</sub>(0,&tau;,f) - V<sub>E</sub>(0,&tau;,f)]</span>
+          </div>
+
+          <p>
+            Executive 在原公司升任 CEO 時，沒有 poacher 參與；經理人與公司以 bargaining power
+            <code>&beta; &isin; [0,1]</code> 分配晉升 surplus。公司 <code>f</code> 不變，
+            tenure 與 <code>k(&tau;)</code> 也不中斷。因此，內部晉升最接近模型中的純 bilateral bargaining。
+          </p>
+        </section>
+
+        <section class="chapter" id="offers">
+          <div class="chapter-heading">
+            <div class="chapter-number">4</div>
+            <div>
+              <h2>Outside offers、counteroffers 與 job lock</h2>
+              <p>外部 offer 不一定帶來移動；它也可能只改變 incumbent 所支付的價格。</p>
+            </div>
+          </div>
+
+          <p>
+            生產力為 <code>f′</code> 的外部公司出現後，經理人、incumbent 與 poacher
+            進入三方 bargaining。兩家公司進行 Bertrand competition：較弱的一方願意 bid 到其全部 surplus，
+            這個 bid 建立經理人的 outside option；經理人再以 <code>&beta;</code> 分得最強公司相對於次強公司的額外 surplus。
+          </p>
+
+          <div class="threshold-wrap">
+            <h3>外部公司生產力 f′ 決定三種均衡結果</h3>
+            <div class="threshold-wrap-inner">
+              <div class="threshold-labels" aria-hidden="true">
+                <span>&theta;</span>
+                <span>θ̄</span>
+              </div>
+              <div class="threshold" aria-label="外部 offer 的三種結果">
+                <div class="zone ignore">
+                  <strong>Offer ignored</strong>
+                  <span>f′ 太低，沒有影響</span>
+                </div>
+                <div class="zone renegotiate">
+                  <strong>Renegotiation</strong>
+                  <span>incumbent 加薪，經理人留下</span>
+                </div>
+                <div class="zone switch">
+                  <strong>Job switch</strong>
+                  <span>poacher 足夠好，經理人離開</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flow" aria-label="長任期如何產生看不見的競爭">
+            <div class="flow-item">
+              <strong>Tenure 上升</strong>
+              <span>經理人在現任公司累積更多時間</span>
+            </div>
+            <div class="flow-item">
+              <strong>k(&tau;) 上升</strong>
+              <span>換公司要放棄更多特定知識</span>
+            </div>
+            <div class="flow-item">
+              <strong>Job lock 增強</strong>
+              <span>真正 switching 所需的 f′ 更高</span>
+            </div>
+            <div class="flow-item">
+              <strong>Matching 增加</strong>
+              <span>更多 offer 以留任加薪告終</span>
+            </div>
+          </div>
+
+          <div class="callout teal">
+            <h3>Invisible competition 的典型觀察</h3>
+            <p>
+              長任期 CEO 收到不錯的外部 offer，但 offer 不足以補償其放棄的
+              <code>k(&tau;)</code>，所以沒有跳槽；然而 offer 足以提高 outside option，
+              迫使 incumbent 提高 <code>r</code>。資料最後只記錄到「沒有移動 + 薪資上升」。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="identification">
+          <div class="chapter-heading">
+            <div class="chapter-number">5</div>
+            <div>
+              <h2>Identification：模型物件如何對應資料 moments？</h2>
+              <p>作者用 SMM，以 43 個 moments 估計 22 個參數，並聯合匹配 mobility 與 pay dynamics。</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <caption>主要參數、識別變異與直覺</caption>
+              <thead>
+                <tr>
+                  <th>要識別的物件</th>
+                  <th>主要 moments / variation</th>
+                  <th>識別直覺</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Offer arrival rates</strong></td>
+                  <td>依 transition type 區分的 job-spell duration 與 destination</td>
+                  <td>不同職位與公司間的離開速度，約束各類工作機會到達率。</td>
+                </tr>
+                <tr>
+                  <td><strong>General HC <code>g(t)</code></strong><br>
+                    <strong>Firm-specific HC <code>k(&tau;)</code></strong></td>
+                  <td>Experience-pay profile、tenure-pay profile，以及 movers</td>
+                  <td>換公司時 experience 繼續、tenure 歸零；switchers 分開兩個同時累積的時鐘。</td>
+                </tr>
+                <tr>
+                  <td><strong>Bargaining power <code>&beta;</code></strong></td>
+                  <td>晉升與換工作時的 pay changes；pay-level 與 pay-growth profiles 的 wedge</td>
+                  <td><code>&beta;</code> 決定每次 transition surplus 有多少立即轉進新合約。</td>
+                </tr>
+                <tr>
+                  <td><strong>Ability、firm productivity</strong></td>
+                  <td>Manager 與 firm fixed-effect moments；firm effects 對公司規模的斜率</td>
+                  <td>公司規模協助把 estimated firm effects 映射到生產力 <code>f</code>。</td>
+                </tr>
+                <tr>
+                  <td><strong>Assortative matching</strong></td>
+                  <td>Manager effects 與所在公司規模的關係</td>
+                  <td>能力較高者是否系統性進入較高生產力公司，約束 <code>&Psi;(&middot; | a)</code>。</td>
+                </tr>
+                <tr>
+                  <td><strong>Contract history <code>r<sub>it</sub></code></strong></td>
+                  <td>Pay growth、tenure/experience profiles、transitions 與 within-manager variation 的聯合形狀</td>
+                  <td><code>r<sub>it</sub></code> 不可見，只能透過模型預測的累積競爭效果間接識別。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>5.1 Movers 分開 experience 與 tenure</h3>
+          <p>
+            對沒有換公司的人，<code>t</code> 與 <code>&tau;</code> 同時增加，因此
+            <code>g(t)</code> 和 <code>k(&tau;)</code> 很難區分。經理人換公司時則有：
+          </p>
+
+          <div class="equation">
+            <span class="math">experience t：繼續累積&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+              tenure &tau;：重設為 0</span>
+          </div>
+
+          <p>
+            Movers 因此提供 off-diagonal variation：換工作後仍存在的回報屬於 portable human capital；
+            隨 tenure 重設而消失的部分則約束 firm-specific human capital。
+          </p>
+
+          <h3>5.2 最特殊的做法：模擬同一個 omitted-variable bias</h3>
+
+          <div class="equation">
+            <span class="math">w<sub>it</sub> =
+              a<sub>i</sub> + g(t) + k(&tau;) + f<sub>j</sub> +
+              r<sub>it</sub> + &epsilon;<sub>it</sub></span>
+            <p>研究者看得到薪資與職涯，但看不到 endogenous contract term r<sub>it</sub>。</p>
+          </div>
+
+          <p>
+            <code>r<sub>it</sub></code> 會在 matched offer 後上升，且與能力、公司、tenure、
+            過去 mobility 和 offer history 都相關。傳統 TWFE 遺漏它後，不只是多一個 noise，
+            而是產生系統性偏誤。作者的 SMM 程序是：
+          </p>
+
+          <div class="flow" aria-label="SMM 模擬遺漏變數偏誤的四個步驟">
+            <div class="flow-item">
+              <strong>設定參數</strong>
+              <span>給定 arrivals、HC、sorting、β 等參數</span>
+            </div>
+            <div class="flow-item">
+              <strong>模擬完整職涯</strong>
+              <span>包含看不見的 offers、matches 與 r<sub>it</sub></span>
+            </div>
+            <div class="flow-item">
+              <strong>隱藏 r<sub>it</sub></strong>
+              <span>對模擬資料跑與真實資料相同的 TWFE</span>
+            </div>
+            <div class="flow-item">
+              <strong>匹配 moments</strong>
+              <span>選擇能重現 observed bias 與動態的參數</span>
+            </div>
+          </div>
+
+          <div class="callout gold">
+            <h3>Identification 的核心</h3>
+            <p>
+              作者不是聲稱可以直接觀察 <code>r<sub>it</sub></code>，而是要求結構模型重現
+              「研究者遺漏 <code>r<sub>it</sub></code> 後實際得到的迴歸形狀」。
+              這把原本的 omitted-variable problem 轉化為模型必須匹配的 quantitative restriction。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="unique">
+          <div class="chapter-heading">
+            <div class="chapter-number">6</div>
+            <div>
+              <h2>這篇文章 unique 在哪裡？</h2>
+              <p>個別零件並非全新；貢獻在於組合方式，以及它允許的新分解。</p>
+            </div>
+          </div>
+
+          <div class="rank">
+            <div class="rank-number">1</div>
+            <div>
+              <h3>把「沒有跳槽」建模成競爭的可能結果</h3>
+              <p>
+                Offer 不只造成 job switch，也可能造成 incumbent renegotiation。
+                因此 retention 本身可能是雇主競爭成功運作後的均衡結果。
+              </p>
+            </div>
+          </div>
+
+          <div class="rank">
+            <div class="rank-number">2</div>
+            <div>
+              <h3>讓合約成為競爭歷史的動態 state variable</h3>
+              <p>
+                <code>r<sub>it</sub></code> 會因 matched offers ratchet upward，
+                使薪資具有 path dependence，而不只是當期 productivity 與 match quality 的函數。
+              </p>
+            </div>
+          </div>
+
+          <div class="rank">
+            <div class="rank-number">3</div>
+            <div>
+              <h3>分開 pure bargaining power 與 realized surplus capture</h3>
+              <p>
+                <code>&beta;</code> 是經理人的雙邊 bargaining power；實際取得的 surplus share
+                <code>b</code> 還包含雇主 bidding。沒有 competition 的模型會把兩者混為一談。
+              </p>
+            </div>
+          </div>
+
+          <div class="rank">
+            <div class="rank-number">4</div>
+            <div>
+              <h3>用同一模型聯合解釋 mobility 與 compensation</h3>
+              <p>
+                模型必須同時匹配工作期間、transition type、pay jumps、experience/tenure profiles、
+                firm/manager effects 與 within-manager pay dynamics，不能只靠單一流動率或薪資統計說故事。
+              </p>
+            </div>
+          </div>
+
+          <div class="equation">
+            <span class="math">b = 1 + r / [f + k(&tau;) - f<sub>min</sub>]
+              &nbsp;&isin;&nbsp; [&beta;,1]</span>
+            <p>
+              Competition share = (b − β) / b；pure bargaining share = β / b。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="results">
+          <div class="chapter-heading">
+            <div class="chapter-number">7</div>
+            <div>
+              <h2>主要結果與經濟含意</h2>
+              <p>經理人的純 bargaining power 不高，但競爭讓其實際取得更多 surplus。</p>
+            </div>
+          </div>
+
+          <div class="result-strip" aria-label="四個主要估計結果">
+            <div class="result">
+              <b>0.32</b>
+              <span>估計的 managerial bargaining power β，標準誤 0.04</span>
+            </div>
+            <div class="result">
+              <b>54.3%</b>
+              <span>全樣本的 realized surplus capture</span>
+            </div>
+            <div class="result">
+              <b>42.7%</b>
+              <span>全樣本 rents 中來自 competition 的比例</span>
+            </div>
+            <div class="result">
+              <b>72.8%</b>
+              <span>職涯合約性薪資成長中來自 renegotiation 的比例</span>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <caption>Realized capture 與 competition contribution</caption>
+              <thead>
+                <tr>
+                  <th>群體</th>
+                  <th class="num">Realized capture b</th>
+                  <th class="num">Share from competition</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Full sample</td>
+                  <td class="num">54.3%</td>
+                  <td class="num">42.7%</td>
+                </tr>
+                <tr>
+                  <td>Internal CEOs</td>
+                  <td class="num">49.6%</td>
+                  <td class="num">36.2%</td>
+                </tr>
+                <tr>
+                  <td>Poached CEOs</td>
+                  <td class="num">79.3%</td>
+                  <td class="num">60.1%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <ul>
+            <li>
+              <strong>β 並不特別高：</strong>0.32 與一般勞工的 bargaining estimates 接近，
+              低於部分先前 CEO 文獻的估計。
+            </li>
+            <li>
+              <strong>但實際 surplus capture 很高：</strong>差距不是額外 managerial power，
+              而是 incumbent 與 poacher 的競爭性出價。
+            </li>
+            <li>
+              <strong>外部聘用最昂貴：</strong>poached CEOs 的競爭成分最高；
+              internal appointees 相對受到競爭隔離。
+            </li>
+            <li>
+              <strong>薪資比 mobility 更能看見競爭：</strong>多數 contractual gains
+              經由 renegotiation 累積，而不是透過實際 job switches。
+            </li>
+          </ul>
+
+          <p class="small">
+            註：結果表報告全樣本 realized capture 為 54.3%；簡報前面的 results overview
+            寫作 54.6%。此筆記採用第 22 頁結果表的數字。
+          </p>
+        </section>
+
+        <section class="chapter" id="limits">
+          <div class="chapter-heading">
+            <div class="chapter-number">8</div>
+            <div>
+              <h2>如何解讀：貢獻、限制與閱讀重點</h2>
+              <p>這是一個有力的結構性分解，但不是直接觀察 counteroffers 的 reduced-form design。</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="card teal">
+              <p class="label">What the paper changes</p>
+              <h3>重新解釋低流動率與內部晉升</h3>
+              <p>
+                低 mobility 不再自動等於 weak competition。Firm-specific capital
+                讓外部 offer 難以接受，incumbent matching 又把競爭轉成加薪；
+                internal hiring 也可能是競爭環境下成本較低的路徑。
+              </p>
+            </article>
+            <article class="card red">
+              <p class="label">What remains model-dependent</p>
+              <h3>Invisible competition 並未被直接看到</h3>
+              <p>
+                資料沒有直接觀察 offers 與 counteroffers。競爭成分是透過均衡模型、
+                offer distribution、bargaining protocol、piece-rate contract 與
+                human-capital portability 的假設間接推論。
+              </p>
+            </article>
+          </div>
+
+          <div class="callout orange">
+            <h3>讀這篇文章時最值得追問的三件事</h3>
+            <ol>
+              <li>
+                <strong>哪些 moments 真正區分 β 與 competition？</strong>
+                如果 alternative wage process 也能產生相同 pay-growth wedge，分解是否穩健？
+              </li>
+              <li>
+                <strong>k(&tau;) 歸零的假設有多重要？</strong>
+                管理技能可能部分 portable；不同 portability 設定如何改變 job lock 與 matching？
+              </li>
+              <li>
+                <strong>Offer arrival 與 offer acceptance 是否可分開？</strong>
+                因為未接受的 offer 不可見，arrival rates 的識別高度依賴模型中的 threshold structure。
+              </li>
+            </ol>
+          </div>
+
+          <div class="callout">
+            <h3>Bottom line</h3>
+            <p>
+              這篇文章最重要的貢獻，不是證明 CEO 市場流動很多，而是證明
+              <strong>競爭不必透過移動才能影響薪資</strong>。一旦 incumbent counteroffers
+              與 firm-specific human capital 同時存在，「少跳槽」可能正是競爭透過留任合約發揮作用的結果。
+            </p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <footer>
+      DSE 2026 Conference Note · 根據 2026-08-06 簡報整理 · 最後更新 2026-08-06
+    </footer>
+  </div>
+</body>
+</html>

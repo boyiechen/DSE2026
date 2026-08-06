@@ -1,0 +1,1137 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Nicolas Hommel 與 Thibaut Piquard：Firms' Foreign Exchange Hedging 研討會筆記">
+  <title>Firms' Foreign Exchange Hedging：研討會筆記</title>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]],
+        macros: {
+          Var: "\\operatorname{Var}",
+          Cov: "\\operatorname{Cov}"
+        }
+      },
+      svg: { fontCache: "global" }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    :root {
+      --paper: #eef2f3;
+      --surface: #ffffff;
+      --surface-2: #f7f9f9;
+      --ink: #17262e;
+      --muted: #5d6c73;
+      --line: #d4dcdf;
+      --blue: #285f8f;
+      --blue-soft: #e6eff7;
+      --teal: #147565;
+      --teal-soft: #e1f2ee;
+      --orange: #b45d25;
+      --orange-soft: #faebdf;
+      --plum: #74506f;
+      --plum-soft: #f1e8ef;
+      --red: #aa443d;
+      --red-soft: #f8e7e4;
+      --gold: #8c6913;
+      --gold-soft: #f7efd9;
+      --shadow: 0 12px 30px rgba(23, 38, 46, 0.07);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.7;
+    }
+    a {
+      color: var(--blue);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+    h1, h2, h3, h4 { letter-spacing: 0; }
+    h1 {
+      max-width: 980px;
+      margin: 0 0 12px;
+      font-size: clamp(2rem, 4vw, 3.25rem);
+      line-height: 1.08;
+      overflow-wrap: anywhere;
+    }
+    h2 {
+      margin: 0;
+      font-size: 1.55rem;
+      line-height: 1.25;
+    }
+    h3 {
+      margin: 0 0 8px;
+      font-size: 1.08rem;
+      line-height: 1.35;
+    }
+    h4 {
+      margin: 0 0 6px;
+      font-size: 0.96rem;
+    }
+    p { margin: 0 0 12px; }
+    ul, ol { margin: 8px 0 14px; padding-left: 1.35rem; }
+    li { margin: 5px 0; }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.9em;
+    }
+    .shell {
+      width: min(1420px, 100%);
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .masthead {
+      overflow: hidden;
+      margin-bottom: 22px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .masthead-copy {
+      padding: 34px 38px 29px;
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow {
+      margin: 0 0 7px;
+      color: var(--teal);
+      font-size: 0.78rem;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+    .lead {
+      max-width: 1050px;
+      margin: 0;
+      color: #34474f;
+      font-size: 1.05rem;
+    }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 18px;
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+    .thesis-map {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      background: var(--surface-2);
+    }
+    .thesis-step {
+      min-width: 0;
+      min-height: 126px;
+      padding: 18px 20px;
+      border-right: 1px solid var(--line);
+    }
+    .thesis-step:last-child { border-right: 0; }
+    .thesis-step span {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 0.74rem;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+    .thesis-step strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--blue);
+    }
+    .thesis-step:nth-child(2) strong { color: var(--orange); }
+    .thesis-step:nth-child(3) strong { color: var(--teal); }
+    .thesis-step:nth-child(4) strong { color: var(--plum); }
+    .thesis-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.87rem;
+      line-height: 1.52;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 250px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+    .toc {
+      position: sticky;
+      top: 18px;
+      max-height: calc(100vh - 36px);
+      overflow-y: auto;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: var(--surface);
+      box-shadow: 0 8px 24px rgba(23, 38, 46, 0.055);
+    }
+    .toc strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+    }
+    .toc a {
+      display: block;
+      padding: 5px 8px;
+      border-left: 2px solid transparent;
+      color: #40525b;
+      font-size: 0.86rem;
+      text-decoration: none;
+    }
+    .toc a:hover,
+    .toc a:focus-visible {
+      border-left-color: var(--teal);
+      color: var(--teal);
+      background: var(--teal-soft);
+    }
+    main {
+      min-width: 0;
+      padding: 2px 30px 30px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .chapter {
+      scroll-margin-top: 18px;
+      padding: 31px 0 35px;
+      border-bottom: 1px solid var(--line);
+    }
+    .chapter:last-child { border-bottom: 0; }
+    .chapter-heading {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 20px;
+    }
+    .chapter-number {
+      display: grid;
+      width: 40px;
+      height: 40px;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--blue);
+      font-size: 0.88rem;
+      font-weight: 850;
+    }
+    .chapter:nth-child(3n + 2) .chapter-number { background: var(--teal); }
+    .chapter:nth-child(3n) .chapter-number { background: var(--orange); }
+    .chapter-heading p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 0.93rem;
+    }
+    .callout {
+      margin: 15px 0;
+      padding: 15px 18px;
+      border-left: 4px solid var(--blue);
+      background: var(--blue-soft);
+    }
+    .callout.teal { border-left-color: var(--teal); background: var(--teal-soft); }
+    .callout.orange { border-left-color: var(--orange); background: var(--orange-soft); }
+    .callout.red { border-left-color: var(--red); background: var(--red-soft); }
+    .callout.gold { border-left-color: var(--gold); background: var(--gold-soft); }
+    .callout.plum { border-left-color: var(--plum); background: var(--plum-soft); }
+    .callout p:last-child { margin-bottom: 0; }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin: 16px 0;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin: 16px 0;
+    }
+    .card {
+      min-width: 0;
+      padding: 16px 17px;
+      border: 1px solid var(--line);
+      border-top: 3px solid var(--blue);
+      border-radius: 8px;
+      background: var(--surface-2);
+    }
+    .card.teal { border-top-color: var(--teal); }
+    .card.orange { border-top-color: var(--orange); }
+    .card.plum { border-top-color: var(--plum); }
+    .card.red { border-top-color: var(--red); }
+    .card.gold { border-top-color: var(--gold); }
+    .card p:last-child,
+    .card ul:last-child { margin-bottom: 0; }
+    .card .label {
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
+      margin: 18px 0;
+    }
+    .flow-item {
+      position: relative;
+      min-width: 0;
+      padding: 15px 13px;
+      border: 1px solid var(--line);
+      border-top: 3px solid var(--blue);
+      border-radius: 8px;
+      background: var(--surface-2);
+      text-align: center;
+    }
+    .flow-item::after {
+      position: absolute;
+      top: 50%;
+      right: -20px;
+      color: var(--muted);
+      content: "→";
+      font-weight: 850;
+      transform: translateY(-50%);
+    }
+    .flow-item:last-child::after { content: ""; }
+    .flow-item:nth-child(2) { border-top-color: var(--orange); }
+    .flow-item:nth-child(3) { border-top-color: var(--teal); }
+    .flow-item strong,
+    .flow-item span { display: block; }
+    .flow-item span {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.48;
+    }
+    .equation {
+      overflow-x: auto;
+      margin: 15px 0;
+      padding: 14px 18px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fbfcfc;
+      text-align: center;
+    }
+    .table-wrap {
+      overflow-x: auto;
+      margin: 16px 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      font-size: 0.92rem;
+    }
+    caption {
+      padding: 11px 13px;
+      color: var(--muted);
+      background: var(--surface-2);
+      font-size: 0.82rem;
+      text-align: left;
+    }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+    }
+    th {
+      color: #31434d;
+      background: #f3f6f7;
+      font-weight: 800;
+    }
+    tr:last-child td { border-bottom: 0; }
+    td.num, th.num {
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      white-space: nowrap;
+    }
+    .tag {
+      display: inline-block;
+      margin: 1px 3px 1px 0;
+      padding: 2px 7px;
+      border-radius: 999px;
+      color: var(--teal);
+      background: var(--teal-soft);
+      font-size: 0.75rem;
+      font-weight: 800;
+    }
+    .tag.minus {
+      color: var(--orange);
+      background: var(--orange-soft);
+    }
+    .rank {
+      display: grid;
+      grid-template-columns: 38px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+      margin: 11px 0;
+      padding: 13px 15px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface-2);
+    }
+    .rank-number {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--blue);
+      font-weight: 850;
+    }
+    .rank:nth-of-type(2) .rank-number { background: var(--plum); }
+    .rank:nth-of-type(3) .rank-number { background: var(--orange); }
+    .rank:nth-of-type(4) .rank-number { background: var(--teal); }
+    .rank p { margin: 3px 0 0; color: var(--muted); }
+    .refs {
+      padding-left: 1.25rem;
+      font-size: 0.92rem;
+    }
+    .refs li { margin-bottom: 9px; }
+    .small {
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+    footer {
+      padding: 0 0 8px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-align: center;
+    }
+
+    @media (max-width: 1000px) {
+      .thesis-map { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .thesis-step:nth-child(2) { border-right: 0; }
+      .thesis-step:nth-child(-n + 2) { border-bottom: 1px solid var(--line); }
+      .layout { grid-template-columns: 1fr; }
+      .toc {
+        position: static;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        max-height: none;
+      }
+      .toc strong { grid-column: 1 / -1; }
+    }
+    @media (max-width: 760px) {
+      .shell { padding: 12px; }
+      .masthead-copy { padding: 25px 22px; }
+      .thesis-map,
+      .grid-2,
+      .grid-3,
+      .flow,
+      .toc { grid-template-columns: 1fr; }
+      .thesis-step {
+        min-height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .thesis-step:last-child { border-bottom: 0; }
+      .flow { gap: 12px; }
+      .flow-item::after { content: ""; }
+      main { padding: 2px 20px 22px; }
+      .chapter-heading { grid-template-columns: 38px minmax(0, 1fr); }
+      .chapter-number { width: 34px; height: 34px; }
+    }
+    @media print {
+      body { background: #fff; }
+      .shell { width: 100%; padding: 0; }
+      .masthead, main, .toc { box-shadow: none; }
+      .toc { display: none; }
+      .layout { display: block; }
+      main { border: 0; padding: 0; }
+      .chapter { break-inside: avoid; }
+      a { color: inherit; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="masthead">
+      <div class="masthead-copy">
+        <p class="eyebrow">DSE 2026 Conference Notes · Corporate Finance</p>
+        <h1>Firms' Foreign Exchange Hedging</h1>
+        <p class="lead">
+          Nicolas Hommel 與 Thibaut Piquard 的研究，利用歐洲逐筆外匯衍生品資料，
+          衡量企業避險前後的匯率風險，並檢驗流動性、交易成本與擔保品三種避險理論。
+          核心結論是：流動性管理確實重要，但不足以解釋大型企業的實際避險規模；
+          盈餘平滑創造額外需求，避險部位調整成本則造成不完全與僵固的避險。
+        </p>
+        <div class="meta">
+          <span><strong>講者：</strong>Nicolas Hommel</span>
+          <span><strong>共同作者：</strong>Thibaut Piquard</span>
+          <span><strong>簡報日期：</strong>2026-08-06</span>
+          <span><strong>來源：</strong><a href="../../Conference/13%20Nicolas%20Hommel.pdf">Conference/13 Nicolas Hommel.pdf</a></span>
+        </div>
+      </div>
+      <div class="thesis-map" aria-label="文章主旨摘要">
+        <div class="thesis-step">
+          <span>Question</span>
+          <strong>企業如何回應匯率波動？</strong>
+          <p>企業面臨多少匯率風險、避掉多少，又是什麼機制驅動避險？</p>
+        </div>
+        <div class="thesis-step">
+          <span>Standard story</span>
+          <strong>融資摩擦下的流動性管理</strong>
+          <p>避險在不利匯率下保留資金，讓企業仍能營運、投資與支付員工。</p>
+        </div>
+        <div class="thesis-step">
+          <span>Evidence</span>
+          <strong>曝險越大，避險比例越高</strong>
+          <p>但交易成本低、現金擔保少，而且現金部位與避險基本無關。</p>
+        </div>
+        <div class="thesis-step">
+          <span>New answer</span>
+          <strong>盈餘平滑 + 調整成本</strong>
+          <p>盈餘平滑解釋廣泛需求；調整成本解釋為何企業沒有完全、即時避險。</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <nav class="toc" aria-label="目錄">
+        <strong>目錄</strong>
+        <a href="#question">1. 研究問題與答案</a>
+        <a href="#data">2. 資料與四個事實</a>
+        <a href="#measurement">3. 避險前後風險的測量</a>
+        <a href="#theory">4. Informing hedging theory</a>
+        <a href="#literature">5. 最相關文獻</a>
+        <a href="#model">6. 模型與量化結果</a>
+        <a href="#interpretation">7. 如何解讀本文貢獻</a>
+        <a href="#references">8. 參考文獻與連結</a>
+      </nav>
+
+      <main>
+        <section class="chapter" id="question">
+          <div class="chapter-heading">
+            <div class="chapter-number">1</div>
+            <div>
+              <h2>研究問題與文章的答案</h2>
+              <p>先區分「企業使用什麼工具」與「企業為何要避險」。</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="card">
+              <p class="label">最常見的回答</p>
+              <h3>企業利用外匯衍生品管理流動性</h3>
+              <p>
+                當外部融資比內部資金昂貴時，不利匯率衝擊可能讓企業缺乏資金，
+                被迫削減投資或營運。遠期外匯等工具可以在壞狀態產生現金流，
+                協調企業的投資與融資政策。
+              </p>
+            </article>
+            <article class="card teal">
+              <p class="label">本文的回答</p>
+              <h3>企業做曝險敏感、但不完全的避險</h3>
+              <p>
+                匯率風險越高，企業避掉的比例越大；然而避險需求不只來自流動性。
+                即使現金充裕，企業仍希望排除匯率造成的盈餘雜訊。
+                治理、避險會計與長期合約等調整成本，則限制部位的即時調整。
+              </p>
+            </article>
+          </div>
+
+          <div class="callout">
+            <h3>一句話版本</h3>
+            <p>
+              企業以外匯衍生品降低匯率風險，但實際行為不是單純的「缺現金所以避險」；
+              更像是「為了穩定盈餘而持續避險，但因部位調整有摩擦而留下部分風險」。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="data">
+          <div class="chapter-heading">
+            <div class="chapter-number">2</div>
+            <div>
+              <h2>資料與四個關鍵事實</h2>
+              <p>逐筆契約資料使作者能同時觀察部位、價格、到期日與擔保狀態。</p>
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <article class="card">
+              <p class="label">Derivatives</p>
+              <h3>EMIR，2017–2023</h3>
+              <p>每日、逐筆外匯衍生品申報，包括幣別、方向、名目本金、成交價、到期日與擔保狀態。</p>
+            </article>
+            <article class="card orange">
+              <p class="label">Financial statements</p>
+              <h3>Compustat Global，2000–2023</h3>
+              <p>歐元區及鄰近歐洲國家的上市非金融企業季度合併財報。</p>
+            </article>
+            <article class="card teal">
+              <p class="label">Final sample</p>
+              <h3>逾 150 萬筆契約</h3>
+              <p>超過 1,000 家上市企業；每家企業平均與約 4 家 dealer banks 往來。</p>
+            </article>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <caption>本文用來挑戰既有避險理論的四個事實</caption>
+              <thead>
+                <tr>
+                  <th>事實</th>
+                  <th>實證內容</th>
+                  <th>理論含意</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Fact 1</strong></td>
+                  <td>承受較多匯率風險的企業，會避掉更高比例的風險。</td>
+                  <td>避險需求與原始經濟曝險緊密相連，但仍是不完全避險。</td>
+                </tr>
+                <tr>
+                  <td><strong>Fact 2</strong></td>
+                  <td>EUR/USD 遠期契約的交易成本相對 EBIT 很小。</td>
+                  <td>dealer markup 與 CIP 偏離難以單獨解釋大量未避險風險。</td>
+                </tr>
+                <tr>
+                  <td><strong>Fact 3</strong></td>
+                  <td>歐洲企業很少明確提供現金擔保；即使提供，金額通常也小。</td>
+                  <td>擔保品限制不像是此樣本中不完全避險的第一階原因。</td>
+                </tr>
+                <tr>
+                  <td><strong>Fact 4</strong></td>
+                  <td>控制產業、時間與風險後，現金部位與避險基本無關。</td>
+                  <td>單純 liquidity channel 預測的現金—避險關係不成立。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="chapter" id="measurement">
+          <div class="chapter-heading">
+            <div class="chapter-number">3</div>
+            <div>
+              <h2>如何衡量避險前與避險後的匯率風險？</h2>
+              <p>核心不是直接觀察避險前現金流，而是估計兩個可觀察部分後反推。</p>
+            </div>
+          </div>
+
+          <div class="callout teal">
+            <h3>識別恆等式</h3>
+            <div class="equation">
+              \[
+                \underbrace{b_i^*}_{\text{避險後曝險}}
+                =
+                \underbrace{b_i}_{\text{避險前營運曝險}}
+                +
+                \underbrace{w_i}_{\text{衍生品曝險}},
+                \qquad
+                b_i=b_i^*-w_i.
+              \]
+            </div>
+            <p>
+              作者分別估計財報中的避險後曝險 \(b_i^*\) 與衍生品部位曝險 \(w_i\)，
+              再反推出看不到的原始營運曝險 \(b_i\)。
+            </p>
+          </div>
+
+          <div class="flow" aria-label="風險測量三步驟">
+            <div class="flow-item">
+              <strong>1. Factor model</strong>
+              <span>由 EBIT 對匯率因子的敏感度，估計避險後曝險 \(b_i^*\)。</span>
+            </div>
+            <div class="flow-item">
+              <strong>2. Euro delta</strong>
+              <span>由逐筆契約的 delta × notional，估計避險部位 \(w_i\)。</span>
+            </div>
+            <div class="flow-item">
+              <strong>3. Back out</strong>
+              <span>使用 \(b_i=b_i^*-w_i\) 重建避險前曝險。</span>
+            </div>
+          </div>
+
+          <h3>步驟一：估計避險後的匯率 loading</h3>
+          <div class="equation">
+            \[
+              \frac{EBIT_{it}-EBIT_{i,t-4}}{Assets_{i,t-4}}
+              =
+              b_i^* \cdot f_t+\varepsilon_{it}.
+            \]
+          </div>
+          <ul>
+            <li>\(f_t\)：各貨幣匯率的一年期變動，可視為多貨幣因子向量。</li>
+            <li>\(b_i^*\)：財報現金流對匯率的敏感度；因財報已含避險效果，所以是避險後曝險。</li>
+            <li>\(\varepsilon_{it}\)：非匯率因素造成的現金流變動。</li>
+            <li>每家企業大約只有 60 筆觀察，因此採 two-step ridge：先利用產業資訊，再估計企業 loading，以減少 overfitting。</li>
+          </ul>
+
+          <h3>步驟二：由逐筆合約計算 euro delta</h3>
+          <div class="equation">
+            \[
+              H_{itk}=\sum_c \delta_{ckt}\times Notional_{ckt}.
+            \]
+          </div>
+          <ul>
+            <li>遠期與交換契約的 delta 為 \(+1\) 或 \(-1\)，取決於部位方向。</li>
+            <li>選擇權以 Black–Scholes delta 計算，並假設為歐式 vanilla options。</li>
+            <li>只使用一年內到期的契約，使衍生品部位的期間與一年期 EBIT 變動一致。</li>
+            <li>依企業、貨幣與時間加總後，統一方向並縮放到可與 \(b_i^*\) 比較的資產尺度，得到 \(w_i\)。</li>
+          </ul>
+
+          <div class="callout gold">
+            <h3>為什麼使用平均 euro delta？</h3>
+            <div class="equation">
+              \[
+                \Pi_T-\Pi_0
+                \simeq
+                \sum_{t=0}^{T-1}(P_{t+1}-P_t)X_t
+                =
+                (P_T-P_0)\bar X
+                +
+                \Cov(P_{t+1}-P_t,\;X_t-\bar X).
+              \]
+            </div>
+            <p>
+              第一項只取決於期初、期末匯率與平均部位，是 path-independent 部分；
+              第二項取決於企業何時調整部位。理論上，平均 euro delta 是衍生品曝險最好的
+              path-independent approximation。
+            </p>
+          </div>
+
+          <h3>步驟三：把 loading 轉成 currency risk</h3>
+          <p>
+            本文把 currency risk 定義為「現金流變異中由匯率因素解釋的比例」。
+            在匯率因子與殘差正交的直觀表示下：
+          </p>
+          <div class="equation">
+            \[
+              CR(b)
+              =
+              \frac{\Var(b\cdot f_t)}
+              {\Var(b\cdot f_t)+\Var(\varepsilon_{it})}.
+            \]
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <h3>After hedging</h3>
+              <p>代入 \(b_i^*\)，計算衍生品已發揮作用後，匯率解釋多少現金流變異。</p>
+            </article>
+            <article class="card orange">
+              <h3>Before hedging</h3>
+              <p>代入 \(b_i=b_i^*-w_i\)，計算若移除衍生品現金流，企業原本會承受多少風險。</p>
+            </article>
+          </div>
+          <p class="small">
+            避險消除的風險可用兩者差額表示；「避掉的比例」則可概念化為
+            \(1-CR(b_i^*)/CR(b_i)\)。這項方法避免必須完整建模產品需求、海外收入、
+            成本結構與市場競爭，因為原始曝險是從合約部位直接反推。
+          </p>
+        </section>
+
+        <section class="chapter" id="theory">
+          <div class="chapter-heading">
+            <div class="chapter-number">4</div>
+            <div>
+              <h2>Informing hedging theory：三條理論管道</h2>
+              <p>投影片上的加減號代表對避險需求的方向，而不是對文獻品質的評價。</p>
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <article class="card teal">
+              <p class="label"><span class="tag">＋ Demand</span></p>
+              <h3>Liquidity channel</h3>
+              <p>
+                避險在不利匯率狀態提供資金，使企業仍能投資與營運。
+                代表文獻是 Froot, Scharfstein &amp; Stein（1993）。
+              </p>
+            </article>
+            <article class="card orange">
+              <p class="label"><span class="tag minus">－ Limit</span></p>
+              <h3>Trading costs channel</h3>
+              <p>
+                dealer markup 與 CIP deviations 提高遠期契約成本，
+                使完全避險不值得。代表文獻是 Hau et al.（2021）、
+                Du et al.（2018）與 Kubitza et al.（2025）。
+              </p>
+            </article>
+            <article class="card plum">
+              <p class="label"><span class="tag minus">－ Limit</span></p>
+              <h3>Collateral channel</h3>
+              <p>
+                融資與衍生品都要使用有限擔保能力，形成投資、借款與避險之間的取捨。
+                代表文獻是 Rampini–Viswanathan 系列。
+              </p>
+            </article>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <caption>理論預測與本文證據的對照</caption>
+              <thead>
+                <tr>
+                  <th>理論</th>
+                  <th>主要預測</th>
+                  <th>本文證據</th>
+                  <th>判斷</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Liquidity</strong></td>
+                  <td>缺乏內部資金時避險有價值；現金非常充裕後，邊際避險利益應下降。</td>
+                  <td>現金與避險基本無關；liquidity-only 模型產生的避險需求太小。</td>
+                  <td>存在，但不足。</td>
+                </tr>
+                <tr>
+                  <td><strong>Trading costs</strong></td>
+                  <td>dealer spread 或 CIP basis 高時，企業降低避險。</td>
+                  <td>EUR/USD 成本相對 EBIT 小；企業對短期成本衝擊的反應很弱。</td>
+                  <td>不能解釋大部分不完全避險。</td>
+                </tr>
+                <tr>
+                  <td><strong>Collateral</strong></td>
+                  <td>受限企業缺少可抵押資產，因此避險較少，甚至完全不避險。</td>
+                  <td>明確現金擔保少，value-at-risk 相對現金小；cash-rich firms 也持續避險。</td>
+                  <td>在其他市場／困境企業可能重要，但非本樣本第一階機制。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="chapter" id="literature">
+          <div class="chapter-heading">
+            <div class="chapter-number">5</div>
+            <div>
+              <h2>哪些文獻與本文最有關係？</h2>
+              <p>依「基準理論、本文新答案、實證識別與模型架構」分別排序。</p>
+            </div>
+          </div>
+
+          <div class="rank">
+            <div class="rank-number">1</div>
+            <div>
+              <h3>Froot, Scharfstein &amp; Stein（1993）：主要基準與被檢驗命題</h3>
+              <p>
+                外部融資昂貴時，避險能使內部資金與投資機會配合。
+                本文保留此機制，但以現金關係與量化模型證明它無法單獨解釋觀察到的避險規模。
+              </p>
+            </div>
+          </div>
+
+          <div class="rank">
+            <div class="rank-number">2</div>
+            <div>
+              <h3>DeMarzo &amp; Duffie（1995）：最接近本文的 earnings-smoothing 機制</h3>
+              <p>
+                避險排除管理者無法控制的外生雜訊，使盈餘更能反映管理能力與專案品質。
+                即使企業不缺流動性，改善資訊傳遞仍能創造避險需求。
+              </p>
+            </div>
+          </div>
+
+          <div class="rank">
+            <div class="rank-number">3</div>
+            <div>
+              <h3>Rampini–Viswanathan 系列：本文直接檢驗的主要限制機制</h3>
+              <p>
+                融資和避險都是需被擔保的付款承諾；低淨值企業會把擔保能力優先用於投資。
+                本文利用 EMIR 的擔保欄位，直接檢驗這個理論在歐洲企業外匯避險中的量化重要性。
+              </p>
+            </div>
+          </div>
+
+          <div class="rank">
+            <div class="rank-number">4</div>
+            <div>
+              <h3>Hau et al.（2021）：與交易價格識別最接近</h3>
+              <p>
+                OTC dealer 對較不熟練的企業客戶收取較高價差；多銀行平台可消除價格歧視。
+                本文同樣將企業成交價與 interdealer quotes 配對，但進一步問這些成本相對 EBIT 是否夠大。
+              </p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="card gold">
+              <h3>Bolton, Chen &amp; Wang（2011）</h3>
+              <p>
+                與本文的動態模型架構最接近：企業聯合決定投資、現金、信用額度、
+                外部融資、股利與衍生品避險，核心狀態是流動性的邊際價值。
+              </p>
+            </article>
+            <article class="card red">
+              <h3>Du et al.（2018）與 Kubitza et al.（2025）</h3>
+              <p>
+                提供 CIP deviations 的市場背景：銀行資產負債表限制會改變遠期價格，
+                並影響機構投資人的貨幣避險與國際資產配置。與非金融企業需求的距離較遠。
+              </p>
+            </article>
+          </div>
+
+          <div class="callout orange">
+            <h3>書目年份提醒</h3>
+            <p>
+              簡報將 collateral 文獻縮寫為「Rampini Viswanathan ’10 ’11 ’25」。
+              其中 ’11 很可能指 <em>Collateral and Capital Structure</em> 的 AFA 2011／工作論文版本
+              （正式出版於 2013），或 2011 年首稿、2014 年出版的
+              <em>Dynamic Risk Management</em>。兩者都主張有限擔保品使受限企業減少避險，
+              因而不影響對這張投影片的經濟解讀。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="model">
+          <div class="chapter-heading">
+            <div class="chapter-number">6</div>
+            <div>
+              <h2>動態模型與量化結果</h2>
+              <p>模型要同時解釋「為何避險」與「為何沒有完全避險」。</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="card teal">
+              <p class="label">Mechanisms generating hedging</p>
+              <h3>避險需求從哪裡來？</h3>
+              <ul>
+                <li><strong>Liquidity channel：</strong>借款有上限、發行股票昂貴。</li>
+                <li><strong>Earnings smoothing：</strong>企業希望降低盈餘中的匯率雜訊。</li>
+              </ul>
+            </article>
+            <article class="card orange">
+              <p class="label">Mechanisms limiting hedging</p>
+              <h3>為何不是完全避險？</h3>
+              <ul>
+                <li>小額交易成本。</li>
+                <li>資料不支持強烈的擔保品限制。</li>
+                <li><strong>Hedge adjustment costs：</strong>治理、避險會計與長期合約使部位調整有摩擦。</li>
+              </ul>
+            </article>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <caption>模型配適：不同機制能否同時解釋避險量與成本敏感度？</caption>
+              <thead>
+                <tr>
+                  <th>Moment</th>
+                  <th class="num">Data</th>
+                  <th class="num">Liquidity only</th>
+                  <th class="num">Baseline</th>
+                  <th class="num">Smoothing only</th>
+                  <th class="num">Adjustment only</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Hedging，風險第 10 分位（%）</td>
+                  <td class="num">84</td>
+                  <td class="num">26</td>
+                  <td class="num">73</td>
+                  <td class="num">59</td>
+                  <td class="num">2</td>
+                </tr>
+                <tr>
+                  <td>Hedging，風險第 9 分位（%）</td>
+                  <td class="num">37</td>
+                  <td class="num">22</td>
+                  <td class="num">39</td>
+                  <td class="num">42</td>
+                  <td class="num">0</td>
+                </tr>
+                <tr>
+                  <td>CIP semi-elasticity</td>
+                  <td class="num">2</td>
+                  <td class="num">755</td>
+                  <td class="num">2</td>
+                  <td class="num">823</td>
+                  <td class="num">44</td>
+                </tr>
+                <tr>
+                  <td>Debt–hedging correlation</td>
+                  <td class="num">≤ 0</td>
+                  <td class="num">0.72</td>
+                  <td class="num">−0.33</td>
+                  <td class="num">0.06</td>
+                  <td class="num">0.53</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout plum">
+            <h3>模型配適的分工</h3>
+            <p>
+              盈餘平滑負責產生足夠且跨流動性狀態存在的避險需求；
+              調整成本負責讓企業不會因短期 CIP 成本變動就大幅改變部位，
+              並限制總避險量。兩者必須同時存在，才能接近資料中的避險比例、
+              成本敏感度與負債—避險相關性。
+            </p>
+          </div>
+
+          <p>
+            簡報的反事實分析顯示，避險帶來的總利益約為企業價值的
+            <strong>1.2%</strong>：其中約 <strong>0.9%</strong> 是股東價值利益，
+            約 <strong>0.3%</strong> 來自盈餘平滑價值。
+          </p>
+        </section>
+
+        <section class="chapter" id="interpretation">
+          <div class="chapter-heading">
+            <div class="chapter-number">7</div>
+            <div>
+              <h2>如何解讀本文的貢獻？</h2>
+              <p>本文不是說既有理論錯誤，而是辨認它們在此樣本中的量化重要性。</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="card">
+              <h3>本文支持什麼？</h3>
+              <ul>
+                <li>外匯衍生品確實顯著降低企業現金流的匯率變異。</li>
+                <li>企業的避險需求與原始營運曝險緊密相關。</li>
+                <li>融資摩擦能產生避險需求，特別是財務受限狀態。</li>
+                <li>OTC 價格與 CIP basis 是真實存在的成本。</li>
+              </ul>
+            </article>
+            <article class="card orange">
+              <h3>本文修正什麼？</h3>
+              <ul>
+                <li>大型企業的避險不能主要歸因於現金不足。</li>
+                <li>少量顯性擔保品不能解釋大部分未避險風險。</li>
+                <li>交易成本雖存在，但相對 EBIT 太小。</li>
+                <li>對短期成本變化反應小，不代表成本無關，也可能反映調整摩擦。</li>
+              </ul>
+            </article>
+          </div>
+
+          <div class="callout red">
+            <h3>最重要的識別限制</h3>
+            <p>
+              「很少明確提供現金擔保」不等於完全沒有隱含信用支持；
+              dealer 仍可能依企業信用、信用額度或其他資產承作無擔保契約。
+              此外，本文結果最直接適用於大型歐洲上市企業與主要貨幣遠期，
+              不必然推廣到小型企業、危機狀態、商品衍生品或集中清算市場。
+            </p>
+          </div>
+
+          <div class="callout teal">
+            <h3>最終 takeaway</h3>
+            <p>
+              衍生品提供一個觀察企業風險與金融摩擦的實驗室。因為作者同時觀察
+              原始風險的估計、避險部位、成交價格與擔保狀態，所以能把
+              「企業為何避險」與「哪些成本限制避險」分開量化。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="references">
+          <div class="chapter-heading">
+            <div class="chapter-number">8</div>
+            <div>
+              <h2>參考文獻與連結</h2>
+              <p>先讀前四篇即可掌握本文的主要理論對話。</p>
+            </div>
+          </div>
+
+          <ol class="refs">
+            <li>
+              Hommel, Nicolas, and Thibaut Piquard.
+              <a href="../../Conference/13%20Nicolas%20Hommel.pdf"><em>Firms' Foreign Exchange Hedging</em></a>.
+              DSE 2026 conference presentation, August 6, 2026.
+            </li>
+            <li>
+              Froot, Kenneth A., David S. Scharfstein, and Jeremy C. Stein.
+              <a href="https://onlinelibrary.wiley.com/doi/10.1111/j.1540-6261.1993.tb05123.x">
+                “Risk Management: Coordinating Corporate Investment and Financing Policies.”
+              </a>
+              <em>Journal of Finance</em> 48(5), 1993.
+            </li>
+            <li>
+              DeMarzo, Peter M., and Darrell Duffie.
+              <a href="https://www.gsb.stanford.edu/faculty-research/publications/corporate-incentives-hedging-hedge-accounting">
+                “Corporate Incentives for Hedging and Hedge Accounting.”
+              </a>
+              <em>Review of Financial Studies</em> 8(3), 1995.
+            </li>
+            <li>
+              Rampini, Adriano A., and S. Viswanathan.
+              <a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1540-6261.2010.01616.x">
+                “Collateral, Risk Management, and the Distribution of Debt Capacity.”
+              </a>
+              <em>Journal of Finance</em> 65(6), 2010.
+            </li>
+            <li>
+              Bolton, Patrick, Hui Chen, and Neng Wang.
+              <a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1540-6261.2011.01681.x">
+                “A Unified Theory of Tobin’s q, Corporate Investment, Financing, and Risk Management.”
+              </a>
+              <em>Journal of Finance</em> 66(5), 2011.
+            </li>
+            <li>
+              Rampini, Adriano A., and S. Viswanathan.
+              <a href="https://www.sciencedirect.com/science/article/pii/S0304405X13000779">
+                “Collateral and Capital Structure.”
+              </a>
+              <em>Journal of Financial Economics</em> 109(2), 2013.
+            </li>
+            <li>
+              Rampini, Adriano A., Amir Sufi, and S. Viswanathan.
+              <a href="https://www.sciencedirect.com/science/article/pii/S0304405X13002651">
+                “Dynamic Risk Management.”
+              </a>
+              <em>Journal of Financial Economics</em> 111(2), 2014.
+            </li>
+            <li>
+              Du, Wenxin, Alexander Tepper, and Adrien Verdelhan.
+              <a href="https://afajof.org/issue/volume-73-issue-3/">
+                “Deviations from Covered Interest Rate Parity.”
+              </a>
+              <em>Journal of Finance</em> 73(3), 2018.
+            </li>
+            <li>
+              Hau, Harald, Peter Hoffmann, Sam Langfield, and Yannick Timmer.
+              <a href="https://pubsonline.informs.org/doi/10.1287/mnsc.2020.3787">
+                “Discriminatory Pricing of Over-the-Counter Derivatives.”
+              </a>
+              <em>Management Science</em> 67(11), 2021.
+            </li>
+            <li>
+              Kubitza, Christian, Jean-David Sigaux, and Quentin Vandeweyer.
+              <a href="https://www.ecb.europa.eu/pub/pdf/scpwps/ecb.wp3017~2c077fb436.en.pdf">
+                “The Implications of CIP Deviations for International Capital Flows.”
+              </a>
+              ECB Working Paper 3017, 2025.
+            </li>
+            <li>
+              Rampini, Adriano A., and S. Viswanathan.
+              <a href="https://www.nber.org/papers/w33875">“Collateral and Secured Debt.”</a>
+              NBER Working Paper 33875, 2025.
+            </li>
+          </ol>
+        </section>
+      </main>
+    </div>
+
+    <footer>
+      以本地 2026-08-06 簡報為主要來源；文獻連結用於補足簡報中的作者—年份縮寫。
+    </footer>
+  </div>
+</body>
+</html>
