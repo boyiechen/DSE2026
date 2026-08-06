@@ -1,0 +1,1492 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Miller 與 Nam：Financial Intermediation in the European Emissions Market 導讀筆記">
+  <title>Financial Intermediation in the European Emissions Market｜導讀筆記</title>
+  <style>
+    :root {
+      --canvas: #edf1ee;
+      --paper: #ffffff;
+      --paper-2: #f6f8f6;
+      --ink: #17241f;
+      --muted: #617169;
+      --line: #d4ddd7;
+      --navy: #1d3657;
+      --navy-soft: #e7edf4;
+      --green: #1d7257;
+      --green-dark: #14533f;
+      --green-soft: #e2f1ea;
+      --lime: #769d37;
+      --lime-soft: #edf4df;
+      --gold: #a27620;
+      --gold-soft: #f8efd9;
+      --red: #a7403a;
+      --red-soft: #f7e8e6;
+      --purple: #705477;
+      --purple-soft: #f0e8f2;
+      --shadow: 0 15px 38px rgba(23, 36, 31, 0.075);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--canvas);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.72;
+    }
+    a {
+      color: var(--green-dark);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+    h1, h2, h3, h4 { letter-spacing: 0; }
+    h1 {
+      max-width: 1050px;
+      margin: 0 0 12px;
+      font-size: clamp(2rem, 4.2vw, 3.2rem);
+      line-height: 1.08;
+      overflow-wrap: anywhere;
+    }
+    h2 {
+      margin: 0;
+      font-size: 1.56rem;
+      line-height: 1.28;
+    }
+    h3 {
+      margin: 0 0 8px;
+      font-size: 1.08rem;
+      line-height: 1.42;
+    }
+    h4 {
+      margin: 0 0 5px;
+      font-size: 0.95rem;
+    }
+    p { margin: 0 0 12px; }
+    ul, ol { margin: 8px 0 14px; padding-left: 1.35rem; }
+    li { margin: 5px 0; }
+    strong { font-weight: 800; }
+    code, .math {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    code {
+      padding: 1px 5px;
+      border-radius: 4px;
+      color: #244b3d;
+      background: var(--green-soft);
+      font-size: 0.9em;
+    }
+    .shell {
+      width: min(1420px, 100%);
+      min-width: 0;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .masthead {
+      overflow: hidden;
+      margin-bottom: 22px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+    .masthead-copy {
+      padding: 37px 40px 31px;
+      border-top: 6px solid var(--green);
+      border-bottom: 1px solid var(--line);
+      background:
+        radial-gradient(circle at 95% 8%, rgba(118, 157, 55, 0.14), transparent 27%),
+        var(--paper);
+    }
+    .eyebrow {
+      margin: 0 0 7px;
+      color: var(--green);
+      font-size: 0.78rem;
+      font-weight: 850;
+      letter-spacing: 0.045em;
+      text-transform: uppercase;
+    }
+    .lead {
+      max-width: 1080px;
+      margin: 0;
+      color: #354940;
+      font-size: 1.06rem;
+    }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 18px;
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+    .meta span {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+    .status {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 999px;
+      color: var(--red);
+      background: var(--red-soft);
+      font-size: 0.76rem;
+      font-weight: 850;
+    }
+    .thesis-map {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      background: var(--paper-2);
+    }
+    .thesis-step {
+      min-width: 0;
+      min-height: 145px;
+      padding: 19px 21px;
+      border-right: 1px solid var(--line);
+    }
+    .thesis-step:last-child { border-right: 0; }
+    .thesis-step span {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 0.73rem;
+      font-weight: 850;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .thesis-step strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--navy);
+    }
+    .thesis-step:nth-child(2) strong { color: var(--green); }
+    .thesis-step:nth-child(3) strong { color: var(--gold); }
+    .thesis-step:nth-child(4) strong { color: var(--purple); }
+    .thesis-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.87rem;
+      line-height: 1.52;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 270px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+    .toc {
+      position: sticky;
+      top: 18px;
+      max-height: calc(100vh - 36px);
+      overflow-y: auto;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: var(--paper);
+      box-shadow: 0 8px 24px rgba(23, 36, 31, 0.055);
+    }
+    .toc strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+    }
+    .toc a {
+      display: block;
+      padding: 6px 8px;
+      border-left: 2px solid transparent;
+      color: #40554b;
+      font-size: 0.85rem;
+      line-height: 1.45;
+      text-decoration: none;
+    }
+    .toc a:hover,
+    .toc a:focus-visible {
+      border-left-color: var(--green);
+      color: var(--green-dark);
+      background: var(--green-soft);
+    }
+    main {
+      min-width: 0;
+      padding: 2px 31px 30px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+    .chapter {
+      scroll-margin-top: 18px;
+      padding: 31px 0 36px;
+      border-bottom: 1px solid var(--line);
+    }
+    .chapter:last-child { border-bottom: 0; }
+    .chapter-heading {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 20px;
+    }
+    .chapter-number {
+      display: grid;
+      width: 40px;
+      height: 40px;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--green);
+      font-size: 0.88rem;
+      font-weight: 850;
+    }
+    .chapter:nth-child(3n + 2) .chapter-number { background: var(--navy); }
+    .chapter:nth-child(3n) .chapter-number { background: var(--gold); }
+    .chapter-heading p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 0.93rem;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin: 16px 0;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin: 16px 0;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .card {
+      min-width: 0;
+      padding: 16px 17px;
+      border: 1px solid var(--line);
+      border-top: 3px solid var(--green);
+      border-radius: 8px;
+      background: var(--paper-2);
+    }
+    .card.navy { border-top-color: var(--navy); }
+    .card.gold { border-top-color: var(--gold); }
+    .card.red { border-top-color: var(--red); }
+    .card.purple { border-top-color: var(--purple); }
+    .card.lime { border-top-color: var(--lime); }
+    .card p:last-child,
+    .card ul:last-child { margin-bottom: 0; }
+    .label {
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 0.74rem;
+      font-weight: 850;
+      letter-spacing: 0.035em;
+      text-transform: uppercase;
+    }
+    .callout {
+      margin: 16px 0;
+      padding: 15px 18px;
+      border-left: 4px solid var(--green);
+      background: var(--green-soft);
+    }
+    .callout.navy { border-left-color: var(--navy); background: var(--navy-soft); }
+    .callout.gold { border-left-color: var(--gold); background: var(--gold-soft); }
+    .callout.red { border-left-color: var(--red); background: var(--red-soft); }
+    .callout.purple { border-left-color: var(--purple); background: var(--purple-soft); }
+    .callout.lime { border-left-color: var(--lime); background: var(--lime-soft); }
+    .callout p:last-child,
+    .callout ul:last-child,
+    .callout ol:last-child { margin-bottom: 0; }
+    .equation {
+      overflow-x: auto;
+      margin: 15px 0;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fbfcfb;
+      text-align: center;
+    }
+    .equation .math {
+      display: inline-block;
+      min-width: max-content;
+      color: #213e32;
+      font-size: clamp(0.89rem, 2vw, 1.05rem);
+    }
+    .equation p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 21px;
+      margin: 18px 0;
+    }
+    .flow-item {
+      position: relative;
+      min-width: 0;
+      padding: 15px 13px;
+      border: 1px solid var(--line);
+      border-top: 3px solid var(--navy);
+      border-radius: 8px;
+      background: var(--paper-2);
+      text-align: center;
+    }
+    .flow-item::after {
+      position: absolute;
+      top: 50%;
+      right: -19px;
+      color: var(--muted);
+      content: "→";
+      font-weight: 850;
+      transform: translateY(-50%);
+    }
+    .flow-item:last-child::after { content: ""; }
+    .flow-item:nth-child(2) { border-top-color: var(--green); }
+    .flow-item:nth-child(3) { border-top-color: var(--gold); }
+    .flow-item:nth-child(4) { border-top-color: var(--purple); }
+    .flow-item strong,
+    .flow-item span { display: block; }
+    .flow-item span {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.83rem;
+      line-height: 1.48;
+    }
+    .market-pipe {
+      display: grid;
+      grid-template-columns: 1fr auto 1.25fr auto 1fr;
+      align-items: stretch;
+      overflow: hidden;
+      margin: 17px 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper-2);
+    }
+    .pipe-box {
+      min-width: 0;
+      padding: 17px;
+      text-align: center;
+    }
+    .pipe-box strong,
+    .pipe-box span { display: block; }
+    .pipe-box strong { color: var(--navy); }
+    .pipe-box span {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+    .pipe-arrow {
+      display: grid;
+      place-items: center;
+      padding: 0 8px;
+      color: var(--green);
+      font-weight: 900;
+    }
+    .table-wrap {
+      overflow-x: auto;
+      margin: 16px 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--paper);
+      font-size: 0.9rem;
+    }
+    caption {
+      padding: 11px 13px;
+      color: var(--muted);
+      background: var(--paper-2);
+      font-size: 0.82rem;
+      text-align: left;
+    }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+    }
+    th {
+      color: #31473d;
+      background: #f1f5f2;
+      font-weight: 800;
+    }
+    tr:last-child td { border-bottom: 0; }
+    td.num, th.num {
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      white-space: nowrap;
+    }
+    .tag {
+      display: inline-block;
+      margin: 1px 3px 1px 0;
+      padding: 2px 7px;
+      border-radius: 999px;
+      color: var(--green-dark);
+      background: var(--green-soft);
+      font-size: 0.75rem;
+      font-weight: 800;
+    }
+    .tag.navy { color: var(--navy); background: var(--navy-soft); }
+    .tag.gold { color: var(--gold); background: var(--gold-soft); }
+    .tag.red { color: var(--red); background: var(--red-soft); }
+    .tag.purple { color: var(--purple); background: var(--purple-soft); }
+    .result-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      overflow: hidden;
+      margin: 17px 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    .result {
+      padding: 16px;
+      border-right: 1px solid var(--line);
+      background: var(--paper-2);
+    }
+    .result:last-child { border-right: 0; }
+    .result b {
+      display: block;
+      color: var(--navy);
+      font-size: 1.4rem;
+      line-height: 1.2;
+    }
+    .result:nth-child(2) b { color: var(--green); }
+    .result:nth-child(3) b { color: var(--gold); }
+    .result:nth-child(4) b { color: var(--purple); }
+    .result span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+    .answer-state {
+      min-width: 92px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+    .answered { color: var(--green-dark); }
+    .partial { color: var(--gold); }
+    .open { color: var(--red); }
+    .small {
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+    .refs {
+      padding-left: 1.25rem;
+      font-size: 0.9rem;
+    }
+    .refs li { margin-bottom: 8px; }
+    footer {
+      padding: 0 0 8px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-align: center;
+    }
+
+    @media (max-width: 1120px) {
+      .thesis-map { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .thesis-step:nth-child(2) { border-right: 0; }
+      .thesis-step:nth-child(-n + 2) { border-bottom: 1px solid var(--line); }
+      .layout { grid-template-columns: 1fr; }
+      .toc {
+        position: static;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        max-height: none;
+      }
+      .toc strong { grid-column: 1 / -1; }
+      .flow { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+      .flow-item::after { content: ""; }
+      .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .result-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .result:nth-child(2) { border-right: 0; }
+      .result:nth-child(-n + 2) { border-bottom: 1px solid var(--line); }
+    }
+    @media (max-width: 720px) {
+      html, body { max-width: 100%; overflow-x: clip; }
+      .shell { padding: 12px; }
+      .masthead, .layout, main { max-width: 100%; }
+      .masthead-copy { padding: 25px 22px; }
+      .thesis-map,
+      .grid-2,
+      .grid-3,
+      .grid-4,
+      .flow,
+      .toc,
+      .result-strip,
+      .market-pipe { grid-template-columns: 1fr; }
+      .thesis-step {
+        min-height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .thesis-step:last-child { border-bottom: 0; }
+      .result {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .result:last-child { border-bottom: 0; }
+      .pipe-arrow { padding: 4px; transform: rotate(90deg); }
+      main { padding: 2px 20px 22px; }
+      .chapter-heading { grid-template-columns: 38px minmax(0, 1fr); }
+      .chapter-number { width: 34px; height: 34px; }
+    }
+    @media print {
+      body { background: #fff; }
+      .shell { width: 100%; padding: 0; }
+      .masthead, main, .toc { box-shadow: none; }
+      .toc { display: none; }
+      .layout { display: block; }
+      main { border: 0; padding: 0; }
+      .chapter { break-inside: avoid; }
+      a { color: inherit; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="masthead">
+      <div class="masthead-copy">
+        <p class="eyebrow">DSE 2026 Conference Reading Note</p>
+        <h1>Financial Intermediation in the European Emissions Market</h1>
+        <p class="lead">
+          Robert A. Miller 與 Minhyuk Nam 研究一個經典理論不應該存在的現象：
+          如果 emissions permits 有單一競爭價格，為什麼同一張 permit 在不同平台價格不同，
+          banks 又為什麼持有近半庫存、進行大量中介交易？
+        </p>
+        <div class="meta">
+          <span><strong>作者：</strong>Robert A. Miller、Minhyuk Nam（Carnegie Mellon University）</span>
+          <span><strong>版本：</strong>DSE 2026 Michigan，August 2026</span>
+          <span><strong>狀態：</strong><span class="status">Research in progress</span></span>
+          <span><strong>原始投影片：</strong><a href="../../Conference/16%20Robert%20A.%20Miller.pdf">Conference/16 Robert A. Miller.pdf</a></span>
+        </div>
+      </div>
+
+      <div class="thesis-map" aria-label="文章核心邏輯">
+        <div class="thesis-step">
+          <span>Benchmark</span>
+          <strong>一張 permit，一個價格</strong>
+          <p>Montgomery 與 Rubin 的 competitive equilibrium 沒有平台價差，也不需要金融中介。</p>
+        </div>
+        <div class="thesis-step">
+          <span>Facts</span>
+          <strong>市場不是 frictionless</strong>
+          <p>Cost of carry 高於無風險利率、跨平台價格分散，banks 大量持有並反覆轉手。</p>
+        </div>
+        <div class="thesis-step">
+          <span>Mechanism</span>
+          <strong>Permits 是要融資的 inventory</strong>
+          <p>Liquidity、planning 與 transaction costs 決定誰持有 spot、誰買 futures、何時交易。</p>
+        </div>
+        <div class="thesis-step">
+          <span>Research frontier</span>
+          <strong>Search、spread 與 welfare</strong>
+          <p>完整 search-and-matching estimation 與 market-design counterfactual 尚在進行。</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <nav class="toc" aria-label="目錄">
+        <strong>閱讀路線</strong>
+        <a href="#summary">1. 一分鐘摘要</a>
+        <a href="#questions">2. Core research questions</a>
+        <a href="#importance">3. 為什麼重要？</a>
+        <a href="#institutions">4. Institutional background</a>
+        <a href="#data">5. Data 與 measurement</a>
+        <a href="#facts">6. 關鍵 empirical facts</a>
+        <a href="#model">7. Model setup</a>
+        <a href="#equilibrium">8. Equilibrium 與價格分解</a>
+        <a href="#answers">9. 作者回答了什麼？</a>
+        <a href="#literature">10. 與前人有何不同？</a>
+        <a href="#limits">11. 識別、限制與討論題</a>
+      </nav>
+
+      <main>
+        <section class="chapter" id="summary">
+          <div class="chapter-heading">
+            <div class="chapter-number">1</div>
+            <div>
+              <h2>一分鐘摘要</h2>
+              <p>不要把 EUA 只看成 environmental regulation；它同時是一項需要 balance-sheet capacity 的金融資產。</p>
+            </div>
+          </div>
+
+          <div class="callout navy">
+            <h3>Core answer</h3>
+            <p>
+              EU ETS 的 permit price 不只反映 marginal abatement cost，也反映「誰替市場持有 inventory」
+              的資金成本。Banks 因為 liquidity cost 最低，可以持有 spot permits、賣出 futures，
+              把 compliance firms 的資金需求移到自己的 balance sheet。另一方面，regulator
+              一再把實際 cap 調得比原先承諾更緊，造成無法由平滑 carry path 解釋的價格 surprise。
+            </p>
+          </div>
+
+          <div class="grid-3">
+            <article class="card navy">
+              <p class="label">Price path</p>
+              <h3>Carry 解釋 expected growth</h3>
+              <p>
+                Expected permit return 等於 risk-free rate 加上 marginal carrier 的 liquidity cost。
+                因此 carry 長期高於 risk-free rate 並不違反 equilibrium。
+              </p>
+            </article>
+            <article class="card">
+              <p class="label">Price level</p>
+              <h3>Cap news 解釋 surprise</h3>
+              <p>
+                Verified emissions 高度可預測；更可能推動大幅價格重估的是 cap revisions、
+                Market Stability Reserve 與 auction-volume cuts。
+              </p>
+            </article>
+            <article class="card gold">
+              <p class="label">Intermediation</p>
+              <h3>Banks 是 cheapest carriers</h3>
+              <p>
+                Banks 沒有 compliance obligation，卻有較低 funding cost；它們承接 inventory、
+                供給 futures 並在不同 firms、venues 與日期之間搬運 permits。
+              </p>
+            </article>
+          </div>
+
+          <div class="callout red">
+            <h3>閱讀這份投影片時最重要的警告</h3>
+            <p>
+              Research-question slide 列出五個問題，但目前 deck 並沒有全部給出定量答案。
+              Slides 完整建立 competitive benchmark、描述性 facts 與 carry mechanism；
+              search friction、intermediation spread、committed-cap counterfactual
+              及 welfare analysis 仍在研究中。作者研究頁也明確標示 full-solution estimation in progress。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="questions">
+          <div class="chapter-heading">
+            <div class="chapter-number">2</div>
+            <div>
+              <h2>Core research questions</h2>
+              <p>表面上是五個問題，核心其實是：偏離 frictionless benchmark 的 wedge 從哪裡來、由誰承擔？</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <caption>投影片提出的問題，以及最精簡的經濟學版本</caption>
+              <thead>
+                <tr>
+                  <th>問題</th>
+                  <th>經濟學核心</th>
+                  <th>目前狀態</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>1. 為什麼 permit price 上升約八倍？</strong></td>
+                  <td>把 2015–2024 的價格上升拆成 interest、cost of carry、risk premium 與 regulatory surprise。</td>
+                  <td><span class="tag gold">部分回答</span></td>
+                </tr>
+                <tr>
+                  <td><strong>2. Credibly committed cap 會如何？</strong></td>
+                  <td>若 regulator 從一開始就可信地承諾 cap path，價格路徑與 uncertainty incidence 會怎麼改變？</td>
+                  <td><span class="tag red">Counterfactual 未展示</span></td>
+                </tr>
+                <tr>
+                  <td><strong>3. Trading frictions 多昂貴？</strong></td>
+                  <td>競爭均衡與現實價格之差，有多少來自 transaction costs、search 與跨平台 segmentation？</td>
+                  <td><span class="tag gold">Facts 已有；結構量化未完成</span></td>
+                </tr>
+                <tr>
+                  <td><strong>4. Financial intermediaries 做什麼？</strong></td>
+                  <td>Banks 是降低 compliance cost 的 liquidity providers，還是利用 frictions 抽取 rents？</td>
+                  <td><span class="tag gold">機制回答；rent 尚未量化</span></td>
+                </tr>
+                <tr>
+                  <td><strong>5. 哪種 market design 福利較高？</strong></td>
+                  <td>限制 financial participation 或取消 free allocation，會改善還是惡化 allocation？</td>
+                  <td><span class="tag red">估計後才能回答</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout">
+            <h3>把五問濃縮成一句話</h3>
+            <p>
+              <strong>當一張 permit 必須經過 auction、limit-order book 與 OTC 才到達最終 emitter，
+              balance-sheet constraints、search 與平台選擇如何改變 carbon price、compliance cost
+              及監管政策的分配效果？</strong>
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="importance">
+          <div class="chapter-heading">
+            <div class="chapter-number">3</div>
+            <div>
+              <h2>為什麼重要？</h2>
+              <p>Carbon market 是否 cost-effective，不只取決於 cap 設多緊，也取決於 permits 如何被融資與交易。</p>
+            </div>
+          </div>
+
+          <div class="result-strip" aria-label="EU ETS 規模">
+            <div class="result">
+              <b>約 40%</b>
+              <span>EU greenhouse-gas emissions 由 EU ETS 涵蓋</span>
+            </div>
+            <div class="result">
+              <b>€38.8B</b>
+              <span>2024 年 auctions 募得金額</span>
+            </div>
+            <div class="result">
+              <b>約 €770B</b>
+              <span>2023 年總交易額</span>
+            </div>
+            <div class="result">
+              <b>約 5 次</b>
+              <span>一張 permit 在 surrender 前平均轉手次數</span>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="card">
+              <h3>Environmental efficiency</h3>
+              <p>
+                Cap-and-trade 的承諾是用單一價格把減排安排給 marginal abatement cost 最低的 firms。
+                若小 emitters 支付較高價格或無法進入便宜 venue，實際 allocation 可能偏離理論 optimum。
+              </p>
+            </article>
+            <article class="card navy">
+              <h3>Policy credibility</h3>
+              <p>
+                Firms 的 investment 與 abatement 決策依賴長期 scarcity signal。
+                若 cap path 反覆改動，price level 會由 policy surprise 而非平滑 fundamentals 主導。
+              </p>
+            </article>
+            <article class="card gold">
+              <h3>Incidence and market power</h3>
+              <p>
+                Intermediation spread 決定 compliance cost 由誰承擔：
+                regulated firms、banks、consumers 或 taxpayers。單看 aggregate permit price 看不到這種分配。
+              </p>
+            </article>
+            <article class="card purple">
+              <h3>Market design</h3>
+              <p>
+                禁止 financial firms 可能減少 speculation，卻也可能移除最便宜的 inventory carrier。
+                同樣地，取消 free allocation 會改變誰需要在何時籌措大量資金。
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="chapter" id="institutions">
+          <div class="chapter-heading">
+            <div class="chapter-number">4</div>
+            <div>
+              <h2>Institutional background：EU ETS 怎麼運作？</h2>
+              <p>Supply 由 cap 與 allocation 決定，demand 來自年度 surrender obligation，inventory 可以跨年。</p>
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <article class="card navy">
+              <p class="label">Cap</p>
+              <h3>總量逐年下降</h3>
+              <p>Regulator 設定全 EU permits 數量；每個 emitter 每年必須 surrender 等於 verified emissions 的 permits。</p>
+            </article>
+            <article class="card">
+              <p class="label">Issuance</p>
+              <h3>Auction + free allocation</h3>
+              <p>Permits 透過 primary auctions 或按歷史生產免費配發，之後進入 secondary market。</p>
+            </article>
+            <article class="card gold">
+              <p class="label">Intertemporal rule</p>
+              <h3>可以 bank，不能 borrow</h3>
+              <p>Unused permits 可以 carry over 到未來，但 firms 不能向未來 allocation 借 permits 來完成今天的 compliance。</p>
+            </article>
+          </div>
+
+          <div class="market-pipe" aria-label="Permit 從 issuance 到 compliance 的流程">
+            <div class="pipe-box">
+              <strong>EU-wide cap</strong>
+              <span>Auction 與 free allocation 發行</span>
+            </div>
+            <div class="pipe-arrow">→</div>
+            <div class="pipe-box">
+              <strong>Secondary circulation</strong>
+              <span>LOM、OTC、banks、futures；可重複轉手並跨年持有</span>
+            </div>
+            <div class="pipe-arrow">→</div>
+            <div class="pipe-box">
+              <strong>Compliance</strong>
+              <span>Verification 後 surrender；不足面臨 €100/tCO₂ fine</span>
+            </div>
+          </div>
+
+          <h3>4.1 年度 compliance cycle</h3>
+          <p>
+            Auctions 通常於平日 9–11am CET 進行，LOM/OTC 約在 8am–6pm 交易。
+            Year <em>t</em> 的 emissions 在次年初經 audit，free allocation 與 surrender 集中於
+            compliance year 尾端。這個 calendar 會製造明顯的 seasonal liquidity demand。
+          </p>
+
+          <h3>4.2 同一張 permit 的三種交易機制</h3>
+          <div class="table-wrap">
+            <table>
+              <caption>Auction、LOM 與 OTC 的制度差異</caption>
+              <thead>
+                <tr>
+                  <th>Venue</th>
+                  <th>Pricing / matching</th>
+                  <th>主要參與者</th>
+                  <th>核心 friction</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Auction</strong></td>
+                  <td>Uniform-price sealed bid；supply 事前固定並公告</td>
+                  <td>Registered large emitters、financials</td>
+                  <td>Primary、一邊市場；非所有小 firms 都能直接參與</td>
+                </tr>
+                <tr>
+                  <td><strong>Limit-order market</strong></td>
+                  <td>Limit/market orders；bid、ask 與 spread 可見</td>
+                  <td>Members 直接交易，其他 firms 經 broker</td>
+                  <td>Membership/access cost、execution 與 cancellation risk</td>
+                </tr>
+                <tr>
+                  <td><strong>OTC</strong></td>
+                  <td>Bilateral 或 brokered negotiation</td>
+                  <td>Small firms 經 intermediaries</td>
+                  <td>Search、counterparty matching 與 bargaining</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="chapter" id="data">
+          <div class="chapter-heading">
+            <div class="chapter-number">5</div>
+            <div>
+              <h2>Data 與 measurement</h2>
+              <p>最大貢獻之一，是把 compliance account、permit flows、三個 venues 與市場價格放到同一張圖上。</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <caption>資料來源、期間與用途</caption>
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>期間</th>
+                  <th>觀察內容</th>
+                  <th>回答什麼？</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>EU Transaction Log (EUTL)</strong></td>
+                  <td>主要為 2005–2023</td>
+                  <td>Account-pair 每日淨 transfer、holder identity/type、daily balances、installation emissions 與 free allocation</td>
+                  <td>誰買、誰賣、誰持有、是否完成 obligation，以及 permits 經過哪些 intermediaries</td>
+                </tr>
+                <tr>
+                  <td><strong>Auctions：EEX / ICE</strong></td>
+                  <td>2010–2024</td>
+                  <td>Clearing prices、volumes、bidder/bid summary statistics</td>
+                  <td>Primary-market price 與供給 shock</td>
+                </tr>
+                <tr>
+                  <td><strong>LOM：EEX / LSEG</strong></td>
+                  <td>OHLC 2015–2024</td>
+                  <td>Daily open-high-low-close prices 與 volume</td>
+                  <td>Centralized secondary-market price</td>
+                </tr>
+                <tr>
+                  <td><strong>LOM order book：Databento</strong></td>
+                  <td>2018–2024</td>
+                  <td>Anonymized orders、submission、execution、cancellation、spread position</td>
+                  <td>Execution risk、order survival 與 intraday liquidity</td>
+                </tr>
+                <tr>
+                  <td><strong>OTC：LEBA</strong></td>
+                  <td>2015–2024</td>
+                  <td>Daily VWAP 與 volume</td>
+                  <td>Decentralized-market price 與 LOM/auction price gaps</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout navy">
+            <h3>資料真正 unique 在哪裡？</h3>
+            <p>
+              一般 market data 只看 transaction price，看不到 buyer 為何需要 permit；
+              administrative compliance data 則知道 emissions 與 allocation，卻沒有完整 execution price。
+              本文把兩者合起來，才能分辨 ultimate compliance demand、inventory holding、
+              intermediation turnover 與 venue-specific price。
+            </p>
+          </div>
+
+          <div class="callout gold">
+            <h3>仍然存在的 measurement gap</h3>
+            <p>
+              EUTL 提供完整 ownership transfer network，但 OTC 只有 daily VWAP/volume，
+              order book 又是 anonymized。要把某一筆 compliance account transfer
+              精確連到某一筆 OTC price 或 LOM identity 並不容易；因此 slides 目前多呈現
+              aggregate moments，而非完整 transaction-level causal matching。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="facts">
+          <div class="chapter-heading">
+            <div class="chapter-number">6</div>
+            <div>
+              <h2>關鍵 empirical facts</h2>
+              <p>每個 fact 都對應一個 frictionless benchmark 無法自然解釋的現象。</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="card navy">
+              <p class="label">Fact 1 · Intermediation</p>
+              <h3>Banks gross trade 很大、net position 接近零</h3>
+              <p>
+                Emitters 隨 auctions 擴張與 free allocation 下降成為 net buyers；
+                banks 在 LOM/OTC 同時大量買賣。這比較像 inventory transformation
+                與 matching，而不是 banks 最終消費 permits。
+              </p>
+            </article>
+            <article class="card">
+              <p class="label">Fact 2 · Inventory</p>
+              <h3>Firms 用不同路徑管理相同 obligation</h3>
+              <p>
+                Account-balance clusters 顯示，有些 firms 逐步累積、有些等到 futures expiry
+                或 free allocation、有些長期是 sellers。這支持 liquidity 與 planning costs 的異質性。
+              </p>
+            </article>
+            <article class="card gold">
+              <p class="label">Fact 3 · Carry</p>
+              <h3>Cost of carry 持續高於 risk-free rate</h3>
+              <p>
+                2009–2025 的 futures/spot implied carry 幾乎長期高於 risk-free benchmark；
+                slide 顯示 median gap 約 1.1 percentage points。
+              </p>
+            </article>
+            <article class="card purple">
+              <p class="label">Fact 4 · Intraday</p>
+              <h3>Auction 時點使 volume 與 volatility 同時跳高</h3>
+              <p>
+                平日 intraday activity 大致平坦，但 daily auction close 附近出現尖峰，
+                顯示 primary issuance 對 secondary liquidity 與 price discovery 有直接影響。
+              </p>
+            </article>
+            <article class="card red">
+              <p class="label">Fact 5 · Scarcity news</p>
+              <h3>Emissions 可預測，cap path 卻反覆被下修</h3>
+              <p>
+                Shapley decomposition 顯示 installation identity 與 lagged emissions
+                可解釋大部分 emissions variation；相較之下，MSR、backloading 與 phase-4
+                reform 一再把 implemented cap 壓到 announced path 以下。
+              </p>
+            </article>
+            <article class="card lime">
+              <p class="label">Fact 6 · Law of one price</p>
+              <h3>同一 permit 在三個 venues 有持續價差</h3>
+              <p>
+                2019–2024 daily gaps 的中心可能只有幾個 bps，但分布很寬；
+                free-allocation、surrender、MSR announcement 與 auction-volume-cut dates
+                會改變或擴大 gaps。
+              </p>
+            </article>
+          </div>
+
+          <div class="flow" aria-label="Empirical facts 到理論機制">
+            <div class="flow-item">
+              <strong>Carry wedge</strong>
+              <span>Inventory 需要融資</span>
+            </div>
+            <div class="flow-item">
+              <strong>Balance paths</strong>
+              <span>Planning 與 liquidity heterogeneity</span>
+            </div>
+            <div class="flow-item">
+              <strong>Platform gaps</strong>
+              <span>Access、execution 與 search frictions</span>
+            </div>
+            <div class="flow-item">
+              <strong>Policy events</strong>
+              <span>Scarcity 與 demand shocks</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="chapter" id="model">
+          <div class="chapter-heading">
+            <div class="chapter-number">7</div>
+            <div>
+              <h2>Model setup：把 compliance 當作 dynamic inventory problem</h2>
+              <p>Firms 同時選擇何時 cover obligation、用 spot 還是 futures、每次交易多大。</p>
+            </div>
+          </div>
+
+          <h3>7.1 Agents、states 與 timing</h3>
+          <div class="table-wrap">
+            <table>
+              <caption>Emitter 與 bank 的差異</caption>
+              <thead>
+                <tr>
+                  <th>Object</th>
+                  <th>Emitter <em>i</em></th>
+                  <th>Bank <em>b</em></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Free allocation</td>
+                  <td><code>x<sub>i</sub></code></td>
+                  <td>0</td>
+                </tr>
+                <tr>
+                  <td>Verified emissions</td>
+                  <td><code>y<sub>i</sub></code></td>
+                  <td>0</td>
+                </tr>
+                <tr>
+                  <td>Initial net obligation</td>
+                  <td><code>R<sub>i,0</sub> = y<sub>i</sub> − x<sub>i</sub> − w<sub>i,0</sub></code></td>
+                  <td>沒有 compliance demand</td>
+                </tr>
+                <tr>
+                  <td>Liquidity-cost type</td>
+                  <td><code>γ<sub>i</sub></code></td>
+                  <td><code>γ<sub>b</sub> = min<sub>i</sub> γ<sub>i</sub></code></td>
+                </tr>
+                <tr>
+                  <td>Planning-cost type</td>
+                  <td><code>ϕ<sub>i</sub></code></td>
+                  <td><code>ϕ<sub>b</sub> = 0</code></td>
+                </tr>
+                <tr>
+                  <td>Trading direction</td>
+                  <td>Shortage emitter 持續買；surplus emitter 只賣</td>
+                  <td>可同時買與賣，但 permit holdings 不得為負</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>7.2 三種 costs</h3>
+          <div class="grid-3">
+            <article class="card">
+              <p class="label">Liquidity cost</p>
+              <h3>C(w<sub>i,t</sub>; γ<sub>i</sub>)</h3>
+              <p>
+                資金綁在不付 dividend 的 spot permits 上所產生的 opportunity cost。
+                對 inventory value 為 increasing、convex，且 γ 越高成本越高。
+              </p>
+            </article>
+            <article class="card gold">
+              <p class="label">Planning cost</p>
+              <h3>P(R<sub>i,t</sub>; ϕ<sub>i</sub>)</h3>
+              <p>
+                把 compliance cost 留到未來、尚未鎖定時的 organizational/risk-management cost。
+                ϕ 越高，firm 越早 cover obligation。
+              </p>
+            </article>
+            <article class="card purple">
+              <p class="label">Transaction cost</p>
+              <h3>ψ(m<sub>i,t</sub>) + κ₀ε<sub>i,t</sub>1<sub>i,t</sub></h3>
+              <p>
+                Convex variable cost 控制 trade splitting；每次下單 fixed cost
+                控制交易頻率，使 firms 可能少次、大筆交易。
+              </p>
+            </article>
+          </div>
+
+          <h3>7.3 Emitter 的動態選擇</h3>
+          <div class="equation">
+            <span class="math">
+              min E<sub>0</sub> Σ<sub>t=0</sub><sup>T</sup> β<sup>t</sup>
+              [p<sub>t</sub>a<sub>i,t</sub> + C(w<sub>i,t</sub>;γ<sub>i</sub>)
+              + P(R<sub>i,t</sub>;ϕ<sub>i</sub>) + ψ(m<sub>i,t</sub>)
+              + κ₀ε<sub>i,t</sub>1<sub>i,t</sub> + β<sup>T−t</sup>F<sub>t</sub>f<sub>i,t</sub>]
+            </span>
+            <p>
+              選擇 spot <code>a<sub>i,t</sub></code> 與 futures <code>f<sub>i,t</sub></code>，
+              並確保到 deadline 時 allocation + holdings + purchases ≥ verified emissions。
+            </p>
+          </div>
+
+          <div class="callout red">
+            <h3>Bank 的角色不是從零自然長出來的</h3>
+            <p>
+              目前 slide model 直接設定 <code>γ<sub>b</sub> = min γ<sub>i</sub></code>
+              且 <code>ϕ<sub>b</sub> = 0</code>，所以 bank 是市場中最便宜的 carrier。
+              這很好地建立 mechanism，但「banks 為何具有最低資金成本」與「這個差距有多大」
+              仍需要 estimation 或外部 evidence。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="equilibrium">
+          <div class="chapter-heading">
+            <div class="chapter-number">8</div>
+            <div>
+              <h2>Equilibrium：誰 carry inventory，以及價格如何成長？</h2>
+              <p>模型把 spot–futures basis 轉譯成 marginal carrier 的 balance-sheet cost。</p>
+            </div>
+          </div>
+
+          <h3>8.1 Spot 還是 futures？</h3>
+          <div class="equation">
+            <span class="math">
+              β<sup>T</sup>F<sub>t</sub> =
+              β<sup>t</sup>p<sub>t</sub> +
+              p<sub>t</sub>E<sub>t</sub>[Σ<sub>s=t+1</sub><sup>T</sup>
+              β<sup>s</sup>C′(w<sub>i,s</sub>;γ<sub>i</sub>)]
+            </span>
+            <p>Futures 的 present value = 今天買 spot 的成本 + 持有到 deadline 的 marginal liquidity cost。</p>
+          </div>
+          <ul>
+            <li><strong>γ 高：</strong>balance sheet 昂貴，少持有 spot、較依賴 futures。</li>
+            <li><strong>γ 低：</strong>可以便宜地 carry permits，承擔 futures short side。</li>
+            <li><strong>極端情況：</strong>若第一單位 inventory 的 financing cost 已很高，firm 完全不持有 spot。</li>
+          </ul>
+
+          <h3>8.2 今天 cover 還是明天 cover？</h3>
+          <ul>
+            <li><strong>ϕ 高：</strong>不確定的 compliance bill 很痛，firm 較早鎖定 obligation。</li>
+            <li><strong>ψ 更 convex：</strong>把 coverage 分散成更多、較小的 trades。</li>
+            <li><strong>κ₀ 更高：</strong>避免頻繁下單，形成較少、較大的 trades。</li>
+          </ul>
+
+          <h3>8.3 Competitive equilibrium</h3>
+          <p>
+            每個 agent 在給定 spot/futures prices 下最適化；spot market 的 aggregate net purchase
+            等於當期 issuance，futures 為 zero net supply。Bank 承擔 futures short side並持有 spot inventory。
+            同時交易兩種 instruments 的 marginal agents 共享一個 equilibrium marginal funding cost
+            <code>C̄′<sub>t</sub></code>。
+          </p>
+
+          <div class="equation">
+            <span class="math">
+              F<sub>t</sub>/p<sub>t</sub> =
+              ∏<sub>s=t+1</sub><sup>T</sup>(1+r)(1+C̄′<sub>s</sub>)
+            </span>
+            <p>Futures–spot basis 定價從現在到 compliance deadline 的累積 funding cost。</p>
+          </div>
+
+          <div class="equation">
+            <span class="math">
+              E<sub>t</sub>[p<sub>t+1</sub>] =
+              (1+r)(1+C̄′<sub>t+1</sub>)p<sub>t</sub>
+            </span>
+            <p>若 C̄′ = 0，就回到 Rubin (1996)：permit price 只按 risk-free rate 成長。</p>
+          </div>
+
+          <h3>8.4 Expected carry 與 unexpected scarcity</h3>
+          <div class="equation">
+            <span class="math">
+              p<sub>T</sub>/p<sub>0</sub> =
+              ∏<sub>t</sub>(1+r)(1+C̄′<sub>t</sub>)
+              × ∏<sub>t</sub>(1+ε<sub>t</sub>)
+            </span>
+            <p>
+              第一項是 equilibrium 預期報酬路徑；第二項是 forecast surprises，
+              其中 1+ε<sub>t</sub> = p<sub>t</sub>/E<sub>t−1</sub>[p<sub>t</sub>]。
+            </p>
+          </div>
+
+          <div class="callout gold">
+            <h3>「The equilibrium prices the carry, not the level」是什麼意思？</h3>
+            <p>
+              Arbitrage condition 決定今天與明天價格的比例，卻不能單獨決定
+              <em>p</em><sub>0</sub> 是 €8、€30 還是 €65。Price level 必須由 aggregate scarcity、
+              cap expectation、abatement demand 與 policy news pin down。這就是為什麼 carry model
+              能解釋 slope，卻不能靠自己解釋八倍上升的 level。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="answers">
+          <div class="chapter-heading">
+            <div class="chapter-number">9</div>
+            <div>
+              <h2>作者怎麼回答？哪些仍未回答？</h2>
+              <p>把投影片中的 result、mechanism 與 research agenda 明確分開。</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <caption>逐題回答與證據狀態</caption>
+              <thead>
+                <tr>
+                  <th>Research question</th>
+                  <th>目前答案</th>
+                  <th>證據／缺口</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>為何價格上升八倍？</strong></td>
+                  <td>
+                    Expected growth 應拆成 risk-free rate + marginal liquidity cost；
+                    額外的大幅重估屬於 scarcity surprise。Verified emissions 高度可預測，
+                    而 implemented cap 反覆低於 announced path，指向 regulatory surprise。
+                  </td>
+                  <td>
+                    <span class="answer-state partial">部分回答</span><br>
+                    Deck 未報告 interest、carry、risk premium、policy surprise 各自占八倍上升多少。
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Committed cap path 會如何？</strong></td>
+                  <td>
+                    理論上移除 <code>ε<sub>t</sub></code> 中的政策 surprise，
+                    讓價格更沿著 carry path 成長；也會改變誰承擔不確定性。
+                  </td>
+                  <td>
+                    <span class="answer-state open">尚未回答</span><br>
+                    沒有模擬 counterfactual price path 或 firm-level incidence。
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Trading frictions 多昂貴？</strong></td>
+                  <td>
+                    Cross-venue gaps 持續存在；compliance 與 supply-news dates
+                    會改變 gap distribution，說明 one-price benchmark 不成立。
+                  </td>
+                  <td>
+                    <span class="answer-state partial">描述性回答</span><br>
+                    Search cost、execution risk、access fee 與 spread 尚未分別量化為 welfare loss。
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Banks 的角色？</strong></td>
+                  <td>
+                    低 liquidity-cost banks 持有 inventory、賣 futures，
+                    讓高 funding-cost emitters 不必提早占用 balance sheet；
+                    大 gross volume、低 net purchase 與此機制一致。
+                  </td>
+                  <td>
+                    <span class="answer-state partial">機制回答</span><br>
+                    Competitive block 沒有 persistent intermediation rent；spread 必須由 search model 解釋。
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Alternative market design？</strong></td>
+                  <td>
+                    模型指出限制 banks 可能提高 inventory financing cost；
+                    取消 free allocation 會把更多需求移到 auctions 與 intermediaries。
+                  </td>
+                  <td>
+                    <span class="answer-state open">尚未回答</span><br>
+                    Welfare counterfactual 必須等 structural parameters 估完。
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout">
+            <h3>目前最可信的 substantive conclusion</h3>
+            <p>
+              Banks 不只是 carbon-market outsiders 或純粹 speculators；它們提供
+              <strong>inventory financing、intertemporal transformation 與 venue access</strong>。
+              但 slides 尚不足以判定它們創造的 liquidity benefit 是否大於 intermediation rents。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="literature">
+          <div class="chapter-heading">
+            <div class="chapter-number">10</div>
+            <div>
+              <h2>跟前人有什麼不同？</h2>
+              <p>不是推翻 competitive benchmark，而是把 benchmark 當作可量化 frictions 的零點。</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <caption>文獻對照</caption>
+              <thead>
+                <tr>
+                  <th>Literature</th>
+                  <th>前人的核心答案</th>
+                  <th>本文補上的部分</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Montgomery (1972)：static cap-and-trade</strong></td>
+                  <td>單一 market-clearing permit price 等於 marginal abatement cost，可達成 cost-effective allocation。</td>
+                  <td>現實沒有免費、無摩擦的 Walrasian auctioneer；firms 必須選 venue、找 counterparty 並支付 access/execution costs。</td>
+                </tr>
+                <tr>
+                  <td><strong>Rubin (1996)：intertemporal banking</strong></td>
+                  <td>Perfect foresight 下，bankable permit price 應以 risk-free rate 成長。</td>
+                  <td>Permit inventory 占用資金；equilibrium return 加上 marginal carrier 的 liquidity cost，因此 carry 可高於 risk-free rate。</td>
+                </tr>
+                <tr>
+                  <td><strong>Carbon asset-pricing / policy-news literature</strong></td>
+                  <td>研究 carbon prices 對 policy、macro、energy 與 risk shocks 的反應。</td>
+                  <td>把 price surprise 與 inventory-financing return 分開，並用 account-level emissions 說明 demand 本身高度可預測。</td>
+                </tr>
+                <tr>
+                  <td><strong>Market microstructure studies</strong></td>
+                  <td>多半研究單一 exchange、auction efficiency、bid-ask spread 或 OTC trading。</td>
+                  <td>同時涵蓋 auction、LOM、OTC，並把 venue prices 連到 compliance accounts、balances 與 intermediaries。</td>
+                </tr>
+                <tr>
+                  <td><strong>Financial intermediation / search</strong></td>
+                  <td>Dealers 在 decentralized markets 透過 inventory 與 matching 提供 liquidity 並收取 spread。</td>
+                  <td>將 dealer logic 放入 emission-permit market：ultimate demand 由 regulation 產生，且有年度 deadline、free allocation 與 no-borrowing rule。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="grid-3">
+            <article class="card navy">
+              <h3>1. Unit of analysis 不同</h3>
+              <p>從 aggregate carbon price 轉向 account × balance × venue × compliance calendar。</p>
+            </article>
+            <article class="card">
+              <h3>2. Bank role 內生化</h3>
+              <p>Intermediary 不是外生噪音，而是 firms 資金成本異質性下的 marginal inventory carrier。</p>
+            </article>
+            <article class="card gold">
+              <h3>3. Benchmark 可被 counterfactual</h3>
+              <p>最終目標是比較 frictional equilibrium 與 nested competitive equilibrium，量化 frictions 與 intermediation value。</p>
+            </article>
+          </div>
+
+          <div class="callout purple">
+            <h3>最精確的「本文創新」說法</h3>
+            <p>
+              本文不是第一篇知道 carbon prices 受 policy 影響，也不是第一篇研究 dealer/search。
+              它最有辨識度的組合是：<strong>完整 permit-transfer administrative data
+              + 三種 venue prices/order flow + dynamic compliance/inventory model
+              + financial-intermediation counterfactual</strong>。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="limits">
+          <div class="chapter-heading">
+            <div class="chapter-number">11</div>
+            <div>
+              <h2>Identification、限制與 seminar 討論題</h2>
+              <p>這份 deck 的價值很高，但目前比較像 measurement + benchmark + mechanism，而非完整 causal/structural result。</p>
+            </div>
+          </div>
+
+          <h3>11.1 目前的 evidence 應該如何解讀？</h3>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Descriptive moments 很強</h3>
+              <p>
+                Complete transfer network、balance paths、order-book behavior 與 cross-venue prices
+                共同否定簡單的一價、無中介 benchmark。
+              </p>
+            </article>
+            <article class="card gold">
+              <h3>Causal decomposition 尚弱</h3>
+              <p>
+                Event-day gap distributions 顯示 correlation，但 compliance months 或 MSR announcements
+                可能同時改變 volatility、composition 與 information arrival。
+              </p>
+            </article>
+            <article class="card red">
+              <h3>Risk premium 尚未進模型核心</h3>
+              <p>
+                Carry wedge 未必全部是 pure funding cost；inventory risk、margin requirements、
+                convenience yield 與 futures risk premium 也可能進入 basis。
+              </p>
+            </article>
+            <article class="card purple">
+              <h3>Bank advantage 部分由 assumption 驅動</h3>
+              <p>
+                設定 bank 為最低 γ 能產生觀察到的 intermediation，但仍需資料識別 γ distribution、
+                search technology 與 bank spread，才能做 welfare。
+              </p>
+            </article>
+          </div>
+
+          <h3>11.2 Structural estimation 可以用哪些 moments？</h3>
+          <ul>
+            <li><strong>γ / liquidity cost：</strong>spot–futures basis、inventory duration、bank holdings。</li>
+            <li><strong>ϕ / planning cost：</strong>firms 距 deadline 多早 cover obligation、clustered balance paths。</li>
+            <li><strong>ψ、κ / transaction costs：</strong>trade size、frequency、order execution/cancellation。</li>
+            <li><strong>Search / access：</strong>OTC versus LOM participation、cross-venue gaps、small-firm reliance on intermediaries。</li>
+            <li><strong>Policy expectations：</strong>announced versus implemented cap、MSR/auction-volume announcements。</li>
+          </ul>
+          <p class="small">
+            上述是由 slides 的理論 mapping 推得的 estimation roadmap；投影片尚未展示完整 moment conditions、
+            parameter estimates 或 fit。
+          </p>
+
+          <h3>11.3 Seminar 中值得追問</h3>
+          <ol>
+            <li>如何把 futures risk premium、margin/collateral cost 與純 liquidity cost 分開？</li>
+            <li>Bank 持有約 50% permits 是 equilibrium inventory，還是短期 custodian/clearing movement？</li>
+            <li>EUTL transfer 如何精確 match 到匿名 LOM order 與 OTC VWAP？Measurement error 如何處理？</li>
+            <li>Firms 是否能透過 affiliates 或 brokers 規避 venue-access classification？</li>
+            <li>Cap revisions 真的是 unanticipated news，還是 market 早已逐步 priced in？</li>
+            <li>限制 financial participation 的 counterfactual 是否要讓 venue liquidity、entry 與 bid-ask spread 內生反應？</li>
+            <li>取消 free allocation 同時改變 wealth transfer、working capital 與 abatement incentive，模型會納入哪些 margins？</li>
+          </ol>
+
+          <div class="callout navy">
+            <h3>建議的閱讀順序</h3>
+            <p>
+              先讀 slides 3–4 理解 benchmark 與五問，再讀 9–16 看資料與 facts；
+              slides 17–24 是 carry model，25–29 把 price surprise 與 platform gaps 拉回 data。
+              最後讀 slide 30 時要注意：作者明確說 competitive block 仍無法解釋
+              price level、one-price violations 與 futures risk premium。
+            </p>
+          </div>
+
+          <h3>11.4 Sources</h3>
+          <ul class="refs">
+            <li>
+              Miller, Robert A. and Minhyuk Nam,
+              <a href="../../Conference/16%20Robert%20A.%20Miller.pdf"><em>Financial Intermediation in the European Emissions Market</em></a>,
+              DSE 2026 conference slides, August 2026.
+            </li>
+            <li>
+              <a href="https://minhyuknam.com/">Minhyuk Nam research page</a>：
+              描述 intended continuous-time search-and-matching model，並註明 full-solution estimation in progress。
+            </li>
+            <li>Montgomery (1972)：competitive emission-permit market 的 cost-effectiveness benchmark。</li>
+            <li>Rubin (1996)：可跨期 banking permits 的 intertemporal equilibrium benchmark。</li>
+          </ul>
+        </section>
+      </main>
+    </div>
+
+    <footer>
+      Conference reading note · prepared from the August 2026 slide deck · research-in-progress claims are labeled explicitly
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,1788 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Becker、Clark、Hendricks 與 Houde：Differential Returns to Securitization 研討會筆記">
+  <title>Differential Returns to Securitization：研討會筆記</title>
+  <style>
+    :root {
+      --paper: #eef1f2;
+      --surface: #ffffff;
+      --surface-2: #f7f9f9;
+      --ink: #19282e;
+      --muted: #607078;
+      --line: #d5dcdf;
+      --red: #b3262e;
+      --red-dark: #8f1f27;
+      --red-soft: #f8e8e8;
+      --navy: #315c73;
+      --navy-soft: #e6eef3;
+      --teal: #177669;
+      --teal-soft: #e3f2ef;
+      --orange: #b45d26;
+      --orange-soft: #faebdf;
+      --gold: #876817;
+      --gold-soft: #f7efd8;
+      --plum: #73516f;
+      --plum-soft: #f1e8ef;
+      --shadow: 0 14px 34px rgba(25, 40, 46, 0.075);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.72;
+    }
+    a {
+      color: var(--navy);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+    h1, h2, h3, h4 { letter-spacing: 0; }
+    h1 {
+      max-width: 1050px;
+      margin: 0 0 13px;
+      font-size: clamp(2rem, 4.2vw, 3.25rem);
+      line-height: 1.08;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    h2 {
+      margin: 0;
+      font-size: 1.55rem;
+      line-height: 1.28;
+    }
+    h3 {
+      margin: 0 0 8px;
+      font-size: 1.08rem;
+      line-height: 1.4;
+    }
+    h4 {
+      margin: 0 0 6px;
+      font-size: 0.96rem;
+      line-height: 1.4;
+    }
+    p { margin: 0 0 12px; }
+    ul, ol { margin: 8px 0 14px; padding-left: 1.35rem; }
+    li { margin: 5px 0; }
+    strong { font-weight: 800; }
+    code, .math {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    code {
+      padding: 1px 5px;
+      border-radius: 4px;
+      color: #284d60;
+      background: var(--navy-soft);
+      font-size: 0.9em;
+    }
+    .shell {
+      width: min(1420px, 100%);
+      min-width: 0;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .masthead {
+      overflow: hidden;
+      margin-bottom: 22px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .masthead-copy {
+      padding: 36px 40px 30px;
+      border-top: 6px solid var(--red);
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow {
+      margin: 0 0 7px;
+      color: var(--red);
+      font-size: 0.78rem;
+      font-weight: 850;
+      letter-spacing: 0.045em;
+      text-transform: uppercase;
+    }
+    .lead {
+      max-width: 1080px;
+      margin: 0;
+      color: #354850;
+      font-size: 1.06rem;
+    }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 18px;
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+    .meta span {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+    .thesis-map {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      background: var(--surface-2);
+    }
+    .thesis-step {
+      min-width: 0;
+      min-height: 138px;
+      padding: 19px 21px;
+      border-right: 1px solid var(--line);
+    }
+    .thesis-step:last-child { border-right: 0; }
+    .thesis-step span {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 0.73rem;
+      font-weight: 850;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .thesis-step strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--red);
+    }
+    .thesis-step:nth-child(2) strong { color: var(--navy); }
+    .thesis-step:nth-child(3) strong { color: var(--teal); }
+    .thesis-step:nth-child(4) strong { color: var(--plum); }
+    .thesis-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.87rem;
+      line-height: 1.52;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 265px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+    .toc {
+      position: sticky;
+      top: 18px;
+      max-height: calc(100vh - 36px);
+      overflow-y: auto;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: var(--surface);
+      box-shadow: 0 8px 24px rgba(25, 40, 46, 0.055);
+    }
+    .toc strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+    }
+    .toc a {
+      display: block;
+      padding: 6px 8px;
+      border-left: 2px solid transparent;
+      color: #40545d;
+      font-size: 0.85rem;
+      line-height: 1.45;
+      text-decoration: none;
+    }
+    .toc a:hover,
+    .toc a:focus-visible {
+      border-left-color: var(--red);
+      color: var(--red);
+      background: var(--red-soft);
+    }
+    main {
+      min-width: 0;
+      padding: 2px 31px 30px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .chapter {
+      scroll-margin-top: 18px;
+      padding: 31px 0 36px;
+      border-bottom: 1px solid var(--line);
+    }
+    .chapter:last-child { border-bottom: 0; }
+    .chapter-heading {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 20px;
+    }
+    .chapter-number {
+      display: grid;
+      width: 40px;
+      height: 40px;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--red);
+      font-size: 0.88rem;
+      font-weight: 850;
+    }
+    .chapter:nth-child(3n + 2) .chapter-number { background: var(--navy); }
+    .chapter:nth-child(3n) .chapter-number { background: var(--teal); }
+    .chapter-heading p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 0.93rem;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin: 16px 0;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin: 16px 0;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .card {
+      min-width: 0;
+      padding: 16px 17px;
+      border: 1px solid var(--line);
+      border-top: 3px solid var(--red);
+      border-radius: 8px;
+      background: var(--surface-2);
+    }
+    .card.navy { border-top-color: var(--navy); }
+    .card.teal { border-top-color: var(--teal); }
+    .card.orange { border-top-color: var(--orange); }
+    .card.plum { border-top-color: var(--plum); }
+    .card.gold { border-top-color: var(--gold); }
+    .card p:last-child,
+    .card ul:last-child { margin-bottom: 0; }
+    .label {
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 0.74rem;
+      font-weight: 850;
+      letter-spacing: 0.035em;
+      text-transform: uppercase;
+    }
+    .callout {
+      margin: 16px 0;
+      padding: 15px 18px;
+      border-left: 4px solid var(--red);
+      background: var(--red-soft);
+    }
+    .callout.navy { border-left-color: var(--navy); background: var(--navy-soft); }
+    .callout.teal { border-left-color: var(--teal); background: var(--teal-soft); }
+    .callout.orange { border-left-color: var(--orange); background: var(--orange-soft); }
+    .callout.gold { border-left-color: var(--gold); background: var(--gold-soft); }
+    .callout.plum { border-left-color: var(--plum); background: var(--plum-soft); }
+    .callout p:last-child,
+    .callout ul:last-child,
+    .callout ol:last-child { margin-bottom: 0; }
+    .equation {
+      overflow-x: auto;
+      margin: 15px 0;
+      padding: 15px 18px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fbfcfc;
+      text-align: center;
+    }
+    .equation .math {
+      display: inline-block;
+      min-width: max-content;
+      color: #203d4b;
+      font-size: clamp(0.9rem, 2vw, 1.06rem);
+    }
+    .equation p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+    .cutoff-demo {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      align-items: stretch;
+      overflow: hidden;
+      margin: 17px 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface-2);
+    }
+    .cutoff-side {
+      min-width: 0;
+      padding: 16px 18px;
+    }
+    .cutoff-side strong,
+    .cutoff-side span { display: block; }
+    .cutoff-side strong { color: var(--teal); }
+    .cutoff-side.right strong { color: var(--red); }
+    .cutoff-side span {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+    .cutoff-rule {
+      display: grid;
+      min-width: 90px;
+      place-items: center;
+      padding: 10px;
+      border-right: 1px dashed var(--red);
+      border-left: 1px dashed var(--red);
+      color: var(--red);
+      background: var(--red-soft);
+      font-size: 0.8rem;
+      font-weight: 850;
+      text-align: center;
+    }
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 21px;
+      margin: 18px 0;
+    }
+    .flow.five { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .flow-item {
+      position: relative;
+      min-width: 0;
+      padding: 15px 13px;
+      border: 1px solid var(--line);
+      border-top: 3px solid var(--red);
+      border-radius: 8px;
+      background: var(--surface-2);
+      text-align: center;
+    }
+    .flow-item::after {
+      position: absolute;
+      top: 50%;
+      right: -19px;
+      color: var(--muted);
+      content: "→";
+      font-weight: 850;
+      transform: translateY(-50%);
+    }
+    .flow-item:last-child::after { content: ""; }
+    .flow-item:nth-child(2) { border-top-color: var(--orange); }
+    .flow-item:nth-child(3) { border-top-color: var(--navy); }
+    .flow-item:nth-child(4) { border-top-color: var(--teal); }
+    .flow-item:nth-child(5) { border-top-color: var(--plum); }
+    .flow-item strong,
+    .flow-item span { display: block; }
+    .flow-item span {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.83rem;
+      line-height: 1.48;
+    }
+    .stack {
+      display: grid;
+      gap: 0;
+      margin: 18px 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .stack-row {
+      display: grid;
+      grid-template-columns: 160px minmax(0, 1fr);
+      border-bottom: 1px solid var(--line);
+    }
+    .stack-row:last-child { border-bottom: 0; }
+    .stack-label {
+      display: grid;
+      place-items: center;
+      padding: 15px;
+      color: #fff;
+      background: var(--red);
+      font-size: 0.86rem;
+      font-weight: 850;
+      text-align: center;
+    }
+    .stack-row:nth-child(2) .stack-label { background: var(--orange); }
+    .stack-row:nth-child(3) .stack-label { background: var(--navy); }
+    .stack-row:nth-child(4) .stack-label { background: var(--teal); }
+    .stack-copy {
+      padding: 14px 17px;
+      background: var(--surface-2);
+    }
+    .stack-copy p:last-child { margin-bottom: 0; }
+    .table-wrap {
+      overflow-x: auto;
+      margin: 16px 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      font-size: 0.91rem;
+    }
+    caption {
+      padding: 11px 13px;
+      color: var(--muted);
+      background: var(--surface-2);
+      font-size: 0.82rem;
+      text-align: left;
+    }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+    }
+    th {
+      color: #31464f;
+      background: #f3f6f7;
+      font-weight: 800;
+    }
+    tr:last-child td { border-bottom: 0; }
+    td.num, th.num {
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      white-space: nowrap;
+    }
+    .tag {
+      display: inline-block;
+      margin: 1px 3px 1px 0;
+      padding: 2px 7px;
+      border-radius: 999px;
+      color: var(--teal);
+      background: var(--teal-soft);
+      font-size: 0.75rem;
+      font-weight: 800;
+    }
+    .tag.red { color: var(--red); background: var(--red-soft); }
+    .tag.orange { color: var(--orange); background: var(--orange-soft); }
+    .tag.navy { color: var(--navy); background: var(--navy-soft); }
+    .tag.plum { color: var(--plum); background: var(--plum-soft); }
+    .result-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      overflow: hidden;
+      margin: 17px 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    .result {
+      padding: 16px;
+      border-right: 1px solid var(--line);
+      background: var(--surface-2);
+    }
+    .result:last-child { border-right: 0; }
+    .result b {
+      display: block;
+      color: var(--red);
+      font-size: 1.45rem;
+      line-height: 1.2;
+    }
+    .result:nth-child(2) b { color: var(--navy); }
+    .result:nth-child(3) b { color: var(--teal); }
+    .result:nth-child(4) b { color: var(--plum); }
+    .result span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+    .timeline {
+      position: relative;
+      margin: 18px 0 18px 12px;
+      padding-left: 28px;
+      border-left: 2px solid var(--line);
+    }
+    .timeline-item {
+      position: relative;
+      padding: 0 0 18px;
+    }
+    .timeline-item:last-child { padding-bottom: 0; }
+    .timeline-item::before {
+      position: absolute;
+      top: 5px;
+      left: -36px;
+      width: 14px;
+      height: 14px;
+      border: 3px solid var(--surface);
+      border-radius: 50%;
+      background: var(--red);
+      box-shadow: 0 0 0 1px var(--line);
+      content: "";
+    }
+    .timeline-item:nth-child(2)::before { background: var(--orange); }
+    .timeline-item:nth-child(3)::before { background: var(--navy); }
+    .timeline-item:nth-child(4)::before { background: var(--teal); }
+    .timeline-item:nth-child(5)::before { background: var(--plum); }
+    .timeline-item p:last-child { margin-bottom: 0; }
+    .small {
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+    .refs {
+      padding-left: 1.25rem;
+      font-size: 0.9rem;
+    }
+    .refs li { margin-bottom: 8px; }
+    footer {
+      padding: 0 0 8px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-align: center;
+    }
+
+    @media (max-width: 1120px) {
+      .thesis-map { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .thesis-step:nth-child(2) { border-right: 0; }
+      .thesis-step:nth-child(-n + 2) { border-bottom: 1px solid var(--line); }
+      .layout { grid-template-columns: 1fr; }
+      .toc {
+        position: static;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        max-height: none;
+      }
+      .toc strong { grid-column: 1 / -1; }
+      .flow,
+      .flow.five { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+      .flow-item::after { content: ""; }
+      .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .result-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .result:nth-child(2) { border-right: 0; }
+      .result:nth-child(-n + 2) { border-bottom: 1px solid var(--line); }
+    }
+    @media (max-width: 720px) {
+      html, body { max-width: 100%; overflow-x: clip; }
+      .shell { padding: 12px; }
+      .masthead, .layout, main { max-width: 100%; }
+      .masthead-copy { padding: 25px 22px; }
+      .thesis-map,
+      .grid-2,
+      .grid-3,
+      .grid-4,
+      .flow,
+      .flow.five,
+      .toc,
+      .result-strip { grid-template-columns: 1fr; }
+      .thesis-step {
+        min-height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .thesis-step:last-child { border-bottom: 0; }
+      .result {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .result:last-child { border-bottom: 0; }
+      .stack-row { grid-template-columns: 1fr; }
+      .stack-label { place-items: start; text-align: left; }
+      .cutoff-demo { grid-template-columns: 1fr; }
+      .cutoff-rule {
+        min-width: 0;
+        border-top: 1px dashed var(--red);
+        border-right: 0;
+        border-bottom: 1px dashed var(--red);
+        border-left: 0;
+      }
+      main { padding: 2px 20px 22px; }
+      .chapter-heading { grid-template-columns: 38px minmax(0, 1fr); }
+      .chapter-number { width: 34px; height: 34px; }
+    }
+    @media print {
+      body { background: #fff; }
+      .shell { width: 100%; padding: 0; }
+      .masthead, main, .toc { box-shadow: none; }
+      .toc { display: none; }
+      .layout { display: block; }
+      main { border: 0; padding: 0; }
+      .chapter { break-inside: avoid; }
+      a { color: inherit; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="masthead">
+      <div class="masthead-copy">
+        <p class="eyebrow">DSE 2026 Conference Notes · Mortgage Intermediation</p>
+        <h1>Differential Returns to Securitization: Evidence and Impact</h1>
+        <p class="lead">
+          Jonathan Becker、Rob Clark、Kenneth Hendricks 與 Jean-François Houde
+          打開 mortgage originate-to-distribute 的黑盒子：Ginnie Mae issuer
+          利用規模與 portfolio duration 生產 differentiated securities，
+          但投資人支付的 customization pay-up 只部分傳給 originator，幾乎不傳給 borrower。
+          證券設計因此不只是提高定價效率，也會創造市場力與重新分配 rents。
+        </p>
+        <div class="meta">
+          <span><strong>作者：</strong>Jonathan Becker · Rob Clark · Kenneth Hendricks · Jean-François Houde</span>
+          <span><strong>簡報日期：</strong>2026-08-06</span>
+          <span><strong>核心市場：</strong>Ginnie Mae FHA/VA mortgages</span>
+          <span><strong>來源：</strong><a href="../../Conference/15%20J.F.%20Houde.pdf">Conference/15 J.F. Houde.pdf</a></span>
+        </div>
+      </div>
+
+      <div class="thesis-map" aria-label="文章主旨摘要">
+        <div class="thesis-step">
+          <span>Question</span>
+          <strong>Customization rents 最後歸誰？</strong>
+          <p>Security pay-up 會傳給 wholesale originator 與 borrower，還是被中介者保留？</p>
+        </div>
+        <div class="thesis-step">
+          <span>Institution</span>
+          <strong>Nonbank 不需長期持有貸款</strong>
+          <p>Warehouse line 支付 closing；數週後 securitization，最終資金來自 MBS investors。</p>
+        </div>
+        <div class="thesis-step">
+          <span>Data</span>
+          <strong>首次連起整條供應鏈</strong>
+          <p>HMDA → Optimal Blue → Bloomberg/TRACE → eMBS performance。</p>
+        </div>
+        <div class="thesis-step">
+          <span>Answer</span>
+          <strong>44% wholesale；retail 近零</strong>
+          <p>Issuer asymmetry 創造市場力；大型 customizers 得利，小 issuer 與 borrower 受損。</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <nav class="toc" aria-label="目錄">
+        <strong>目錄</strong>
+        <a href="#question">1. 核心問題與答案</a>
+        <a href="#architecture">2. 美國 mortgage 制度架構</a>
+        <a href="#nonbank">3. Nonbank business model</a>
+        <a href="#growth">4. 為何 nonbank 占三分之二？</a>
+        <a href="#tba">5. TBA 與 spec pools</a>
+        <a href="#literature">6. 前人文獻與本文差異</a>
+        <a href="#data">7. 本文使用的 data</a>
+        <a href="#model">8. Model 與三個 predictions</a>
+        <a href="#identification">9. Identification</a>
+        <a href="#results">10. 結果與 counterfactual</a>
+        <a href="#limits">11. 解讀、限制與來源</a>
+      </nav>
+
+      <main>
+        <section class="chapter" id="question">
+          <div class="chapter-heading">
+            <div class="chapter-number">1</div>
+            <div>
+              <h2>核心研究問題與文章的答案</h2>
+              <p>問題不是 securities 值多少，而是誰取得 securities 創造的價值。</p>
+            </div>
+          </div>
+
+          <div class="callout">
+            <h3>主要 research question</h3>
+            <p>
+              在不依賴 deposits 與傳統 balance-sheet lending 的
+              originate-to-distribute 市場中，mortgage lenders 的 rents 從哪裡來？
+              證券客製化產生的 pay-up，如何在 borrower、originator、MBS issuer 與 investor 之間分配？
+            </p>
+          </div>
+
+          <div class="grid-3">
+            <article class="card">
+              <p class="label">Heterogeneity</p>
+              <h3>誰有能力做 customization？</h3>
+              <p>Issuer 的規模與 portfolio duration 是否解釋 spec-pool usage 與 securitization returns？</p>
+            </article>
+            <article class="card navy">
+              <p class="label">Pass-through</p>
+              <h3>Pay-up 是否沿供應鏈傳遞？</h3>
+              <p>Investor 多付的價格，有多少進入 wholesale bid，又有多少進入 borrower rate/fees？</p>
+            </article>
+            <article class="card teal">
+              <p class="label">Market design</p>
+              <h3>取消 customization 會怎樣？</h3>
+              <p>若高價值 loans 不再被挑出，TBA、大小 issuers 與 borrowers 的分配效果為何？</p>
+            </article>
+          </div>
+
+          <div class="callout teal">
+            <h3>一句話答案</h3>
+            <p>
+              Scale 與 portfolio duration 使不同 issuers 對同一筆 loan 有不同 WTP，
+              形成 wholesale market power。Security pay-up 約 44% 傳給 originator，
+              但 originator 幾乎不再傳給 borrower；rents 最後停留在 issuer 與 originator。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="architecture">
+          <div class="chapter-heading">
+            <div class="chapter-number">2</div>
+            <div>
+              <h2>美國 government mortgage 的制度架構</h2>
+              <p>FHA、VA 與 Ginnie Mae 不是同一件事；它們位於不同風險層次。</p>
+            </div>
+          </div>
+
+          <h3>2.1 Mortgage cash-flow supply chain</h3>
+
+          <div class="flow five" aria-label="Mortgage supply chain">
+            <div class="flow-item">
+              <strong>Borrower</strong>
+              <span>申請貸款、支付 upfront fees 與每月本息</span>
+            </div>
+            <div class="flow-item">
+              <strong>Originator</strong>
+              <span>行銷、underwriting、closing；可自行保留或出售</span>
+            </div>
+            <div class="flow-item">
+              <strong>MBS issuer</strong>
+              <span>購買/彙集 loans，選擇 TBA 或 spec pool</span>
+            </div>
+            <div class="flow-item">
+              <strong>Servicer</strong>
+              <span>收取付款、管理 escrow、delinquency 與 advances</span>
+            </div>
+            <div class="flow-item">
+              <strong>Investor</strong>
+              <span>提供最終長期資金，取得 pass-through cash flows</span>
+            </div>
+          </div>
+
+          <p>
+            這些角色可以由不同公司承擔，也可以 vertically integrated。
+            大型 nonbank 可能同時是 retail originator、correspondent aggregator、
+            Ginnie Mae issuer 與 servicer；地方 lender 則可能只做 origination，
+            再把 loan 賣給大型 issuer。
+          </p>
+
+          <h3>2.2 三層信用與付款保護</h3>
+
+          <div class="stack" aria-label="Government mortgage 的三層保護">
+            <div class="stack-row">
+              <div class="stack-label">第一層<br>Borrower + collateral</div>
+              <div class="stack-copy">
+                <p>
+                  Borrower 承諾支付本息，房屋是 collateral。違約時，borrower equity
+                  與 property value 首先吸收損失。
+                </p>
+              </div>
+            </div>
+            <div class="stack-row">
+              <div class="stack-label">第二層<br>FHA / VA</div>
+              <div class="stack-copy">
+                <p>
+                  FHA 提供 mortgage insurance，VA 提供 guarantee，主要保護 lender/issuer
+                  免受 underlying borrower default 的信用損失。
+                </p>
+              </div>
+            </div>
+            <div class="stack-row">
+              <div class="stack-label">第三層<br>Private issuer</div>
+              <div class="stack-copy">
+                <p>
+                  Approved issuer 建立 pool、發行 MBS、管理 servicing，並首先負責向
+                  security holders 按時轉交 principal and interest。
+                </p>
+              </div>
+            </div>
+            <div class="stack-row">
+              <div class="stack-label">最後保證<br>Ginnie Mae</div>
+              <div class="stack-copy">
+                <p>
+                  Ginnie Mae 以美國政府 full faith and credit 保證 MBS investor
+                  按時收到本息；但它不直接 originate、購買 loans 或自行發行 MBS。
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="callout navy">
+            <h3>最容易混淆的地方</h3>
+            <p>
+              FHA/VA 主要處理 underlying mortgage credit risk；
+              Ginnie Mae 主要保證 MBS investor 的 timely payment。
+              Private issuer 仍必須先履行 servicing 與 advance obligations，
+              所以 government-backed 不等於 nonbank 沒有 liquidity risk。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="nonbank">
+          <div class="chapter-heading">
+            <div class="chapter-number">3</div>
+            <div>
+              <h2>Nonbank mortgage company 的 business model</h2>
+              <p>它不需要存款來持有 30 年貸款，只需把貸款生產並送進 capital market。</p>
+            </div>
+          </div>
+
+          <div class="callout gold">
+            <h3>核心資金邏輯</h3>
+            <p>
+              <strong>短期生產資金：</strong>bank warehouse line；
+              <strong>最終長期資金：</strong>MBS investors；
+              <strong>信用/付款保證：</strong>FHA/VA + Ginnie Mae/GSE。
+              Nonbank 的比較優勢因此可以放在 customer acquisition、underwriting、
+              securitization 與 servicing，而不必建立 deposit franchise。
+            </p>
+          </div>
+
+          <div class="timeline" aria-label="Nonbank mortgage 的生命週期">
+            <div class="timeline-item">
+              <h3>1. Customer acquisition 與 rate lock</h3>
+              <p>
+                Nonbank 透過 online application、call center、loan officers、brokers、
+                real-estate referrals 或 correspondent network 找到 borrower。
+                Borrower 選擇 note rate 與 points/credits，nonbank 同時管理 rate-lock exposure。
+              </p>
+            </div>
+            <div class="timeline-item">
+              <h3>2. Underwriting 與 closing</h3>
+              <p>
+                依 FICO、income、DTI、LTV、property、loan size 與 FHA/VA eligibility
+                審核。Closing 時 nonbank 必須實際交付資金，但通常不會永久把貸款留在 balance sheet。
+              </p>
+            </div>
+            <div class="timeline-item">
+              <h3>3. Warehouse funding</h3>
+              <p>
+                銀行提供 secured warehouse line，loan 暫時作為 collateral。
+                Nonbank 投入 haircut/equity，通常只持有數週；若違反 covenant，
+                warehouse lender 可提高 haircut、改價、限縮或取消額度。
+              </p>
+            </div>
+            <div class="timeline-item">
+              <h3>4. Pipeline hedge 與 securitization</h3>
+              <p>
+                Nonbank 可在 loan closing 前 forward-sell TBA MBS 以鎖定 resale price。
+                貸款完成後放入 multi-issuer TBA pool、single-issuer spec pool，
+                或賣給另一個 aggregator。
+              </p>
+            </div>
+            <div class="timeline-item">
+              <h3>5. Repay warehouse line；retain or sell servicing</h3>
+              <p>
+                用 whole-loan/MBS sale proceeds 償還 warehouse bank。
+                Nonbank 可保留 MSR 持續收 servicing fee，也可出售 MSR 提前取得現金。
+              </p>
+            </div>
+          </div>
+
+          <h3>3.1 Nonbank 的收入來源</h3>
+
+          <div class="grid-3">
+            <article class="card">
+              <p class="label">At closing</p>
+              <h3>Origination fees / points</h3>
+              <p>Borrower 支付的 upfront fees，或 rate 與 lender credits 組合帶來的收入。</p>
+            </article>
+            <article class="card navy">
+              <p class="label">At sale</p>
+              <h3>Gain-on-sale</h3>
+              <p>Resale value 減去 acquisition、warehouse funding、hedging 與 securitization cost。</p>
+            </article>
+            <article class="card teal">
+              <p class="label">Customization</p>
+              <h3>Spec-pool pay-up</h3>
+              <p>把長 duration、高價值 loans 做成 differentiated security 所取得的額外價格。</p>
+            </article>
+            <article class="card orange">
+              <p class="label">Over time</p>
+              <h3>Servicing fee</h3>
+              <p>保留 MSR 後，按 outstanding balance 收費，並承擔 servicing operations。</p>
+            </article>
+            <article class="card plum">
+              <p class="label">Asset sale</p>
+              <h3>MSR sale proceeds</h3>
+              <p>把未來 servicing cash flows 出售給另一個 servicer，換取立即現金。</p>
+            </article>
+            <article class="card gold">
+              <p class="label">Optionality</p>
+              <h3>Retention option</h3>
+              <p>依資金與市場價格選擇暫時保留、延後出售或調整 delivery strategy。</p>
+            </article>
+          </div>
+
+          <div class="equation">
+            <span class="math">WTP = (r − c − g) × duration + resale value − cost + retention option</span>
+            <p>本文的 loan valuation：MSR、security resale、成本與持有選擇共同決定 issuer 對 loan 的 WTP。</p>
+          </div>
+
+          <h3>3.2 Nonbank 的主要風險</h3>
+
+          <div class="table-wrap">
+            <table>
+              <caption>Nonbank 的速度與專業化，以較脆弱的 liquidity structure 為代價</caption>
+              <thead>
+                <tr>
+                  <th>風險</th>
+                  <th>來源</th>
+                  <th>壓力時的後果</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Warehouse liquidity</strong></td>
+                  <td>短期、可能是 uncommitted 的 bank credit lines</td>
+                  <td>Haircut 上升、額度被撤、loan 卡在 pipeline。</td>
+                </tr>
+                <tr>
+                  <td><strong>Pipeline / fallout</strong></td>
+                  <td>Rate lock 後市場價格變動；borrower 未 closing</td>
+                  <td>TBA hedge 與實際 loan volume mismatch。</td>
+                </tr>
+                <tr>
+                  <td><strong>Servicing advances</strong></td>
+                  <td>Borrower 未付款時仍須先墊付 investor、tax、insurance</td>
+                  <td>大量 delinquencies 可能造成急迫現金需求。</td>
+                </tr>
+                <tr>
+                  <td><strong>MSR valuation</strong></td>
+                  <td>Interest rate、prepayment、delinquency 改變 MSR 壽命與成本</td>
+                  <td>資產價值快速波動，甚至觸發 capital/liquidity requirement。</td>
+                </tr>
+                <tr>
+                  <td><strong>Concentration</strong></td>
+                  <td>收入與資產高度集中在 mortgage</td>
+                  <td>Origination cycle 轉差時缺乏其他業務緩衝。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="chapter" id="growth">
+          <div class="chapter-heading">
+            <div class="chapter-number">4</div>
+            <div>
+              <h2>為什麼約三分之二的 mortgage 由 nonbank 發放？</h2>
+              <p>不是一項單獨政策造成，而是 securitization、銀行退出、技術與產品專業化共同作用。</p>
+            </div>
+          </div>
+
+          <div class="callout navy">
+            <h3>先注意 denominator</h3>
+            <p>
+              「三分之二」會隨 loan type、年份、按筆數或金額計算而改變。
+              CFPB 2023 HMDA 中，independent mortgage companies 占 home-purchase loans 63.1%、
+              refinances 67.1%；GAO 2024 agency MBS 按金額計算為 76%，Ginnie Mae MBS 為 87%。
+              簡報的「FHA/VA 超過 90%」使用的是更窄的產品/年份定義。
+            </p>
+          </div>
+
+          <div class="grid-2">
+            <article class="card">
+              <p class="label">1 · Funding technology</p>
+              <h3>Securitization 取代 deposit funding</h3>
+              <p>
+                Warehouse credit 只支應數週，Ginnie Mae/GSE MBS 將最終資金需求交給全球 investors。
+                沒有 deposits 不再是不能做 30 年 mortgage 的決定性障礙。
+              </p>
+            </article>
+            <article class="card navy">
+              <p class="label">2 · Bank retreat</p>
+              <h3>2008 後銀行降低 mortgage exposure</h3>
+              <p>
+                Capital treatment、MSR rules、危機後 litigation/compliance 與 reputational cost
+                使部分銀行縮減 origination、servicing，尤其 FHA lending。
+              </p>
+            </article>
+            <article class="card teal">
+              <p class="label">3 · Specialization</p>
+              <h3>聚焦 FHA/VA 與 underserved borrowers</h3>
+              <p>
+                Nonbanks 建立處理低 down payment、特殊文件與 government-loan rules 的專門平台，
+                填補大型銀行退出的客群與地區。
+              </p>
+            </article>
+            <article class="card orange">
+              <p class="label">4 · Technology</p>
+              <h3>Digital origination 與 centralized operations</h3>
+              <p>
+                Online applications、automated verification、call centers 與 national lead routing
+                讓 nonbanks 更快完成貸款並跨州擴張。
+              </p>
+            </article>
+            <article class="card plum">
+              <p class="label">5 · Regulatory perimeter</p>
+              <h3>不同而非不存在的監理</h3>
+              <p>
+                Nonbanks 受 consumer、state 與 agency counterparty rules 約束，但通常沒有銀行同等的
+                deposit、capital、liquidity 與全面 prudential regime，固定成本與組織彈性不同。
+              </p>
+            </article>
+            <article class="card gold">
+              <p class="label">6 · Cyclicality</p>
+              <h3>可以快速擴張或收縮 capacity</h3>
+              <p>
+                Refinance boom 時迅速增聘、購買 leads；利率上升後則快速裁員。
+                專業化平台比多角化銀行更願意承擔 mortgage volume cycle。
+              </p>
+            </article>
+          </div>
+
+          <div class="callout orange">
+            <h3>重要的反面</h3>
+            <p>
+              Nonbank 並未讓銀行退出資金鏈：銀行仍透過 warehouse lines 融資 nonbanks。
+              差別是銀行由「直接做長期 mortgage」轉為「提供短期 secured credit」。
+              這也把風險由傳統 deposit-funded balance sheet 轉成 capital-market 與 warehouse liquidity risk。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="tba">
+          <div class="chapter-heading">
+            <div class="chapter-number">5</div>
+            <div>
+              <h2>TBA、multi-issuer pools 與 spec pools</h2>
+              <p>標準化創造流動性；客製化揭露品質，但也可能 adverse-select 標準化市場。</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="card navy">
+              <p class="label">约 75% of loans</p>
+              <h3>TBA / multi-issuer market</h3>
+              <ul>
+                <li>交易時只約定 agency/program、coupon、maturity、face value、price、settlement。</li>
+                <li>真正 pool/CUSIP 到接近 settlement 才指定。</li>
+                <li>不同合格 pools 被視為 fungible，流動性高、bid-ask spread 小。</li>
+                <li>小 issuer 可把少量 loans 與其他 issuers 合成一個 MBS。</li>
+                <li>Originator 可在 mortgage closing 前 forward-sell，支援 rate lock 與 pipeline hedge。</li>
+              </ul>
+            </article>
+            <article class="card teal">
+              <p class="label">约 25% of loans</p>
+              <h3>Specified / custom pool market</h3>
+              <ul>
+                <li>交易時知道特定 pool/CUSIP 與 collateral composition。</li>
+                <li>Investor 可根據 loan size、geography、loan age、prepayment 等特徵定價。</li>
+                <li>長 duration、較低 prepayment pools 可取得高於 TBA 的 pay-up。</li>
+                <li>Single issuer 必須有足夠 volume 攤平 pool-creation fixed cost。</li>
+                <li>更精確的資訊與產品 differentiation，會形成 issuer-specific returns。</li>
+              </ul>
+            </article>
+          </div>
+
+          <h3>5.1 為什麼 small-balance loans 有較高價值？</h3>
+
+          <div class="flow five" aria-label="Small loan 到 spec-pool pay-up 的機制">
+            <div class="flow-item">
+              <strong>固定 refi cost</strong>
+              <span>Appraisal、title、closing 等費用不隨本金同比例下降</span>
+            </div>
+            <div class="flow-item">
+              <strong>Small balance</strong>
+              <span>固定成本占本金比例較高</span>
+            </div>
+            <div class="flow-item">
+              <strong>Less refinancing</strong>
+              <span>即使利率下降，refi 誘因也較弱</span>
+            </div>
+            <div class="flow-item">
+              <strong>Longer duration</strong>
+              <span>Mortgage cash flows 留存較久</span>
+            </div>
+            <div class="flow-item">
+              <strong>Investor pay-up</strong>
+              <span>在特定 coupon 市況下，較可預測的長 duration 更有價值</span>
+            </div>
+          </div>
+
+          <h3>5.2 Customization 如何 adverse-select TBA？</h3>
+          <p>
+            Issuer 先把最有價值、duration 最長的 loans 挑去 spec pools，再把剩下仍符合
+            good-delivery rules 的 loans 放入 TBA。TBA investors 預期這種 cheapest-to-deliver selection，
+            因而壓低 generic pool 的共同價格。
+          </p>
+
+          <div class="equation">
+            <span class="math">high-value / long-duration loans → spec pools<br>
+              lower-value / short-duration loans → TBA pools</span>
+            <p>Customization 一方面揭露品質，另一方面降低留在 standard pool 的平均品質。</p>
+          </div>
+
+          <h3>5.3 Slide p.8：discontinuity 從哪裡來？</h3>
+
+          <div class="callout">
+            <h3>先抓住最重要的區分</h3>
+            <p>
+              圖上的跳躍不是 borrower 的 prepayment risk 在某個整數金額突然改變；
+              它來自 spec-pool 市場用固定 maximum loan balance cutoffs 分類產品。
+              真實風險對 loan size 大致平滑，但可進入的 security category 是離散的。
+            </p>
+          </div>
+
+          <p>
+            業界常用的 maximum-balance thresholds 為
+            <strong>$85K、$110K、$125K、$150K、$175K、$200K</strong>；
+            投影片也畫出資料中的 $225K 分界。這些門檻把連續的 loan amount
+            切成 <code>(0,85K]</code>、<code>(85K,110K]</code>、
+            <code>(110K,125K]</code> 等離散產品。
+          </p>
+
+          <div class="cutoff-demo" aria-label="Loan amount 跨過 110K cutoff 的例子">
+            <div class="cutoff-side">
+              <strong>$109,900 loan</strong>
+              <span>仍可進入 maximum balance 不超過 $110K 的 low-balance pool，pay-up 較高。</span>
+            </div>
+            <div class="cutoff-rule">$110K<br>cutoff</div>
+            <div class="cutoff-side right">
+              <strong>$110,100 loan</strong>
+              <span>不能再放入該 pool；必須進下一個較大額 category，或更可能進 TBA。</span>
+            </div>
+          </div>
+
+          <p>
+            兩筆貸款只差 $200，其 borrower quality 和真正的 prepayment risk
+            理論上幾乎相同；但可採用的 securitization technology 不同，
+            所以 issuer 的 expected resale value 會突然下降。
+          </p>
+
+          <div class="grid-2">
+            <article class="card orange">
+              <p class="label">Channel 1</p>
+              <h3>Customization probability 跳降</h3>
+              <p>
+                Cutoff 右側的 loan 較不容易被放入 spec pool，也更可能進入
+                pay-up 為零的 TBA pool。Fixed pool-creation cost 與不足的 loan volume
+                會加強這個 corner solution。
+              </p>
+            </article>
+            <article class="card navy">
+              <p class="label">Channel 2</p>
+              <h3>Conditional spec-pool value 跳降</h3>
+              <p>
+                即使 loan 仍進入 spec pool，它也會落入平均 balance 較大的下一級 pool。
+                Investors 預期其 prepayment 較快，因此支付較低價格。
+              </p>
+            </article>
+          </div>
+
+          <div class="equation">
+            <span class="math">Average pay-up(L) ≈
+              Pr(Spec pool | L) × E[V<sup>SP</sup>−V<sup>TBA</sup> | Spec pool, L]</span>
+            <p>跨過 cutoff 時，上式的 customization probability 與 conditional pool value 都可能下降。</p>
+          </div>
+
+          <h3>5.4 怎麼閱讀 slide p.8 的 chart？</h3>
+
+          <div class="table-wrap">
+            <table>
+              <caption>圖形元素與經濟意義</caption>
+              <thead>
+                <tr>
+                  <th>圖形元素</th>
+                  <th>怎麼讀</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>橫軸</strong></td>
+                  <td>Loan amount（×1000）；125 代表 $125,000。</td>
+                </tr>
+                <tr>
+                  <td><strong>縱軸</strong></td>
+                  <td>
+                    Security price 相對於同 coupon TBA price 的 pay-up。
+                    1 point 是每 $100 face value 多 $1；對 $100,000 本金約為 $1,000。
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>黑點</strong></td>
+                  <td>每 $1,000 loan-size bin 的平均 pay-up；圖下方的 bandwidth 即為 $1,000。</td>
+                </tr>
+                <tr>
+                  <td><strong>紅線</strong></td>
+                  <td>每個 size segment 內的平均價格趨勢。</td>
+                </tr>
+                <tr>
+                  <td><strong>垂直虛線</strong></td>
+                  <td>Spec-pool loan-size cutoffs；真正用於 identification 的是這些位置上的離散跳躍。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <ol>
+            <li>
+              <strong>先看區間內的 downward slope：</strong>loan size 愈大，fixed refinancing cost
+              占本金比例愈低，borrower 更容易 refinance；duration 因而較短，pay-up 平滑下降。
+            </li>
+            <li>
+              <strong>再看虛線上的 downward jump：</strong>跨過 cutoff 後，loan 被重新分類，
+              customization probability 或下一級 spec-pool price 突然下降。
+            </li>
+            <li>
+              <strong>最後看 $225K 以上：</strong>pay-up 幾乎為零，因為大額 loans
+              幾乎都進入 generic TBA market，low-balance customization 的額外價值消失。
+            </li>
+          </ol>
+
+          <div class="callout navy">
+            <h3>縱軸的一個重要細節</h3>
+            <p>
+              依本文 Figure 3a 的定義，投影片畫的是所有 loans 的平均
+              <code>V<sub>i</sub> − V<sup>TBA</sup></code>：若 loan 進入 TBA，
+              它對 pay-up 的貢獻就是零。因此曲線同時反映「進入 spec pool 的機率」
+              與「conditional on spec pool 的價格溢價」，而不只是後者。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="literature">
+          <div class="chapter-heading">
+            <div class="chapter-number">6</div>
+            <div>
+              <h2>前人文獻怎麼回答？本文有何不同？</h2>
+              <p>本文把 security design、wholesale auction 與 retail mortgage pricing 放在同一條鏈上。</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <caption>四類既有答案與本文補上的缺口</caption>
+              <thead>
+                <tr>
+                  <th>文獻路線</th>
+                  <th>典型答案</th>
+                  <th>本文認為仍缺什麼？</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Traditional banking</strong></td>
+                  <td>Rents 來自 cheap deposits、funding advantage 與 balance-sheet lending。</td>
+                  <td>Nonbanks 沒有 deposits、貸款只持有數週，仍占市場多數。</td>
+                </tr>
+                <tr>
+                  <td><strong>MBS pricing / design</strong></td>
+                  <td>Spec-pool pay-up 反映 liquidity、prepayment 與 cheapest-to-deliver。</td>
+                  <td>解釋 security 值多少，卻較少追蹤價值最後由誰取得。</td>
+                </tr>
+                <tr>
+                  <td><strong>Mortgage pass-through</strong></td>
+                  <td>Secondary-market value 應透過 lender competition 進入 mortgage rate/fees。</td>
+                  <td>平均 pass-through 混合 generic TBA shock 與 issuer-specific customization rent。</td>
+                </tr>
+                <tr>
+                  <td><strong>Retail search / IO</strong></td>
+                  <td>Borrower search、information 與 negotiation frictions 造成 retail markups。</td>
+                  <td>沒有解釋 security production capability 如何先在 wholesale market 產生 market power。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout plum">
+            <h3>本文的 conceptual shift</h3>
+            <p>
+              從「特定 mortgage pool 為何比較值錢」轉成「誰有能力生產比較值錢的 security，
+              以及這種能力是否轉成 wholesale 與 retail rents」。Market power
+              不是只有 market concentration，也可以來自 heterogeneous production technology。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="data">
+          <div class="chapter-heading">
+            <div class="chapter-number">7</div>
+            <div>
+              <h2>本文使用的 data：把供應鏈連成一筆價格路徑</h2>
+              <p>每個資料集只看到一段；貢獻在於把 retail、wholesale、secondary 與 performance 串起來。</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <caption>Data map：市場層次、價格、樣本與研究用途</caption>
+              <thead>
+                <tr>
+                  <th>供應鏈位置</th>
+                  <th>Data / period</th>
+                  <th>主要觀察內容</th>
+                  <th>本文用途</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Retail</strong><br>Borrower → Originator</td>
+                  <td>HMDA<br>2018–2019<br>約 2M loans</td>
+                  <td>Loan amount、purpose、institution、borrower information、rate、fees/credits</td>
+                  <td>建立 borrower upfront price，檢驗 retail pass-through。</td>
+                </tr>
+                <tr>
+                  <td><strong>Wholesale</strong><br>Originator → Issuer</td>
+                  <td>Optimal Blue<br>2018–2019<br>約 70K auctions</td>
+                  <td>First-price sealed bids、最高/次高 bid、FICO、LTV、note rate、loan terms</td>
+                  <td>觀察 issuer WTP、wholesale transaction price 與 bid dispersion。</td>
+                </tr>
+                <tr>
+                  <td><strong>Generic secondary</strong><br>Issuer → Investor</td>
+                  <td>Bloomberg<br>約 60K securities</td>
+                  <td>Date × coupon 的 generic TBA price</td>
+                  <td>建立所有 issuer 都可使用的共同 resale benchmark。</td>
+                </tr>
+                <tr>
+                  <td><strong>Specified secondary</strong><br>Issuer → Investor</td>
+                  <td>FINRA TRACE</td>
+                  <td>Specified-pool executed price、volume、security identifier</td>
+                  <td>測量實際 spec-pool price 與 customization pay-up。</td>
+                </tr>
+                <tr>
+                  <td><strong>Collateral / performance</strong></td>
+                  <td>eMBS<br>2013–2022<br>約 14M loans</td>
+                  <td>Issuer、pool、underlying loans、size、coupon、prepayment/survival</td>
+                  <td>測量 duration、issuer heterogeneity 與 selection into pools。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>7.1 HMDA：borrower 得到的價格</h3>
+
+          <div class="equation">
+            <span class="math">P<sub>i</sub>(r) = 100 − Net Fee(r)</span>
+            <p>在給定 note rate r 下，fee 越低或 lender credit 越高，borrower upfront price 越好。</p>
+          </div>
+
+          <p>
+            HMDA coverage 廣，可觀察 borrower、loan 與 lender；但看不到 wholesale bids、
+            最終 MBS pool 或 secondary execution，因此無法單獨回答 pay-up 如何傳遞。
+            約 60K auctioned loans 可進一步與 supply-chain data 連結。
+          </p>
+
+          <h3>7.2 Optimal Blue：issuer 願意付多少？</h3>
+          <p>
+            Correspondent originator 把 loan 放上平台，多個 issuers 在 first-price sealed-bid auction
+            中出價。最高 bid 是 wholesale price <code>W<sub>i</sub></code>；
+            第一與第二高 bid 的差距則顯示 winner 的 valuation advantage。
+          </p>
+
+          <div class="equation">
+            <span class="math">WTP dispersion ≈ highest bid − second-highest bid</span>
+            <p>Small-loan auctions 的 bid dispersion 較高，支持 issuer customization capabilities 不對稱。</p>
+          </div>
+
+          <h3>7.3 Bloomberg + TRACE：把 generic 與 custom value 分開</h3>
+
+          <div class="equation">
+            <span class="math">Δ<sup>SP</sup> =
+              V<sub>i</sub><sup>SP</sup>(c, Z̄) − V<sub>t</sub><sup>TBA</sup>(c)</span>
+            <p>Spec-pool pay-up = 實際 specified-pool value − 同日同 coupon 的 generic TBA benchmark。</p>
+          </div>
+
+          <p>
+            Bloomberg 提供 TBA benchmark；TRACE 是 FINRA 對 OTC fixed-income transactions
+            的 reporting system，提供 executed trade 而非單純 quote。
+            這讓作者能把整體 MBS market move 與 pool-specific customization value 分開。
+          </p>
+
+          <h3>7.4 eMBS：pool 裡有什麼，貸款最後活多久？</h3>
+          <p>
+            eMBS 將 security 連到 underlying collateral 與 performance history。
+            作者可以計算某筆 loan 在 12 或 36 個月後是否仍存續，建立 issuer-specific
+            survival/duration fixed effects，再判斷 spec-pool selection 是來自：
+          </p>
+
+          <div class="grid-3">
+            <article class="card">
+              <p class="label">Observable</p>
+              <h3>Loan attributes</h3>
+              <p>Size、coupon、FICO、LTV、geography 等可觀察特徵。</p>
+            </article>
+            <article class="card navy">
+              <p class="label">Firm heterogeneity</p>
+              <h3>Issuer fixed effects</h3>
+              <p>同樣可觀察 loan characteristics 下，不同 issuer 的 portfolio duration。</p>
+            </article>
+            <article class="card teal">
+              <p class="label">Residual selection</p>
+              <h3>Private information</h3>
+              <p>Loan 與 issuer observables 以外仍能預測 realized performance 的資訊。</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="chapter" id="model">
+          <div class="chapter-heading">
+            <div class="chapter-number">8</div>
+            <div>
+              <h2>Model：acquisition 之後再選 customization</h2>
+              <p>規模 fixed cost 與 portfolio quality 共同產生 differential returns。</p>
+            </div>
+          </div>
+
+          <p>
+            Issuer 先在 retail 或 wholesale market 取得 loans，再決定同一 size/coupon segment
+            中有多少 loans 放入 spec pool。把 loans 依價值由高至低排列，
+            custom pool 平均價值隨納入更多、品質較低的 loans 而下降：
+          </p>
+
+          <div class="equation">
+            <span class="math">V(c,q) = weighted average of the top q loan NPVs,
+              &nbsp; ∂V(c,q)/∂q &lt; 0</span>
+          </div>
+
+          <div class="equation">
+            <span class="math">max<sub>q∈[0,Q<sub>c</sub>]</sub>
+              { qV(c,q) + (Q<sub>c</sub>−q)V<sup>TBA</sup>(c) − κ·1(q&gt;0) }</span>
+            <p>κ 是建立 custom pool 的 fixed cost。</p>
+          </div>
+
+          <div class="grid-3">
+            <article class="card">
+              <p class="label">Interior</p>
+              <h3>0 &lt; q* &lt; Q</h3>
+              <p>Marginal custom loan 的 NPV 等於 TBA value；更差的 loans 留在 TBA。</p>
+            </article>
+            <article class="card navy">
+              <p class="label">All custom</p>
+              <h3>q* = Q</h3>
+              <p>即使最差的 loan 也比 TBA delivery 更有價值，整個 segment 都 customization。</p>
+            </article>
+            <article class="card orange">
+              <p class="label">No custom</p>
+              <h3>q* = 0</h3>
+              <p>高價值 loans 的 volume 不足以支付 fixed cost κ，小 issuer 留在 multi-issuer TBA。</p>
+            </article>
+          </div>
+
+          <h3>模型的三個 predictions</h3>
+          <ol>
+            <li>
+              <strong>Selection：</strong>進入 spec pools 不只依 loan size；
+              所有能預測 duration 的 loan attributes 與 issuer portfolio duration 都應影響選擇。
+            </li>
+            <li>
+              <strong>Differential returns：</strong>customization rate 與 pay-up
+              應隨 issuer scale 和 portfolio duration 上升。
+            </li>
+            <li>
+              <strong>Market power：</strong>對 small/long-duration loans 的 WTP dispersion 較大，
+              security value 對 wholesale 與 retail price 的 pass-through 不完全。
+            </li>
+          </ol>
+        </section>
+
+        <section class="chapter" id="identification">
+          <div class="chapter-heading">
+            <div class="chapter-number">9</div>
+            <div>
+              <h2>Identification：loan-size cutoffs 提供外生 pay-up jump</h2>
+              <p>相似 loans 在 segment 邊界兩側，custom security value 會離散改變。</p>
+            </div>
+          </div>
+
+          <p>
+            Spec-pool market 以 $85K、$110K、$125K、$150K、$175K、$200K
+            等 loan-size bands 定義產品。跨過 cutoff 時，pool 所屬 segment、
+            customization probability 與 spec-pool pay-up 都可能跳動；
+            但 borrower fundamentals 與 generic TBA price 理論上應平滑。
+          </p>
+
+          <div class="flow" aria-label="Loan-size cutoff identification">
+            <div class="flow-item">
+              <strong>接近 cutoff</strong>
+              <span>限制在 loan-size threshold 上下 \$5,000</span>
+            </div>
+            <div class="flow-item">
+              <strong>Fundamentals 平滑</strong>
+              <span>Income、FICO、LTV、FHA status、note rate 無明顯跳動</span>
+            </div>
+            <div class="flow-item">
+              <strong>Spec value 跳動</strong>
+              <span>Market segmentation 讓 customization pay-up 離散改變</span>
+            </div>
+            <div class="flow-item">
+              <strong>IV pass-through</strong>
+              <span>用 cutoff-induced pay-up 識別 wholesale 與 retail coefficients</span>
+            </div>
+          </div>
+
+          <div class="callout orange">
+            <h3>這是 fuzzy RD + IV，不是 sharp RD</h3>
+            <p>
+              跨過 cutoff 並不保證每筆 loan 一定從 spec pool 改進 TBA；
+              cutoff 只會顯著改變 expected pay-up。因此作者把
+              <code>1(L<sub>i</sub> &gt; l<sub>k</sub>)</code>
+              當作 pay-up 的 instrument，利用它所產生的 first stage
+              估計 downstream price pass-through。
+            </p>
+          </div>
+
+          <div class="equation">
+            <span class="math">IV<sub>i</sub> =
+              1{L<sub>i</sub> 位於 cutoff l<sub>k</sub> 的 ±$5K neighborhood}
+              × 1{L<sub>i</sub> &gt; l<sub>k</sub>}</span>
+            <p>在 local sample 中，右側 indicator 預測 security pay-up 的離散下降。</p>
+          </div>
+
+          <div class="equation">
+            <span class="math">W<sub>i</sub> = f(Z<sub>i</sub>) +
+              μ<sup>w</sup><sub>pay-up</sub>[V<sub>i</sub>−V<sup>TBA</sup>] +
+              μ<sup>w</sup><sub>TBA</sub>V<sup>TBA</sup> + FE + error</span>
+          </div>
+
+          <div class="equation">
+            <span class="math">P<sub>i</sub> = g(Z<sub>i</sub>) +
+              μ<sup>r</sup><sub>pay-up</sub>[W<sub>i</sub>−V<sup>TBA</sup>] +
+              μ<sup>r</sup><sub>TBA</sub>V<sup>TBA</sup> + FE + error</span>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <caption>Estimation samples near size cutoffs</caption>
+              <thead>
+                <tr>
+                  <th>Regression</th>
+                  <th class="num">Observations</th>
+                  <th>Estimator</th>
+                  <th>Controls / FE</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Wholesale pass-through</td>
+                  <td class="num">12,695</td>
+                  <td>OLS + IV</td>
+                  <td>Auction date × high/low coupon；loan-size bin × coupon；borrower characteristics</td>
+                </tr>
+                <tr>
+                  <td>Retail pass-through</td>
+                  <td class="num">約 19,600</td>
+                  <td>OLS + IV</td>
+                  <td>相同 cutoff window、FE 與 borrower controls</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout gold">
+            <h3>識別的經濟意義</h3>
+            <p>
+              作者不是用整體 TBA price 的 time-series movement 推論 pass-through，
+              而是比較幾乎相同的 loans，利用 security customization convention
+              在 cutoff 創造的價值跳躍。這特別識別 issuer-specific pay-up，
+              而非 generic mortgage funding shock。
+            </p>
+          </div>
+
+          <div class="callout plum">
+            <h3>不要把 slide p.8 當成最終 causal result</h3>
+            <p>
+              這張圖首先證明 cutoff 對 resale value 有強烈 first stage。
+              真正的 pass-through 結果來自後續 2SLS：把 cutoff-induced pay-up
+              連到 wholesale winning bid 與 retail borrower price。識別成立仍需要
+              cutoff 兩側的 borrower characteristics、真正 prepayment risk
+              與其他定價因素保持平滑，且 loan amount 沒有針對門檻的精準操弄。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="results">
+          <div class="chapter-heading">
+            <div class="chapter-number">10</div>
+            <div>
+              <h2>主要結果、rent distribution 與 counterfactual</h2>
+              <p>一般 TBA shock 傳遞較完整；真正被截留的是 customization-specific rent。</p>
+            </div>
+          </div>
+
+          <div class="result-strip" aria-label="主要估計結果">
+            <div class="result">
+              <b>44%</b>
+              <span>Security pay-up 對 wholesale price 的 IV pass-through</span>
+            </div>
+            <div class="result">
+              <b>88%</b>
+              <span>Generic TBA price 對 wholesale price 的 pass-through</span>
+            </div>
+            <div class="result">
+              <b>≈ 0</b>
+              <span>Wholesale pay-up 對 borrower retail price 的 IV pass-through</span>
+            </div>
+            <div class="result">
+              <b>−$172</b>
+              <span>取消 customization 後，最大 issuers 的平均每貸款 profit change</span>
+            </div>
+          </div>
+
+          <h3>10.1 Pay-up 留在哪裡？</h3>
+
+          <div class="flow" aria-label="Customization pay-up 的分配">
+            <div class="flow-item">
+              <strong>Investor pays +$1</strong>
+              <span>為特定 pool 的長 duration 支付 premium</span>
+            </div>
+            <div class="flow-item">
+              <strong>約 $0.44 傳遞</strong>
+              <span>Issuer 提高 wholesale bid，originator 得到一部分</span>
+            </div>
+            <div class="flow-item">
+              <strong>約 $0.56 留在 issuer</strong>
+              <span>WTP asymmetry 使 winner 不必 bid 出全部 value</span>
+            </div>
+            <div class="flow-item">
+              <strong>Borrower 幾乎為零</strong>
+              <span>Originator 未把 wholesale gain 轉成 rate/fee improvement</span>
+            </div>
+          </div>
+
+          <p>
+            Wholesale IV coefficient 為 0.44；generic TBA price coefficient 約 0.88。
+            Retail IV coefficient 為 −0.037（標準誤 0.048），與零無顯著差異；
+            closing costs 與 note rates 在 size cutoffs 也沒有可見 discontinuity。
+          </p>
+
+          <h3>10.2 為何大型 issuer 得利？</h3>
+          <ul>
+            <li>Volume 足夠攤平 custom-pool fixed cost。</li>
+            <li>Portfolio 中有較多長 duration、高價值 loans。</li>
+            <li>可以在第一與第二高 WTP 之間保留 auction rents。</li>
+            <li>小 issuers 更依賴已被 adverse-selected 的 generic TBA market。</li>
+          </ul>
+
+          <h3>10.3 取消 customization 的 counterfactual</h3>
+          <p>
+            把目前的 spec-pool loans 放回 multi-issuer TBA pool，會提高 generic pool
+            的平均品質與價格，同時讓 spec-pool pay-up 消失。主要分配結果如下：
+          </p>
+
+          <div class="table-wrap">
+            <table>
+              <caption>Eliminating customization / adverse selection 的主要效果</caption>
+              <thead>
+                <tr>
+                  <th>群體</th>
+                  <th>方向</th>
+                  <th>量化結果</th>
+                  <th>原因</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>最大 1–10 名 issuers</td>
+                  <td><span class="tag red">Lose</span></td>
+                  <td>約 −\$172 / loan</td>
+                  <td>失去 customization advantage 與 pay-up。</td>
+                </tr>
+                <tr>
+                  <td>最小、排名 100+ issuers</td>
+                  <td><span class="tag">Gain</span></td>
+                  <td>約 +\$164 / loan</td>
+                  <td>主要依賴的 TBA pool 品質與價格改善。</td>
+                </tr>
+                <tr>
+                  <td>Borrowers overall</td>
+                  <td><span class="tag">Gain</span></td>
+                  <td>Upfront price 平均 +0.061 / \$100</td>
+                  <td>較高 generic TBA value 有部分 pass-through。</td>
+                </tr>
+                <tr>
+                  <td>\$85K small-loan borrowers</td>
+                  <td><span class="tag">Gain most</span></td>
+                  <td>平均 +0.107 / \$100</td>
+                  <td>原本創造高 custom value，卻沒有得到 pay-up。</td>
+                </tr>
+                <tr>
+                  <td>\$1M borrowers</td>
+                  <td><span class="tag navy">Smaller gain</span></td>
+                  <td>平均 +0.035 / \$100</td>
+                  <td>Loan 本身較少產生 small-balance spec premium。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout teal">
+            <h3>政策含意</h3>
+            <p>
+              擴大標準化、流動性高的 TBA pools 可能具有 pro-competitive effect：
+              它降低大型 customizers 的生產優勢，改善小 issuer 的共同 resale benchmark。
+              因此 Uniform MBS 類改革不只影響 secondary liquidity，也可能改變中介市場的競爭結構。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="limits">
+          <div class="chapter-heading">
+            <div class="chapter-number">11</div>
+            <div>
+              <h2>如何解讀：貢獻、限制與延伸閱讀</h2>
+              <p>有力的供應鏈證據，但 counterfactual 尚不是完整 general-equilibrium welfare model。</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="card teal">
+              <p class="label">Main contribution</p>
+              <h3>把 OTD black box 打開</h3>
+              <p>
+                本文從 borrower price 一路連到 auction bids、security trades、pool composition
+                與 realized duration，能直接區分 generic funding pass-through
+                和 issuer-specific customization rents。
+              </p>
+            </article>
+            <article class="card orange">
+              <p class="label">Interpretation</p>
+              <h3>Market power 來自 production asymmetry</h3>
+              <p>
+                大型 issuer 的優勢不只是 market share；它有足夠規模與適合 portfolio，
+                能把同一筆 loan 轉化成更高價的 security，因而具有較高 WTP。
+              </p>
+            </article>
+          </div>
+
+          <div class="callout orange">
+            <h3>主要限制</h3>
+            <ol>
+              <li><strong>External validity：</strong>核心樣本是 Ginnie Mae FHA/VA，不等於所有 conventional、jumbo 或 private-label mortgages。</li>
+              <li><strong>Linked period：</strong>最細的 retail/wholesale linkage 集中 2018–2019，雖然 performance data 涵蓋 2013–2022。</li>
+              <li><strong>Platform selection：</strong>Optimal Blue auctions 代表特定 correspondent channel，不是所有 HMDA loans。</li>
+              <li><strong>Local identification：</strong>Cutoff IV 最直接識別 size thresholds 附近 loans。</li>
+              <li><strong>Coupon choice：</strong>作者聚焦約 75% 沒有 coupon-choice 問題的 loans，以避免 rate choice 與 pool choice 同時內生。</li>
+              <li><strong>Partial equilibrium：</strong>Counterfactual 固定 loan allocation、interest rates、linear pass-through 與 securitization cost，沒有完整建模 entry、funding 與 borrower demand 的均衡反應。</li>
+            </ol>
+          </div>
+
+          <div class="callout">
+            <h3>Bottom line</h3>
+            <p>
+              現代 mortgage market 把傳統銀行功能拆成「短期生產貸款」與「長期持有資金」。
+              這讓沒有 deposits 的 nonbank 成為主要 originator；但也讓 security design capability
+              成為新的市場力來源。Customization 創造的價值不會自動回到創造長 duration loans
+              的 borrowers，而會被 issuer 與 originator 留在供應鏈中。
+            </p>
+          </div>
+
+          <h3>官方制度資料</h3>
+          <ul class="refs">
+            <li><a href="https://www.ginniemae.gov/about_us/who_we_are/Pages/funding_government_lending.aspx">Ginnie Mae — Funding Government Lending</a></li>
+            <li><a href="https://www.ginniemae.gov/about_us/what_we_do/pages/programs_products.aspx">Ginnie Mae — Programs &amp; Products</a></li>
+            <li><a href="https://www.sec.gov/reports/staff-report-enhancing-disclosure-mortgage-backed-securities-markets">SEC — TBA and specified-pool market background</a></li>
+            <li><a href="https://www.federalreserve.gov/newsevents/speech/bowman20201119a.htm">Federal Reserve — Changing Structure of Mortgage Markets</a></li>
+            <li><a href="https://www.gao.gov/products/gao-26-107436">GAO — Nonbank Mortgage Companies, 2026</a></li>
+            <li><a href="https://www.consumerfinance.gov/data-research/hmda/summary-of-2023-data-on-mortgage-lending/">CFPB — Summary of 2023 HMDA Data</a></li>
+            <li><a href="https://www.finra.org/finra-data/fixed-income/about-mbs-data">FINRA — About Mortgage-Backed Security Data</a></li>
+          </ul>
+        </section>
+      </main>
+    </div>
+
+    <footer>
+      DSE 2026 Conference Note · 根據 2026-08-06 簡報與美國官方制度資料整理 · 最後更新 2026-08-06
+    </footer>
+  </div>
+</body>
+</html>
