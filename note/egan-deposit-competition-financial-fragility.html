@@ -1,0 +1,1929 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Egan、Hortaçsu 與 Matvos：Deposit Competition and Financial Fragility 詳細中文導讀">
+  <title>Deposit Competition and Financial Fragility｜經濟直覺導讀</title>
+  <style>
+    :root {
+      --canvas: #edf0ef;
+      --paper: #ffffff;
+      --paper-2: #f7f8f7;
+      --ink: #1d2523;
+      --muted: #69736f;
+      --line: #d8ddda;
+      --wine: #8d2637;
+      --wine-dark: #641b28;
+      --wine-soft: #f6e8eb;
+      --green: #266c58;
+      --green-dark: #194d3e;
+      --green-soft: #e5f1ec;
+      --navy: #294d6c;
+      --navy-soft: #e8eef4;
+      --gold: #a26e18;
+      --gold-soft: #f8eed9;
+      --red: #a64038;
+      --red-soft: #f8e8e6;
+      --purple: #71537d;
+      --purple-soft: #f0e9f3;
+      --shadow: 0 15px 40px rgba(29, 37, 35, 0.075);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--canvas);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      line-height: 1.76;
+    }
+    a {
+      color: var(--wine-dark);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+    h1, h2, h3, h4 { letter-spacing: 0; }
+    h1 {
+      max-width: 1120px;
+      margin: 0 0 13px;
+      font-size: clamp(2.05rem, 4.7vw, 3.45rem);
+      line-height: 1.06;
+    }
+    h2 {
+      margin: 0;
+      font-size: clamp(1.38rem, 3vw, 1.72rem);
+      line-height: 1.28;
+    }
+    h3 {
+      margin: 26px 0 9px;
+      font-size: 1.14rem;
+      line-height: 1.42;
+    }
+    h4 {
+      margin: 0 0 7px;
+      font-size: 0.99rem;
+    }
+    p { margin: 0 0 13px; }
+    ul, ol { margin: 8px 0 15px; padding-left: 1.35rem; }
+    li { margin: 5px 0; }
+    strong { font-weight: 820; }
+    code, .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    code {
+      padding: 1px 5px;
+      border-radius: 4px;
+      color: var(--wine-dark);
+      background: var(--wine-soft);
+      font-size: 0.9em;
+    }
+    button { font: inherit; }
+    .reading-progress {
+      position: fixed;
+      z-index: 20;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--wine), var(--gold));
+    }
+    .shell {
+      width: min(1460px, 100%);
+      min-width: 0;
+      margin: 0 auto;
+      padding: 25px;
+    }
+    .masthead {
+      overflow: hidden;
+      margin-bottom: 22px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+    .masthead-copy {
+      padding: 42px 43px 34px;
+      border-top: 7px solid var(--wine);
+      border-bottom: 1px solid var(--line);
+      background:
+        radial-gradient(circle at 93% 4%, rgba(141, 38, 55, 0.13), transparent 28%),
+        radial-gradient(circle at 69% 100%, rgba(38, 108, 88, 0.10), transparent 33%),
+        var(--paper);
+    }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--wine);
+      font-size: 0.79rem;
+      font-weight: 850;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .lead {
+      max-width: 1080px;
+      margin: 0;
+      color: #394844;
+      font-size: 1.08rem;
+    }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 20px;
+      margin-top: 20px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+    .meta span { min-width: 0; overflow-wrap: anywhere; }
+    .thesis-strip {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      background: var(--paper-2);
+    }
+    .thesis-step {
+      position: relative;
+      min-width: 0;
+      min-height: 151px;
+      padding: 19px 20px;
+      border-right: 1px solid var(--line);
+    }
+    .thesis-step:last-child { border-right: 0; }
+    .thesis-step::after {
+      position: absolute;
+      z-index: 2;
+      top: 50%;
+      right: -10px;
+      display: grid;
+      width: 20px;
+      height: 20px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      color: var(--wine);
+      background: var(--paper);
+      content: "→";
+      font-size: 0.72rem;
+      font-weight: 900;
+      transform: translateY(-50%);
+    }
+    .thesis-step:last-child::after { display: none; }
+    .thesis-step span {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 850;
+      letter-spacing: 0.045em;
+      text-transform: uppercase;
+    }
+    .thesis-step strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--wine-dark);
+    }
+    .thesis-step:nth-child(2) strong,
+    .thesis-step:nth-child(4) strong { color: var(--gold); }
+    .thesis-step:nth-child(3) strong { color: var(--navy); }
+    .thesis-step:nth-child(5) strong { color: var(--green-dark); }
+    .thesis-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.5;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 288px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+    .toc {
+      position: sticky;
+      top: 17px;
+      max-height: calc(100vh - 34px);
+      overflow-y: auto;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--paper);
+      box-shadow: 0 9px 28px rgba(29, 37, 35, 0.06);
+    }
+    .toc-title {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 0.77rem;
+      font-weight: 850;
+      letter-spacing: 0.045em;
+      text-transform: uppercase;
+    }
+    .toc a {
+      display: block;
+      padding: 6px 9px;
+      border-left: 3px solid transparent;
+      color: #44544f;
+      font-size: 0.84rem;
+      line-height: 1.44;
+      text-decoration: none;
+    }
+    .toc a:hover,
+    .toc a:focus-visible,
+    .toc a.active {
+      border-left-color: var(--wine);
+      color: var(--wine-dark);
+      background: var(--wine-soft);
+    }
+    .toc-tools {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+    .toc-tools button {
+      padding: 7px 8px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--wine-dark);
+      background: var(--paper-2);
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 760;
+    }
+    .toc-tools button:hover,
+    .toc-tools button:focus-visible {
+      border-color: var(--wine);
+      background: var(--wine-soft);
+    }
+    main {
+      min-width: 0;
+      padding: 2px 34px 34px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+    .chapter {
+      scroll-margin-top: 18px;
+      padding: 34px 0 39px;
+      border-bottom: 1px solid var(--line);
+    }
+    .chapter:last-child { border-bottom: 0; }
+    .chapter-heading {
+      display: grid;
+      grid-template-columns: 45px minmax(0, 1fr);
+      gap: 13px;
+      align-items: start;
+      margin-bottom: 21px;
+    }
+    .chapter-number {
+      display: grid;
+      width: 41px;
+      height: 41px;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--wine);
+      font-size: 0.87rem;
+      font-weight: 850;
+    }
+    .chapter:nth-child(3n + 2) .chapter-number { background: var(--green); }
+    .chapter:nth-child(3n) .chapter-number { background: var(--gold); }
+    .chapter-heading p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 0.93rem;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin: 16px 0;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin: 16px 0;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .card {
+      min-width: 0;
+      padding: 16px 17px;
+      border: 1px solid var(--line);
+      border-top: 3px solid var(--wine);
+      border-radius: 8px;
+      background: var(--paper-2);
+    }
+    .card.green { border-top-color: var(--green); }
+    .card.navy { border-top-color: var(--navy); }
+    .card.gold { border-top-color: var(--gold); }
+    .card.red { border-top-color: var(--red); }
+    .card.purple { border-top-color: var(--purple); }
+    .card p:last-child,
+    .card ul:last-child { margin-bottom: 0; }
+    .label {
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 0.73rem;
+      font-weight: 850;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .callout {
+      margin: 17px 0;
+      padding: 15px 18px;
+      border-left: 4px solid var(--wine);
+      background: var(--wine-soft);
+    }
+    .callout.why {
+      border-left-color: var(--green);
+      background: var(--green-soft);
+    }
+    .callout.warning {
+      border-left-color: var(--red);
+      background: var(--red-soft);
+    }
+    .callout.caution {
+      border-left-color: var(--gold);
+      background: var(--gold-soft);
+    }
+    .callout.navy {
+      border-left-color: var(--navy);
+      background: var(--navy-soft);
+    }
+    .callout.purple {
+      border-left-color: var(--purple);
+      background: var(--purple-soft);
+    }
+    .callout p:last-child,
+    .callout ul:last-child,
+    .callout ol:last-child { margin-bottom: 0; }
+    .callout-title {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 0.77rem;
+      font-weight: 880;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .equation {
+      overflow-x: auto;
+      margin: 16px 0;
+      padding: 16px 19px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfb;
+      text-align: center;
+    }
+    .equation .mono {
+      display: inline-block;
+      min-width: max-content;
+      color: var(--wine-dark);
+      font-size: clamp(0.9rem, 2vw, 1.06rem);
+    }
+    .equation .eq-caption {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 0.83rem;
+      text-align: center;
+    }
+    .equation.compact { padding: 12px 15px; }
+    .step-list {
+      display: grid;
+      gap: 12px;
+      margin: 17px 0;
+      counter-reset: step;
+    }
+    .step {
+      display: grid;
+      grid-template-columns: 38px minmax(0, 1fr);
+      gap: 12px;
+      padding: 15px 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper-2);
+      counter-increment: step;
+    }
+    .step::before {
+      display: grid;
+      width: 33px;
+      height: 33px;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--green);
+      content: counter(step);
+      font-size: 0.79rem;
+      font-weight: 850;
+    }
+    .step h4 { margin-top: 3px; color: var(--wine-dark); }
+    .step p:last-child { margin-bottom: 0; }
+    .derivation {
+      margin: 16px 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+    .derivation summary {
+      padding: 13px 16px;
+      color: var(--wine-dark);
+      background: var(--paper-2);
+      cursor: pointer;
+      font-weight: 820;
+      list-style-position: inside;
+    }
+    .derivation[open] summary { border-bottom: 1px solid var(--line); }
+    .derivation-body { padding: 16px 18px 4px; }
+    .feedback-loop {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 22px;
+      margin: 19px 0;
+    }
+    .loop-item {
+      position: relative;
+      min-width: 0;
+      padding: 15px 12px;
+      border: 1px solid var(--line);
+      border-top: 3px solid var(--wine);
+      border-radius: 8px;
+      background: var(--paper-2);
+      text-align: center;
+    }
+    .loop-item::after {
+      position: absolute;
+      top: 50%;
+      right: -20px;
+      color: var(--wine);
+      content: "→";
+      font-weight: 900;
+      transform: translateY(-50%);
+    }
+    .loop-item:last-child::after { content: "↺"; right: -4px; top: calc(100% + 8px); }
+    .loop-item:nth-child(2),
+    .loop-item:nth-child(4) { border-top-color: var(--gold); }
+    .loop-item:nth-child(3) { border-top-color: var(--navy); }
+    .loop-item:nth-child(5) { border-top-color: var(--green); }
+    .loop-item strong,
+    .loop-item span { display: block; }
+    .loop-item span {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.81rem;
+      line-height: 1.45;
+    }
+    .table-wrap {
+      overflow-x: auto;
+      margin: 16px 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--paper);
+      font-size: 0.9rem;
+    }
+    caption {
+      padding: 11px 13px;
+      color: var(--muted);
+      background: var(--paper-2);
+      font-size: 0.82rem;
+      text-align: left;
+    }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+    }
+    th {
+      color: #334640;
+      background: #f1f4f2;
+      font-weight: 820;
+    }
+    tr:last-child td { border-bottom: 0; }
+    .num {
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      white-space: nowrap;
+    }
+    .nowrap { white-space: nowrap; }
+    .tag {
+      display: inline-block;
+      margin: 1px 3px 1px 0;
+      padding: 2px 7px;
+      border-radius: 999px;
+      color: var(--wine-dark);
+      background: var(--wine-soft);
+      font-size: 0.75rem;
+      font-weight: 790;
+    }
+    .tag.green { color: var(--green-dark); background: var(--green-soft); }
+    .tag.gold { color: var(--gold); background: var(--gold-soft); }
+    .tag.navy { color: var(--navy); background: var(--navy-soft); }
+    .tag.red { color: var(--red); background: var(--red-soft); }
+    .result-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      overflow: hidden;
+      margin: 17px 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    .result {
+      padding: 16px;
+      border-right: 1px solid var(--line);
+      background: var(--paper-2);
+    }
+    .result:last-child { border-right: 0; }
+    .result b {
+      display: block;
+      color: var(--wine);
+      font-size: 1.42rem;
+      line-height: 1.18;
+    }
+    .result:nth-child(2) b { color: var(--green); }
+    .result:nth-child(3) b { color: var(--navy); }
+    .result:nth-child(4) b { color: var(--gold); }
+    .result span {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+    .checklist {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 18px;
+      margin: 15px 0;
+      padding: 0;
+      list-style: none;
+    }
+    .checklist li {
+      position: relative;
+      margin: 0;
+      padding: 10px 12px 10px 36px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--paper-2);
+    }
+    .checklist li::before {
+      position: absolute;
+      top: 10px;
+      left: 12px;
+      color: var(--green);
+      content: "✓";
+      font-weight: 900;
+    }
+    .mini {
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+    .back-top {
+      display: inline-block;
+      margin-top: 12px;
+      font-size: 0.82rem;
+    }
+    footer {
+      padding: 22px 0 7px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-align: center;
+    }
+
+    @media (max-width: 1160px) {
+      .thesis-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .thesis-step { border-bottom: 1px solid var(--line); }
+      .thesis-step:nth-child(2n) { border-right: 0; }
+      .thesis-step:last-child { grid-column: 1 / -1; border-bottom: 0; }
+      .thesis-step::after { display: none; }
+      .layout { grid-template-columns: 1fr; }
+      .toc {
+        position: static;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        max-height: none;
+      }
+      .toc-title,
+      .toc-tools { grid-column: 1 / -1; }
+      .feedback-loop { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+      .loop-item::after { content: ""; }
+      .loop-item:last-child { grid-column: 1 / -1; }
+      .loop-item:last-child::after { content: ""; }
+      .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .result-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .result:nth-child(2) { border-right: 0; }
+      .result:nth-child(-n + 2) { border-bottom: 1px solid var(--line); }
+    }
+    @media (max-width: 740px) {
+      html, body { max-width: 100%; overflow-x: clip; }
+      .shell { padding: 12px; }
+      .masthead-copy { padding: 28px 22px 25px; }
+      .thesis-strip,
+      .grid-2,
+      .grid-3,
+      .grid-4,
+      .feedback-loop,
+      .toc,
+      .checklist,
+      .result-strip { grid-template-columns: 1fr; }
+      .thesis-step,
+      .thesis-step:nth-child(2n),
+      .thesis-step:last-child {
+        grid-column: auto;
+        min-height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .thesis-step:last-child { border-bottom: 0; }
+      .loop-item:last-child { grid-column: auto; }
+      .result {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .result:last-child { border-bottom: 0; }
+      main { padding: 2px 20px 25px; }
+      .chapter-heading { grid-template-columns: 38px minmax(0, 1fr); }
+      .chapter-number { width: 34px; height: 34px; }
+      .equation { padding: 13px 10px; }
+      .step { grid-template-columns: 34px minmax(0, 1fr); padding: 13px; }
+      .step::before { width: 30px; height: 30px; }
+    }
+    @media print {
+      body { background: #fff; }
+      .reading-progress,
+      .toc,
+      .toc-tools,
+      .back-top { display: none !important; }
+      .shell { width: 100%; padding: 0; }
+      .masthead, main { border: 0; box-shadow: none; }
+      .masthead-copy { padding: 24px 0; }
+      .thesis-strip { border: 1px solid var(--line); }
+      .layout { display: block; }
+      main { padding: 0; }
+      .chapter,
+      .derivation { break-inside: avoid; }
+      .derivation:not([open]) .derivation-body { display: block; }
+      a { color: inherit; }
+    }
+  </style>
+</head>
+<body id="top">
+  <div class="reading-progress" aria-hidden="true"></div>
+
+  <div class="shell">
+    <header class="masthead">
+      <div class="masthead-copy">
+        <p class="eyebrow">DSE 2026 · Banking Competition Reading Note</p>
+        <h1>Deposit Competition and Financial Fragility</h1>
+        <p class="lead">
+          Mark Egan、Ali Hortaçsu 與 Gregor Matvos 把 bank-run theory 變成可估計的產業均衡模型：
+          未保險存款人會因違約風險撤資，撤資又削弱銀行獲利與償付能力。
+          真正的問題不是「run 在理論上能否發生」，而是<strong>資料估出的力量是否大到足以形成自我實現的壞均衡</strong>。
+        </p>
+        <div class="meta">
+          <span><strong>作者：</strong>Mark Egan、Ali Hortaçsu、Gregor Matvos</span>
+          <span><strong>樣本：</strong>16/20 家最大美國商業銀行，2002–2013</span>
+          <span><strong>核心方法：</strong>Logit deposit demand + IV + structural calibration</span>
+          <span><strong>原始 PDF：</strong><a href="../05.Egan/egan_deposit_competition.pdf">05.Egan/egan_deposit_competition.pdf</a></span>
+        </div>
+      </div>
+
+      <div class="thesis-strip" aria-label="金融脆弱性的回饋機制">
+        <div class="thesis-step">
+          <span>Beliefs</span>
+          <strong>違約疑慮上升</strong>
+          <p>未保險存款人承擔損失，因此將 perceived default probability 放進選擇效用。</p>
+        </div>
+        <div class="thesis-step">
+          <span>Demand</span>
+          <strong>未保險存款流失</strong>
+          <p>銀行可提高利率留住資金，但更高資金成本也會壓低利潤。</p>
+        </div>
+        <div class="thesis-step">
+          <span>Bank value</span>
+          <strong>獲利與 continuation value 下降</strong>
+          <p>存款量與利差共同決定銀行願意用多少股東資金填補當期 shortfall。</p>
+        </div>
+        <div class="thesis-step">
+          <span>Solvency</span>
+          <strong>違約門檻提高</strong>
+          <p>較小的資產報酬衝擊就足以觸發 default，實際違約機率上升。</p>
+        </div>
+        <div class="thesis-step">
+          <span>Fixed point</span>
+          <strong>信念被實現</strong>
+          <p>若回饋夠強，同一組 fundamentals 可以同時支持好均衡與 run-like 壞均衡。</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <nav class="toc" aria-label="閱讀目錄">
+        <span class="toc-title">閱讀路線</span>
+        <a href="#summary">0. 一分鐘摘要</a>
+        <a href="#question">1. 問題與貢獻</a>
+        <a href="#environment">2. 時序與均衡概念</a>
+        <a href="#demand">3. 存款需求</a>
+        <a href="#bank">4. 銀行資產負債表</a>
+        <a href="#default">5. Default threshold</a>
+        <a href="#rates">6. 存款利率競爭</a>
+        <a href="#fragility">7. 為何出現多重均衡？</a>
+        <a href="#estimation">8. Demand identification</a>
+        <a href="#evidence">9. 資料與需求結果</a>
+        <a href="#calibration">10. 銀行參數 calibration</a>
+        <a href="#calibration-results">11. 校準結果與檢驗</a>
+        <a href="#equilibria">12. 其他均衡有多壞？</a>
+        <a href="#policy">13. 資本要求與政策</a>
+        <a href="#assessment">14. 如何解讀與質疑</a>
+        <a href="#cheatsheet">15. 一頁速查表</a>
+        <div class="toc-tools" aria-label="推導顯示工具">
+          <button type="button" id="expand-all">展開推導</button>
+          <button type="button" id="collapse-all">收合推導</button>
+        </div>
+      </nav>
+
+      <main>
+        <section class="chapter" id="summary">
+          <div class="chapter-heading">
+            <div class="chapter-number">0</div>
+            <div>
+              <h2>一分鐘摘要</h2>
+              <p>論文把「存款競爭」和「銀行 solvency」放進同一個 fixed-point 問題。</p>
+            </div>
+          </div>
+
+          <div class="callout">
+            <span class="callout-title">核心研究問題</span>
+            <p>
+              未保險存款人究竟多在意銀行違約？這個需求反應是否強到能讓悲觀信念自行實現，
+              使原本相同的資產 fundamentals 同時存在低違約與高違約均衡？
+            </p>
+          </div>
+
+          <div class="result-strip">
+            <div class="result">
+              <b>−0.36</b>
+              <span>未保險存款對 default risk 的估計彈性。</span>
+            </div>
+            <div class="result">
+              <b>≈ 0</b>
+              <span>受保險存款對 default risk 的 placebo 反應，不顯著。</span>
+            </div>
+            <div class="result">
+              <b>≈ 48–56%</b>
+              <span>五大銀行各自存在的壞均衡中，單一銀行 risk-neutral default probability。</span>
+            </div>
+            <div class="result">
+              <b>31%</b>
+              <span>不知道 equilibrium selection 時，maximin planner 的資本要求。</span>
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <div class="card">
+              <div class="label">Demand fact</div>
+              <h4>未保險存款人會跑</h4>
+              <p>在控制利率、銀行與季度效果並使用 IV 後，較高違約風險顯著降低未保險存款需求。</p>
+            </div>
+            <div class="card green">
+              <div class="label">Equilibrium fact</div>
+              <h4>壞均衡真的存在</h4>
+              <p>估計出的需求與銀行技術足以支持個別大銀行的 run-like 高違約均衡。</p>
+            </div>
+            <div class="card gold">
+              <div class="label">Historical reading</div>
+              <h4>危機期間仍相對「好」</h4>
+              <p>2008 年觀察到的五大銀行 default probabilities 位於相對好的均衡，而不是最壞 fixed point。</p>
+            </div>
+          </div>
+
+          <div class="callout why">
+            <span class="callout-title">最重要的經濟直覺</span>
+            <p>
+              銀行脆弱性不是只來自 interbank loans 或共同持有資產。
+              即使銀行之間沒有直接信用曝險，只要它們競爭同一批存款，某家銀行的信念與資金流失就會改變所有銀行的 shares、rates 與 profits。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="question">
+          <div class="chapter-heading">
+            <div class="chapter-number">1</div>
+            <div>
+              <h2>問題與貢獻：從「可能」走到「量化」</h2>
+              <p>理論早已知道 bank run 可能發生；本文問的是這個機制在美國大型銀行資料中有多大。</p>
+            </div>
+          </div>
+
+          <p>
+            美國商業銀行約 75% 的資金來自 deposits，講義指出其中約一半未受保險。
+            未保險存款人面臨本金損失，因此會把銀行 solvency 當成產品特徵；受保險存款人則由保險制度隔離。
+          </p>
+
+          <div class="feedback-loop" aria-label="存款擠兌回饋">
+            <div class="loop-item"><strong>ρ ↑</strong><span>預期違約風險上升</span></div>
+            <div class="loop-item"><strong>s<sup>N</sup> ↓</strong><span>未保險存款撤出</span></div>
+            <div class="loop-item"><strong>profit ↓</strong><span>資金量與利差惡化</span></div>
+            <div class="loop-item"><strong>R̄ ↑</strong><span>更容易選擇 default</span></div>
+            <div class="loop-item"><strong>actual ρ ↑</strong><span>悲觀信念被驗證</span></div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <caption>本文把三條文獻線接在一起</caption>
+              <thead>
+                <tr>
+                  <th>元件</th>
+                  <th>放進模型的內容</th>
+                  <th>為什麼必要？</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Bank-run theory</strong></td>
+                  <td>run-prone uninsured depositors、endogenous default。</td>
+                  <td>建立信念、撤資與 solvency 的正回饋。</td>
+                </tr>
+                <tr>
+                  <td><strong>Industrial organization</strong></td>
+                  <td>差異化銀行、logit demand、寡占利率競爭。</td>
+                  <td>存款不是同質資金；branch、service 與 relationships 會產生 market power。</td>
+                </tr>
+                <tr>
+                  <td><strong>Structural empirical work</strong></td>
+                  <td>用 IV 估需求，再用銀行最適化條件校準技術參數。</td>
+                  <td>把「可能擠兌」變成可做 equilibrium search 與政策反事實的量化模型。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout caution">
+            <span class="callout-title">這不是傳統的純粹 sunspot run 模型</span>
+            <p>
+              每家銀行都有資產報酬風險、長期債券 coupon 與差異化存款需求。
+              多重均衡來自 rational beliefs 與 endogenous balance-sheet outcomes 的 fixed point，
+              但均衡結果仍受實際資產與市場參數約束。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="environment">
+          <div class="chapter-heading">
+            <div class="chapter-number">2</div>
+            <div>
+              <h2>時序與均衡：誰先做什麼？</h2>
+              <p>時序決定哪些是策略、哪些是信念，以及 default 為何在資產報酬實現後才發生。</p>
+            </div>
+          </div>
+
+          <div class="step-list">
+            <div class="step">
+              <div>
+                <h4>銀行設定兩種存款利率</h4>
+                <p>銀行 <i>k</i> 分別選擇 insured rate <i>i</i><sup>I</sup><sub>kt</sub> 與 uninsured rate <i>i</i><sup>N</sup><sub>kt</sub>。</p>
+              </div>
+            </div>
+            <div class="step">
+              <div>
+                <h4>存款人選擇銀行</h4>
+                <p>考慮利率、銀行服務；未保險存款人還考慮 perceived default probability ρ<sub>kt</sub>。</p>
+              </div>
+            </div>
+            <div class="step">
+              <div>
+                <h4>資產報酬 R<sub>kt</sub> 實現</h4>
+                <p>銀行將存款投資於資產，面對 normally distributed stochastic return。</p>
+              </div>
+            </div>
+            <div class="step">
+              <div>
+                <h4>股東選擇償付或 default</h4>
+                <p>若填補當期 equity shortfall 的成本大於繼續經營價值，有限責任股東放棄銀行。</p>
+              </div>
+            </div>
+          </div>
+
+          <h3>Pure-strategy Bayesian Nash equilibrium</h3>
+          <ul class="checklist">
+            <li>銀行選擇使自身價值最大的 insured 與 uninsured rates。</li>
+            <li>存款人在給定 rates、services 與 beliefs 下最大化效用。</li>
+            <li>資產報酬實現後，銀行最適地決定 default 或繼續經營。</li>
+            <li>存款人的違約信念等於模型實際產生的 default probability。</li>
+          </ul>
+
+          <div class="callout navy">
+            <span class="callout-title">Stationary simplification</span>
+            <p>
+              講義假設資產報酬 shocks i.i.d.、市場參數不變、銀行在 bankruptcy 後保留相同 capital structure。
+              這讓 continuation value 可由單一 stationary value 表示，也使均衡搜尋可行；代價是忽略危機中資產與融資結構的持續調整。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="demand">
+          <div class="chapter-heading">
+            <div class="chapter-number">3</div>
+            <div>
+              <h2>存款需求：安全性也是銀行產品特徵</h2>
+              <p>insured 與 uninsured demand 的唯一關鍵差異，是誰承擔銀行 default loss。</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card red">
+              <div class="label">Uninsured deposits</div>
+              <div class="equation compact">
+                <span class="mono">u<sup>N</sup><sub>jkt</sub> = α<sup>N</sup>i<sup>N</sup><sub>kt</sub> − γρ<sub>kt</sub> + δ<sup>N</sup><sub>k</sub> + ε<sup>N</sup><sub>jk</sub></span>
+              </div>
+              <p>高利率提高效用；高違約機率降低效用；δ<sup>N</sup><sub>k</sub> 表示銀行服務與品牌。</p>
+            </div>
+            <div class="card green">
+              <div class="label">Insured deposits</div>
+              <div class="equation compact">
+                <span class="mono">u<sup>I</sup><sub>jkt</sub> = α<sup>I</sup>i<sup>I</sup><sub>kt</sub> + δ<sup>I</sup><sub>k</sub> + ε<sup>I</sup><sub>jk</sub></span>
+              </div>
+              <p>存款保險移除個人損失，因此效用中沒有 −γρ；這也提供漂亮的 placebo group。</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>參數</th>
+                  <th>經濟意義</th>
+                  <th>較大時代表</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>α<sup>I</sup></strong></td><td>insured deposit 對利率的半彈性尺度</td><td>受保險存款更會追逐高利率</td></tr>
+                <tr><td><strong>α<sup>N</sup></strong></td><td>uninsured deposit 對利率的半彈性尺度</td><td>銀行必須更積極用利率留住未保險資金</td></tr>
+                <tr><td><strong>γ</strong></td><td>未保險存款對 default risk 的敏感度</td><td>信念—撤資—solvency 回饋更強</td></tr>
+                <tr><td><strong>δ<sup>g</sup><sub>k</sub></strong></td><td>銀行服務品質、branch network、品牌與關係價值</td><td>銀行可用非價格特徵吸引存款</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p>若 ε 為 i.i.d. T1EV，市場占有率為：</p>
+          <div class="equation">
+            <span class="mono">s<sup>I</sup><sub>kt</sub> = exp(α<sup>I</sup>i<sup>I</sup><sub>kt</sub> + δ<sup>I</sup><sub>k</sub>) / ∑<sub>ℓ</sub>exp(α<sup>I</sup>i<sup>I</sup><sub>ℓt</sub> + δ<sup>I</sup><sub>ℓ</sub>)</span>
+          </div>
+          <div class="equation">
+            <span class="mono">s<sup>N</sup><sub>kt</sub> = exp(α<sup>N</sup>i<sup>N</sup><sub>kt</sub> − γρ<sub>kt</sub> + δ<sup>N</sup><sub>k</sub>) / ∑<sub>ℓ</sub>exp(α<sup>N</sup>i<sup>N</sup><sub>ℓt</sub> − γρ<sub>ℓt</sub> + δ<sup>N</sup><sub>ℓ</sub>)</span>
+          </div>
+
+          <details class="derivation" data-derivation open>
+            <summary>展開：利率如何改變 own-bank share？</summary>
+            <div class="derivation-body">
+              <p>Logit share 對本行利率的 derivative 是：</p>
+              <div class="equation compact">
+                <span class="mono">∂s<sup>g</sup><sub>k</sub>/∂i<sup>g</sup><sub>k</sub> = α<sup>g</sup>s<sup>g</sup><sub>k</sub>(1−s<sup>g</sup><sub>k</sub>), &nbsp; g ∈ {I,N}</span>
+              </div>
+              <p>
+                若銀行 share 接近 1，額外加息能吸引的新存款很少；若 α 高，存款人對利率敏感，
+                小幅加息就能帶來較多資金。這個 derivative 稍後直接進入銀行的 deposit-rate FOC。
+              </p>
+            </div>
+          </details>
+
+          <div class="callout why">
+            <span class="callout-title">存款保險的雙面性</span>
+            <p>
+              它讓 insured deposits 不會因銀行風險撤出，提供穩定 funding anchor；
+              但也使 insured depositors 不監督風險，預期損失可能轉由 FDIC 承擔。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="bank">
+          <div class="chapter-heading">
+            <div class="chapter-number">4</div>
+            <div>
+              <h2>銀行資產負債表：「生產」存款利差</h2>
+              <p>銀行向存款人購買資金、投資於資產，再決定是否值得用 equity 填補低報酬狀態。</p>
+            </div>
+          </div>
+
+          <p>定義銀行 <i>k</i> 的兩類存款量：</p>
+          <div class="equation compact">
+            <span class="mono">D<sup>I</sup><sub>kt</sub> = M<sup>I</sup>s<sup>I</sup><sub>kt</sub>, &nbsp; D<sup>N</sup><sub>kt</sub> = M<sup>N</sup>s<sup>N</sup><sub>kt</sub></span>
+          </div>
+
+          <p>每單位存款投資後得到隨機資產報酬：</p>
+          <div class="equation compact">
+            <span class="mono">R<sub>kt</sub> ∼ N(μ<sub>k</sub>, σ<sub>k</sub>)</span>
+          </div>
+
+          <div class="grid-3">
+            <div class="card navy">
+              <div class="label">Asset side</div>
+              <h4>μ<sub>k</sub>、σ<sub>k</sub></h4>
+              <p>平均資產報酬與報酬風險；σ 同時影響 default tail 與有限責任的 option value。</p>
+            </div>
+            <div class="card gold">
+              <div class="label">Deposit costs</div>
+              <h4>i<sup>I</sup>、i<sup>N</sup>、c<sub>k</sub></h4>
+              <p>利息是直接 funding cost；insured deposits 另有非利息成本 c，例如服務與保險相關成本。</p>
+            </div>
+            <div class="card red">
+              <div class="label">Long-term obligation</div>
+              <h4>b<sub>k</sub></h4>
+              <p>每期需支付的長期債務 coupon，使低資產報酬狀態產生 equity shortfall。</p>
+            </div>
+          </div>
+
+          <p>扣除存款利息與 insured non-interest cost 後，當期存款利潤為：</p>
+          <div class="equation">
+            <span class="mono">π<sub>k</sub>(R) = D<sup>I</sup><sub>k</sub>(R − c<sub>k</sub> − i<sup>I</sup><sub>k</sub>) + D<sup>N</sup><sub>k</sub>(R − i<sup>N</sup><sub>k</sub>)</span>
+          </div>
+
+          <p>要支付 coupon <i>b</i><sub>k</sub> 後，股東需要填補：</p>
+          <div class="equation compact">
+            <span class="mono">Shortfall<sub>k</sub>(R) = b<sub>k</sub> − π<sub>k</sub>(R)</span>
+          </div>
+
+          <div class="callout why">
+            <span class="callout-title">為什麼 deposits 既能穩定銀行，也能讓銀行脆弱？</span>
+            <p>
+              多一單位存款通常帶來正利差，因此提高 profit 與 franchise value；
+              但存款也是到期需償還的 debt。當未保險存款撤出，銀行不只失去資金量，
+              還可能必須提高利率保留剩餘資金，雙重壓縮 continuation value。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="default">
+          <div class="chapter-heading">
+            <div class="chapter-number">5</div>
+            <div>
+              <h2>Default threshold：股東何時選擇放棄？</h2>
+              <p>有限責任把銀行 equity 變成資產報酬上的選擇權；低於某門檻就不再填補 shortfall。</p>
+            </div>
+          </div>
+
+          <p>令 <i>E</i><sub>k</sub> 為繼續經營的 equity value。銀行 default 的條件是：</p>
+          <div class="equation">
+            <span class="mono">Shortfall<sub>k</sub>(R<sub>kt</sub>) &gt; E<sub>k</sub>/(1+r)</span>
+            <p class="eq-caption">填補今天資金缺口的成本，大於保住未來 franchise value 的現值。</p>
+          </div>
+
+          <p>
+            因為 shortfall 隨 <i>R</i> 單調下降，存在唯一門檻 <span class="mono">R̄<sub>k</sub></span>：
+            <span class="mono">R &lt; R̄<sub>k</sub></span> 時 default。
+          </p>
+
+          <div class="equation compact">
+            <span class="mono">ρ<sub>k</sub> = Pr(R<sub>k</sub> &lt; R̄<sub>k</sub>) = Φ[(R̄<sub>k</sub>−μ<sub>k</sub>)/σ<sub>k</sub>]</span>
+          </div>
+
+          <p>定義 standardized threshold：</p>
+          <div class="equation compact">
+            <span class="mono">z<sub>k</sub> = (R̄<sub>k</sub>−μ<sub>k</sub>)/σ<sub>k</sub> = Φ<sup>−1</sup>(ρ<sub>k</sub>)</span>
+          </div>
+
+          <h3>門檻的 indifference condition</h3>
+          <div class="equation">
+            <span class="mono">b<sub>k</sub> − D<sup>I</sup><sub>k</sub>(R̄<sub>k</sub>−c<sub>k</sub>−i<sup>I</sup><sub>k</sub>) − D<sup>N</sup><sub>k</sub>(R̄<sub>k</sub>−i<sup>N</sup><sub>k</sub>) = Continuation Value<sub>k</sub></span>
+          </div>
+
+          <details class="derivation" data-derivation open>
+            <summary>展開：為什麼 continuation value 出現 inverse Mills ratio？</summary>
+            <div class="derivation-body">
+              <p>若銀行存活，表示 <span class="mono">R ≥ R̄</span>。Normal distribution 的 truncated expectation 為：</p>
+              <div class="equation compact">
+                <span class="mono">E[R | R ≥ R̄] = μ + σλ(z)</span>
+              </div>
+              <p>其中 <span class="mono">λ(z) = φ(z)/[1−Φ(z)]</span> 是 inverse Mills ratio。因此存活狀態中超過 default threshold 的預期報酬為：</p>
+              <div class="equation compact">
+                <span class="mono">E[R−R̄ | R ≥ R̄] = μ−R̄ + σλ(z)</span>
+              </div>
+              <p>乘上總存款、存活機率並折現，得到講義中的 continuation value：</p>
+              <div class="equation">
+                <span class="mono">E<sub>k</sub>/(1+r) = [(D<sup>I</sup><sub>k</sub>+D<sup>N</sup><sub>k</sub>)/(1+r)] [1−Φ(z<sub>k</sub>)] [μ<sub>k</sub>−R̄<sub>k</sub>+σ<sub>k</sub>λ(z<sub>k</sub>)]</span>
+              </div>
+            </div>
+          </details>
+
+          <div class="callout caution">
+            <span class="callout-title">Limited-liability term 的直覺</span>
+            <p>
+              Equity 只保留存活時的上行報酬，低於 R̄ 的下行部分由 creditors、deposit insurer 或 resolution process 承擔。
+              因此銀行股東評價一單位資產時，看的是 <span class="mono">μ + σλ(z)</span>，
+              而不只是 unconditional mean μ。這使風險 σ 具有 option value，也帶來典型 risk-shifting 力量。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="rates">
+          <div class="chapter-heading">
+            <div class="chapter-number">6</div>
+            <div>
+              <h2>存款利率競爭：銀行為什麼不把全部資產收益付給存款人？</h2>
+              <p>差異化服務創造 market power，使銀行能以低於存款邊際價值的利率取得資金。</p>
+            </div>
+          </div>
+
+          <p>給定最適 default threshold，使用 envelope theorem，利率一階條件可寫成：</p>
+
+          <div class="grid-2">
+            <div class="card green">
+              <div class="label">Insured FOC</div>
+              <div class="equation compact">
+                <span class="mono">μ<sub>k</sub> + σ<sub>k</sub>λ(z<sub>k</sub>) − c<sub>k</sub> − i<sup>I</sup><sub>k</sub> = 1 / [(1−s<sup>I</sup><sub>k</sub>)α<sup>I</sup>]</span>
+              </div>
+            </div>
+            <div class="card red">
+              <div class="label">Uninsured FOC</div>
+              <div class="equation compact">
+                <span class="mono">μ<sub>k</sub> + σ<sub>k</sub>λ(z<sub>k</sub>) − i<sup>N</sup><sub>k</sub> = 1 / [(1−s<sup>N</sup><sub>k</sub>)α<sup>N</sup>]</span>
+              </div>
+            </div>
+          </div>
+
+          <details class="derivation" data-derivation open>
+            <summary>展開：FOC 的經濟推導</summary>
+            <div class="derivation-body">
+              <p>將一單位存款在 equity 眼中的邊際價值記為 <i>m</i>。忽略共同常數，銀行從某類存款得到：</p>
+              <div class="equation compact">
+                <span class="mono">Π(i) = D(i)[m − i]</span>
+              </div>
+              <p>提高利率有兩個效果：</p>
+              <ol>
+                <li><strong>Extensive margin：</strong>提高 share，吸引更多 deposits。</li>
+                <li><strong>Infra-marginal cost：</strong>所有既有 deposits 都要支付更高利率。</li>
+              </ol>
+              <p>一階條件：</p>
+              <div class="equation compact">
+                <span class="mono">D′(i)[m−i] − D(i) = 0</span>
+              </div>
+              <p>因 logit demand 有 <span class="mono">D′(i)/D(i) = α(1−s)</span>，所以：</p>
+              <div class="equation compact">
+                <span class="mono">m − i = D/D′ = 1/[α(1−s)]</span>
+              </div>
+              <p>
+                insured deposits 的 <i>m</i> 要扣除 c；uninsured deposits 沒有該項。
+                講義把右側稱為 markup。從銀行「購買 funding」的觀點，也可以稱為相對於存款邊際價值的 markdown。
+              </p>
+            </div>
+          </details>
+
+          <div class="grid-3">
+            <div class="card navy">
+              <div class="label">α 大</div>
+              <h4>存款人較 price-sensitive</h4>
+              <p>右側 wedge 小，競爭把更多資產收益 pass through 給存款人。</p>
+            </div>
+            <div class="card gold">
+              <div class="label">s 接近 1</div>
+              <h4>銀行較有市場力量</h4>
+              <p>既有客戶基礎大、邊際加息帶來的新 share 少，銀行可支付較低利率。</p>
+            </div>
+            <div class="card purple">
+              <div class="label">σλ(z) 大</div>
+              <h4>有限責任提高 equity-side return</h4>
+              <p>股東只保留存活狀態的上行報酬，資產風險提高其條件邊際收益。</p>
+            </div>
+          </div>
+
+          <div class="callout why">
+            <span class="callout-title">為什麼 envelope theorem 很重要？</span>
+            <p>
+              利率會影響 deposits，進而可能改變最適 R̄；但在最適 default boundary，
+              邊際改變 threshold 的一階價值為零。這讓 rate FOC 可聚焦在存款量與利率的直接效果，
+              並產生可用於 calibration 的簡潔 wedge 公式。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="fragility">
+          <div class="chapter-heading">
+            <div class="chapter-number">7</div>
+            <div>
+              <h2>為何出現多重均衡？</h2>
+              <p>違約信念既是 uninsured demand 的投入，也是銀行 balance sheet 最終產生的結果。</p>
+            </div>
+          </div>
+
+          <div class="feedback-loop" aria-label="多重均衡 fixed point">
+            <div class="loop-item"><strong>相信 ρ 高</strong><span>−γρ 降低 uninsured utility</span></div>
+            <div class="loop-item"><strong>資金流失／加息</strong><span>s<sup>N</sup> 下降或 i<sup>N</sup> 上升</span></div>
+            <div class="loop-item"><strong>franchise value 降低</strong><span>少量與薄 margin 都壓低 equity value</span></div>
+            <div class="loop-item"><strong>R̄ 上升</strong><span>股東較早選擇 default</span></div>
+            <div class="loop-item"><strong>模型 ρ 上升</strong><span>實際 default probability 驗證信念</span></div>
+          </div>
+
+          <p>均衡要求：</p>
+          <div class="equation compact">
+            <span class="mono">perceived ρ<sub>k</sub> = Φ[(R̄<sub>k</sub>(s(ρ,i),i)/σ<sub>k</sub>) − μ<sub>k</sub>/σ<sub>k</sub>] = actual ρ<sub>k</sub></span>
+          </div>
+
+          <div class="grid-2">
+            <div class="card green">
+              <div class="label">Good equilibrium</div>
+              <h4>低風險信念自我實現</h4>
+              <p>uninsured deposits 穩定、funding cost 低、continuation value 高，銀行願意承受較低 R 而不 default。</p>
+            </div>
+            <div class="card red">
+              <div class="label">Bad equilibrium</div>
+              <h4>run-like 信念自我實現</h4>
+              <p>撤資與高利率壓低銀行價值，使 default threshold 升高，原先悲觀的違約信念變成正確。</p>
+            </div>
+          </div>
+
+          <div class="callout caution">
+            <span class="callout-title">什麼決定回饋是否夠強？</span>
+            <ul>
+              <li>γ：存款人對 default risk 是否敏感。</li>
+              <li>α<sup>N</sup>：銀行能否用加息有效抵銷撤資。</li>
+              <li>uninsured funding share：run-prone funding 在 balance sheet 中多重要。</li>
+              <li>μ、σ、b、capital：銀行距 default boundary 有多遠。</li>
+              <li>銀行間替代：流出的 deposits 會流向哪些競爭者，以及對其 rates 和 profits 的影響。</li>
+            </ul>
+          </div>
+
+          <div class="callout why">
+            <span class="callout-title">為什麼沒有 interbank credit exposure 仍有 contagion？</span>
+            <p>
+              銀行在同一 differentiated-deposit market 中互為替代品。
+              一家銀行的 risk belief 改變會重新分配所有銀行 shares，促使競爭者調整 rates；
+              這些變化再進入每家銀行的 profit、continuation value 與 default boundary。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="estimation">
+          <div class="chapter-heading">
+            <div class="chapter-number">8</div>
+            <div>
+              <h2>Demand identification：風險敏感度不是相關係數</h2>
+              <p>服務品質同時影響 deposits 與 solvency，直接回歸會把銀行變差誤認成 depositors 害怕 default。</p>
+            </div>
+          </div>
+
+          <h3>核心 endogeneity</h3>
+          <div class="feedback-loop" aria-label="default probability endogeneity">
+            <div class="loop-item"><strong>服務品質下降</strong><span>資料看不到的 ξ<sub>kt</sub> 變差</span></div>
+            <div class="loop-item"><strong>deposit demand ↓</strong><span>即使 depositor 不在意 default</span></div>
+            <div class="loop-item"><strong>bank profit ↓</strong><span>funding franchise 變弱</span></div>
+            <div class="loop-item"><strong>default risk ↑</strong><span>CDS-implied ρ 上升</span></div>
+            <div class="loop-item"><strong>負相關出現</strong><span>但未必是 γ 的因果效果</span></div>
+          </div>
+
+          <p>
+            選定一家 reference bank 0，將其 share 與產品特徵相除／相減後，
+            demand inversion 可概念化為：
+          </p>
+          <div class="equation compact">
+            <span class="mono">log(s<sup>N</sup><sub>kt</sub>/s<sup>N</sup><sub>0t</sub>) = α<sup>N</sup>(i<sup>N</sup><sub>kt</sub>−i<sup>N</sup><sub>0t</sub>) − γ(ρ<sub>kt</sub>−ρ<sub>0t</sub>) + Bank FE + Quarter FE + ξ̃<sup>N</sup><sub>kt</sub></span>
+          </div>
+          <div class="equation compact">
+            <span class="mono">log(s<sup>I</sup><sub>kt</sub>/s<sup>I</sup><sub>0t</sub>) = α<sup>I</sup>(i<sup>I</sup><sub>kt</sub>−i<sup>I</sup><sub>0t</sub>) + Bank FE + Quarter FE + ξ̃<sup>I</sup><sub>kt</sub></span>
+          </div>
+          <p class="mini">這裡的 0 是 normalization 用的 reference bank，不是額外假設一個「不存款」outside good。</p>
+
+          <div class="table-wrap">
+            <table>
+              <caption>工具變數策略</caption>
+              <thead>
+                <tr>
+                  <th>內生變數</th>
+                  <th>工具</th>
+                  <th>Relevance</th>
+                  <th>Exclusion 的經濟要求</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Default probability ρ</strong></td>
+                  <td>銀行 net charged-off loans；表格另用 CMO-based alternative。</td>
+                  <td>資產損失惡化 solvency 與 CDS default measure。</td>
+                  <td>控制 fixed effects 後，asset-side charge-offs 不應直接改變存款服務效用。</td>
+                </tr>
+                <tr>
+                  <td><strong>Deposit rates i</strong></td>
+                  <td>Treasury-rate cost shocks × bank-specific pass-through。</td>
+                  <td>共同成本變動因銀行 pass-through 差異而形成 rate variation。</td>
+                  <td>該交互變化不應與銀行當期未觀察服務品質共同變動。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout why">
+            <span class="callout-title">為什麼 insured deposits 是有力 placebo？</span>
+            <p>
+              若同一個 default-risk instrument 也顯著降低 insured deposits，
+              可能表示工具仍在捕捉銀行服務惡化或其他共同需求衝擊。
+              模型預測 insured depositors 不承擔 default loss，因此其 γ 應接近 0。
+            </p>
+          </div>
+
+          <div class="callout warning">
+            <span class="callout-title">Placebo 通過不等於 exclusion 自動成立</span>
+            <p>
+              insured 與 uninsured 客群可能使用不同服務、擁有不同資訊，或受到不同 balance-sheet shocks 影響。
+              Placebo 提高可信度，但工具有效仍需經濟論證。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="evidence">
+          <div class="chapter-heading">
+            <div class="chapter-number">9</div>
+            <div>
+              <h2>資料與需求結果：存款人有多敏感？</h2>
+              <p>資料把 rates、deposit quantities、balance sheets 與市場信用風險連在一起。</p>
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <div class="card navy">
+              <div class="label">Solvency</div>
+              <h4>Markit 5-year CDS</h4>
+              <p>直接且高頻的 market-based solvency measure；模型與表格使用 risk-neutral default probability。</p>
+            </div>
+            <div class="card green">
+              <div class="label">Deposits / balance sheet</div>
+              <h4>Call Reports</h4>
+              <p>insured 與 uninsured deposit levels，加上銀行資產負債表資訊。</p>
+            </div>
+            <div class="card gold">
+              <div class="label">Deposit rates</div>
+              <h4>RateWatch CD rates</h4>
+              <p>銀行層級 certificate-of-deposit rates，用來估計利率敏感度與校準 FOCs。</p>
+            </div>
+          </div>
+
+          <p class="mini">樣本為 16/20 家最大美國商業銀行，2002–2013；主要表格約 564–566 個 observations。</p>
+
+          <h3>Reduced-form direction</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Dependent variable</th>
+                  <th class="num">Default probability coefficient</th>
+                  <th>解讀</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Deposit difference</td><td class="num">−1.98**<br><span class="mini">(0.96)</span></td><td>風險上升時，未保險相對受保險 deposits 下滑。</td></tr>
+                <tr><td>Uninsured deposits</td><td class="num">−2.13*<br><span class="mini">(1.14)</span></td><td>方向符合 run-prone demand。</td></tr>
+                <tr><td>Insured deposits</td><td class="num">−0.16<br><span class="mini">(1.04)</span></td><td>幾乎沒有反應，支持 insurance channel。</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>IV demand estimates</h3>
+          <div class="result-strip">
+            <div class="result">
+              <b>58.79</b>
+              <span>α<sup>I</sup>：insured rate sensitivity；利率彈性 0.64。</span>
+            </div>
+            <div class="result">
+              <b>18.33</b>
+              <span>α<sup>N</sup>：uninsured rate sensitivity；利率彈性 0.22。</span>
+            </div>
+            <div class="result">
+              <b>−10.64</b>
+              <span>−γ：uninsured default-risk coefficient；風險彈性 −0.36。</span>
+            </div>
+            <div class="result">
+              <b>不顯著</b>
+              <span>insured placebo 中 default-risk coefficients 為 −2.86 與 3.16。</span>
+            </div>
+          </div>
+
+          <div class="callout why">
+            <span class="callout-title">經濟讀法</span>
+            <p>
+              uninsured depositors 對利率的估計反應比 insured depositors 小，
+              但會因 solvency risk 撤資。這表示銀行不能只靠小幅加息完全中和風險疑慮；
+              γ 相對於 α<sup>N</sup> 的大小正是 run feedback 能否強到形成多重均衡的關鍵。
+            </p>
+          </div>
+
+          <p>
+            銀行 fixed effects 與 ATM density 正相關、與 CFPB complaints 負相關，
+            且 insured / uninsured 客群對同一家銀行的 fixed effects 不完全相同。
+            這支持「銀行提供差異化服務」而非只靠 rates 競爭的設定。
+          </p>
+        </section>
+
+        <section class="chapter" id="calibration">
+          <div class="chapter-heading">
+            <div class="chapter-number">10</div>
+            <div>
+              <h2>銀行參數 calibration：三組最適條件解三個 unknowns</h2>
+              <p>需求估計提供 α、γ 與 shares；銀行 FOCs 和 default boundary 再反推出 c、σ、μ。</p>
+            </div>
+          </div>
+
+          <div class="callout navy">
+            <span class="callout-title">輸入資料</span>
+            <p>
+              Demand estimates、insured/uninsured market shares、兩類 deposit rates、
+              CDS-implied default probability、長期債務 coupon 與 balance-sheet quantities。
+            </p>
+          </div>
+
+          <div class="step-list">
+            <div class="step">
+              <div>
+                <h4>用兩個 rate FOCs 的差識別 c<sub>k</sub></h4>
+                <p>共同的 conditional asset return <span class="mono">μ+σλ(z)</span> 被消掉，只留下 insured 相對 uninsured 的 non-interest cost。</p>
+              </div>
+            </div>
+            <div class="step">
+              <div>
+                <h4>用 default-boundary indifference 識別 σ<sub>k</sub></h4>
+                <p>觀察 ρ 便知道 standardized threshold z；shortfall = continuation value 將 σ 單獨釘住。</p>
+              </div>
+            </div>
+            <div class="step">
+              <div>
+                <h4>用 uninsured rate FOC 恢復 μ<sub>k</sub></h4>
+                <p>已有 σ、z、α<sup>N</sup>、share 與 rate，平均資產報酬成為剩餘 unknown。</p>
+              </div>
+            </div>
+          </div>
+
+          <details class="derivation" data-derivation open>
+            <summary>Step 1：非利息成本 c<sub>k</sub></summary>
+            <div class="derivation-body">
+              <p>將兩個 FOC 相減，得到：</p>
+              <div class="equation">
+                <span class="mono">c<sub>k</sub> = [i<sup>N</sup><sub>k</sub> + 1/((1−s<sup>N</sup><sub>k</sub>)α<sup>N</sup>)] − [i<sup>I</sup><sub>k</sub> + 1/((1−s<sup>I</sup><sub>k</sub>)α<sup>I</sup>)]</span>
+              </div>
+              <p>
+                括號內各自是「觀察利率 + 因 market power 留下的 wedge」，
+                理論上都應等於該類 deposit 的邊際價值；兩者差異就是 insured-specific cost。
+              </p>
+            </div>
+          </details>
+
+          <details class="derivation" data-derivation>
+            <summary>Step 2：資產報酬波動 σ<sub>k</sub></summary>
+            <div class="derivation-body">
+              <p>由觀察到的 default probability：</p>
+              <div class="equation compact">
+                <span class="mono">z<sub>k</sub> = Φ<sup>−1</sup>(ρ<sub>k</sub>)</span>
+              </div>
+              <p>Continuation value 可以寫成：</p>
+              <div class="equation">
+                <span class="mono">CV<sub>k</sub> = σ<sub>k</sub>[(D<sup>I</sup><sub>k</sub>+D<sup>N</sup><sub>k</sub>)/(1+r)](1−ρ<sub>k</sub>)[−z<sub>k</sub>+λ(z<sub>k</sub>)]</span>
+              </div>
+              <p>而 insured FOC 讓 threshold margin 化為：</p>
+              <div class="equation">
+                <span class="mono">R̄<sub>k</sub>−c<sub>k</sub>−i<sup>I</sup><sub>k</sub> = 1/[(1−s<sup>I</sup><sub>k</sub>)α<sup>I</sup>] + σ<sub>k</sub>[z<sub>k</sub>−λ(z<sub>k</sub>)]</span>
+              </div>
+              <p>代回 shortfall-at-threshold = continuation-value 方程，即可對每家銀行解 σ<sub>k</sub>。</p>
+            </div>
+          </details>
+
+          <details class="derivation" data-derivation>
+            <summary>Step 3：平均資產報酬 μ<sub>k</sub></summary>
+            <div class="derivation-body">
+              <p>重排 uninsured FOC：</p>
+              <div class="equation">
+                <span class="mono">μ<sub>k</sub> = i<sup>N</sup><sub>k</sub> − σ<sub>k</sub>λ[Φ<sup>−1</sup>(ρ<sub>k</sub>)] + 1/[(1−s<sup>N</sup><sub>k</sub>)α<sup>N</sup>]</span>
+              </div>
+              <p>
+                觀察到的 uninsured rate 加上 bank market-power wedge，等於 equity-side conditional asset return；
+                再扣除 limited-liability option term，就得到 unconditional mean μ。
+              </p>
+            </div>
+          </details>
+
+          <div class="callout caution">
+            <span class="callout-title">Estimation 與 calibration 的區分</span>
+            <p>
+              α、γ 由消費者需求與 IV variation 識別；μ、σ、c 則依賴銀行最適化與分布假設，
+              是由模型 FOCs 精確反推。後者的可信度更直接依賴 Bertrand-style rate setting、
+              normal returns、stationarity 與 default-value equation。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="calibration-results">
+          <div class="chapter-heading">
+            <div class="chapter-number">11</div>
+            <div>
+              <h2>校準結果與 sanity checks</h2>
+              <p>反推出來的成本與利差是否落在外部可接受的量級，是結構模型的重要檢驗。</p>
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <div class="card navy">
+              <div class="label">Mean asset returns</div>
+              <h4>約 5%–7.5%</h4>
+              <p>直方圖集中在約 6%，少數銀行落在較低或較高區間。</p>
+            </div>
+            <div class="card red">
+              <div class="label">Return volatility</div>
+              <h4>約 12%–24%</h4>
+              <p>多數集中在約 14%–16%，少數銀行約 20% 或更高。</p>
+            </div>
+            <div class="card gold">
+              <div class="label">Insured non-interest cost</div>
+              <h4>約 4%–5.5%</h4>
+              <p>直方圖最集中於 4%，其餘銀行分布到約 5.5%。</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <caption>講義提供的外部量級比對</caption>
+              <thead>
+                <tr>
+                  <th>校準量</th>
+                  <th>模型結果</th>
+                  <th>現實對照</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Insured non-interest costs</strong></td>
+                  <td>4%–5.5%</td>
+                  <td>對 $1,500 帳戶約每月 $5–$7；小額帳戶費用常見 $5–$10。</td>
+                </tr>
+                <tr>
+                  <td><strong>Interest margin</strong></td>
+                  <td>2.3%–3.75%</td>
+                  <td>講義引用 Hanson et al. (2014) 約 2% 作為比較。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout why">
+            <span class="callout-title">Sanity check 能告訴我們什麼？</span>
+            <p>
+              合理量級表示需求估計、rate FOCs 與 default equation 沒有共同逼出明顯荒謬的成本；
+              但它不是獨立識別，也不能排除多組錯誤假設恰好產生合理 aggregate moments。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="equilibria">
+          <div class="chapter-heading">
+            <div class="chapter-number">12</div>
+            <div>
+              <h2>其他均衡有多壞？</h2>
+              <p>固定估計出的 fundamentals 與 preferences，只改 beliefs、shares、rates 與 default probabilities，搜尋其他 fixed points。</p>
+            </div>
+          </div>
+
+          <div class="callout">
+            <span class="callout-title">Wachovia，March 2008</span>
+            <p>
+              觀察均衡的 risk-neutral default probability 為 <strong>3.3%</strong>；
+              同一組 fundamentals 下存在約 <strong>56%</strong> 的 alternative equilibrium。
+              講義強調兩者的差別是 consumer beliefs。
+            </p>
+          </div>
+
+          <h3>觀察均衡附近還有稍好的均衡</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Bank</th>
+                  <th class="num">Observed Eq.</th>
+                  <th class="num">Better Eq.</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>JPMorgan Chase</td><td class="num">1.50%</td><td class="num">0.28%</td></tr>
+                <tr><td>Citi Bank</td><td class="num">2.11%</td><td class="num">1.94%</td></tr>
+                <tr><td>Bank of America</td><td class="num">1.82%</td><td class="num">0.04%</td></tr>
+                <tr><td>Wells Fargo</td><td class="num">1.50%</td><td class="num">1.36%</td></tr>
+                <tr><td>Wachovia</td><td class="num">3.28%</td><td class="num">3.18%</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="mini">作者的讀法：better equilibria 不多，而且通常沒有好很多；觀察均衡已相對接近好端。</p>
+
+          <h3>但每家銀行各自都有 run-like 壞均衡</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>被推入壞均衡的銀行</th>
+                  <th class="num">Observed ρ</th>
+                  <th class="num">Bad-equilibrium ρ</th>
+                  <th>其他銀行的反應</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>JPMorgan Chase</td><td class="num">1.50%</td><td class="num">50.65%</td><td>其他四家約 2.6%–5.0%</td></tr>
+                <tr><td>Citi Bank</td><td class="num">2.11%</td><td class="num">51.74%</td><td>其他四家約 2.5%–5.0%</td></tr>
+                <tr><td>Bank of America</td><td class="num">1.82%</td><td class="num">56.55%</td><td>其他四家約 3.4%–4.3%</td></tr>
+                <tr><td>Wells Fargo</td><td class="num">1.50%</td><td class="num">47.89%</td><td>其他四家約 2.8%–3.6%</td></tr>
+                <tr><td>Wachovia</td><td class="num">3.28%</td><td class="num">55.99%</td><td>其他四家約 2.8%–5.0%</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout why">
+            <span class="callout-title">經濟上怎麼讀這張表？</span>
+            <p>
+              模型不是說 2008 年這些銀行「應該」有 50% default probability；
+              而是說估計出的 demand sensitivity 與 balance-sheet technology
+              足以讓悲觀 beliefs 成為另一個 rational-expectations fixed point。
+              因此脆弱性表現在 equilibrium set，而不只表現在已實現的均衡。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="policy">
+          <div class="chapter-heading">
+            <div class="chapter-number">13</div>
+            <div>
+              <h2>資本要求與政策：最大的難題是 equilibrium selection</h2>
+              <p>政策不只改變單一均衡內的 default risk，也可能改變壞均衡是否存在與好壞均衡之間的距離。</p>
+            </div>
+          </div>
+
+          <div class="grid-4">
+            <div class="card"><h4>Capital requirements</h4><p>增加 loss-absorbing equity，改變 default threshold 與 equilibrium set。</p></div>
+            <div class="card green"><h4>Deposit insurance</h4><p>降低 γ channel，但可能增加 FDIC exposure 與 moral hazard。</p></div>
+            <div class="card gold"><h4>Interest-rate limits</h4><p>限制銀行用高 rates 搶救 funding，同時改變競爭與 risk-taking。</p></div>
+            <div class="card purple"><h4>Risk limits</h4><p>直接約束 σ 或 risky-asset choice，降低 tail default probability。</p></div>
+          </div>
+
+          <h3>Stability 圖的讀法</h3>
+          <p>
+            講義同時畫出 best 與 worst equilibrium 的 mean risk-neutral default probability。
+            best equilibrium 幾乎保持低風險；worst equilibrium 在低資本區間非常高，之後隨 capital requirement 增加而下降。
+            曲線在低資本處不單調，提醒我們政策會改變整個 equilibrium set，而不只是機械降低 leverage。
+          </p>
+
+          <h3>Welfare 圖的讀法</h3>
+          <p>
+            作者把 consumer surplus、annualized equity value 與 FDIC expected costs 合併。
+            best equilibrium welfare 接近或略高於基準；worst equilibrium 明顯較差，
+            中等資本要求能改善最壞結果，但過高要求又帶來 funding、competition 或 equity 成本。
+          </p>
+
+          <div class="callout warning">
+            <span class="callout-title">為什麼無法直接取 expected welfare？</span>
+            <p>
+              模型找到多個均衡，卻沒有提供「每個均衡會以多少機率發生」的 equilibrium-selection distribution。
+              沒有這個分布，就不能把 best 與 worst equilibrium 按機率平均。
+            </p>
+          </div>
+
+          <div class="callout navy">
+            <span class="callout-title">Uncertainty-averse planner</span>
+            <p>
+              講義採 Gilboa–Schmeidler 式 maximin：不對均衡實現機率加限制，對每個 capital requirement
+              評估最差均衡，選擇使 worst outcome 最大者。得到的資本要求為 <strong>31%</strong>。
+            </p>
+          </div>
+
+          <div class="callout caution">
+            <span class="callout-title">31% 不是一般意義下的唯一「最適資本比率」</span>
+            <p>
+              它依賴極度保守的 equilibrium ambiguity 態度、模型中的福利組成、
+              資產與存款反應、以及未建模的均衡選擇。若 planner 有 equilibrium probabilities，
+              或對尾端結果的態度不同，答案也會不同。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="assessment">
+          <div class="chapter-heading">
+            <div class="chapter-number">14</div>
+            <div>
+              <h2>如何解讀、使用與質疑這個模型？</h2>
+              <p>最有價值的是量化 feedback mechanism；最需要謹慎的是工具排除限制、動態簡化與 equilibrium selection。</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>議題</th>
+                  <th>模型的處理</th>
+                  <th>閱讀時應問</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>CDS default measure</strong></td>
+                  <td>使用市場 CDS 建立 risk-neutral solvency measure。</td>
+                  <td>風險溢酬與 physical default probability 的差異是否會影響 calibration？</td>
+                </tr>
+                <tr>
+                  <td><strong>Default-risk IV</strong></td>
+                  <td>net charge-offs 與 alternative CMO specification。</td>
+                  <td>資產損失是否也直接改變 branch quality、廣告、服務或 depositor information？</td>
+                </tr>
+                <tr>
+                  <td><strong>Rate IV</strong></td>
+                  <td>Treasury shocks × bank-specific pass-through。</td>
+                  <td>pass-through heterogeneity 是否與銀行風險、客群或服務趨勢相關？</td>
+                </tr>
+                <tr>
+                  <td><strong>Logit substitution</strong></td>
+                  <td>差異化銀行，但 ε 仍為 i.i.d. T1EV。</td>
+                  <td>跨銀行替代是否主要由 shares 決定？關係型或地理 segmentation 是否更複雜？</td>
+                </tr>
+                <tr>
+                  <td><strong>Asset returns</strong></td>
+                  <td>每家銀行 R ∼ Normal(μ,σ)，且 shocks i.i.d.</td>
+                  <td>fat tails、common shocks、持續性與內生 risk choice 會如何改變壞均衡？</td>
+                </tr>
+                <tr>
+                  <td><strong>Bankruptcy dynamics</strong></td>
+                  <td>stationary continuation，bankruptcy 後相同 capital structure。</td>
+                  <td>resolution、fire sales、capital raising 與 franchise destruction 是否被低估？</td>
+                </tr>
+                <tr>
+                  <td><strong>Equilibrium selection</strong></td>
+                  <td>搜尋 fixed points；政策採 best/worst 與 maximin。</td>
+                  <td>什麼新聞、coordination device 或政策承諾使經濟從一個均衡跳到另一個？</td>
+                </tr>
+                <tr>
+                  <td><strong>External validity</strong></td>
+                  <td>2002–2013 的大型美國商業銀行與 CD rates。</td>
+                  <td>不同速度的數位提款、社群媒體資訊與 concentrated uninsured deposits 是否改變 γ 與動態？</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="grid-2">
+            <div class="card green">
+              <div class="label">最強貢獻</div>
+              <h4>把 bank-run feedback 變成可量化的 equilibrium object</h4>
+              <p>不是只展示 distressed banks 流失 deposits，而是估計 causal demand、反推 bank technology，並檢查完整 fixed points。</p>
+            </div>
+            <div class="card red">
+              <div class="label">最脆弱環節</div>
+              <h4>Outer identification 與 selection</h4>
+              <p>壞均衡是否存在依賴 demand sensitivity 與 calibration；政策最適值又取決於如何對多個均衡賦予權重。</p>
+            </div>
+          </div>
+
+          <h3>適合課堂討論的五個問題</h3>
+          <ol>
+            <li>Charge-offs 對 uninsured depositors 是否真的只有透過 default probability 影響效用？</li>
+            <li>若 uninsured depositors 可以把資金轉往 Treasury funds，而不只是樣本內銀行，outside option 會怎麼改變 γ？</li>
+            <li>如果存款流失必須透過急售資產來應付，default feedback 是否會更強？</li>
+            <li>更高 deposit insurance 會穩定 funding，但會如何改變 bank risk-taking 與 FDIC cost？</li>
+            <li>若政策能協調 beliefs，是否可能用低於 31% 的 capital 避免壞均衡？</li>
+          </ol>
+        </section>
+
+        <section class="chapter" id="cheatsheet">
+          <div class="chapter-heading">
+            <div class="chapter-number">15</div>
+            <div>
+              <h2>一頁速查表</h2>
+              <p>從 demand 到 policy 的完整因果鏈。</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>層次</th>
+                  <th>核心式子／條件</th>
+                  <th>經濟直覺</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Uninsured demand</strong></td>
+                  <td class="mono">u<sup>N</sup> = α<sup>N</sup>i<sup>N</sup> − γρ + δ<sup>N</sup> + ε<sup>N</sup></td>
+                  <td>高利率吸引資金；高 default risk 觸發撤資。</td>
+                </tr>
+                <tr>
+                  <td><strong>Insured demand</strong></td>
+                  <td class="mono">u<sup>I</sup> = α<sup>I</sup>i<sup>I</sup> + δ<sup>I</sup> + ε<sup>I</sup></td>
+                  <td>保險移除 depositor-side default loss，提供 placebo。</td>
+                </tr>
+                <tr>
+                  <td><strong>Bank margin</strong></td>
+                  <td class="mono">π(R)=D<sup>I</sup>(R−c−i<sup>I</sup>)+D<sup>N</sup>(R−i<sup>N</sup>)</td>
+                  <td>存款量、資產報酬與 funding costs 共同決定 shortfall。</td>
+                </tr>
+                <tr>
+                  <td><strong>Default rule</strong></td>
+                  <td class="mono">default iff b−π(R) &gt; E/(1+r)</td>
+                  <td>填補今天的缺口不值得保住未來 franchise value。</td>
+                </tr>
+                <tr>
+                  <td><strong>Default probability</strong></td>
+                  <td class="mono">ρ = Φ[(R̄−μ)/σ]</td>
+                  <td>較高 threshold、較差 mean return 或較大 downside risk 提高 default。</td>
+                </tr>
+                <tr>
+                  <td><strong>Rate FOC</strong></td>
+                  <td class="mono">m−i = 1/[α(1−s)]</td>
+                  <td>銀行在吸引新 deposits 與提高所有既有 deposits 成本間權衡。</td>
+                </tr>
+                <tr>
+                  <td><strong>Demand IV</strong></td>
+                  <td class="mono">E[Zξ] = 0</td>
+                  <td>分離 default fear、rate response 與未觀察服務品質。</td>
+                </tr>
+                <tr>
+                  <td><strong>Calibration</strong></td>
+                  <td class="mono">兩個 rate FOCs + default boundary</td>
+                  <td>依序恢復 c、σ、μ。</td>
+                </tr>
+                <tr>
+                  <td><strong>Multiple equilibrium</strong></td>
+                  <td class="mono">perceived ρ = model-implied ρ</td>
+                  <td>悲觀信念可能透過撤資與 bank value 自我實現。</td>
+                </tr>
+                <tr>
+                  <td><strong>Policy</strong></td>
+                  <td class="mono">max<sub>capital</sub> min<sub>equilibria</sub> Welfare</td>
+                  <td>不知道 equilibrium selection 時，以最壞均衡做 robust regulation。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout">
+            <span class="callout-title">最後的記憶句</span>
+            <p>
+              <strong>Deposit competition 決定銀行為 funding 支付多少；deposit beliefs 決定 funding 留不留下；
+              funding 又決定銀行是否值得被股東救回。</strong>
+              當這三者形成夠強的正回饋，同一組 fundamentals 就不再對應唯一的 solvency outcome。
+            </p>
+          </div>
+
+          <a class="back-top" href="#top">回到頁首 ↑</a>
+        </section>
+      </main>
+    </div>
+
+    <footer>
+      整理自 Egan、Hortaçsu 與 Matvos，<em>Deposit Competition and Financial Fragility: Evidence from the US Banking Sector</em>。
+      本頁依講義內容補充公式推導、識別邏輯與經濟直覺。
+    </footer>
+  </div>
+
+  <script>
+    (() => {
+      const derivations = [...document.querySelectorAll("[data-derivation]")];
+      document.getElementById("expand-all")?.addEventListener("click", () => {
+        derivations.forEach((item) => { item.open = true; });
+      });
+      document.getElementById("collapse-all")?.addEventListener("click", () => {
+        derivations.forEach((item) => { item.open = false; });
+      });
+
+      const progress = document.querySelector(".reading-progress");
+      const updateProgress = () => {
+        const available = document.documentElement.scrollHeight - window.innerHeight;
+        const ratio = available > 0 ? window.scrollY / available : 0;
+        progress.style.width = `${Math.min(100, Math.max(0, ratio * 100))}%`;
+      };
+      updateProgress();
+      window.addEventListener("scroll", updateProgress, { passive: true });
+      window.addEventListener("resize", updateProgress);
+
+      const links = [...document.querySelectorAll(".toc a[href^='#']")];
+      const linkById = new Map(
+        links.map((link) => [link.getAttribute("href").slice(1), link])
+      );
+      const sections = [...document.querySelectorAll("main > section[id]")];
+      if ("IntersectionObserver" in window) {
+        const observer = new IntersectionObserver((entries) => {
+          const visible = entries
+            .filter((entry) => entry.isIntersecting)
+            .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+          if (!visible) return;
+          links.forEach((link) => link.classList.remove("active"));
+          linkById.get(visible.target.id)?.classList.add("active");
+        }, {
+          rootMargin: "-15% 0px -72% 0px",
+          threshold: [0, 0.1, 0.4]
+        });
+        sections.forEach((section) => observer.observe(section));
+      }
+    })();
+  </script>
+</body>
+</html>
