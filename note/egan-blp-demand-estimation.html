@@ -713,6 +713,7 @@
         <a href="#elasticity">6. 彈性、IIA 與限制</a>
         <a href="#heterogeneity">7. BLP 偏好異質性</a>
         <a href="#integration">8. 個人機率與市場積分</a>
+        <a href="#simulation-qa">8A. p.23–24 模擬問答</a>
         <a href="#inner-loop">9. Inner loop：contraction</a>
         <a href="#outer-loop">10. Outer loop：GMM</a>
         <a href="#algorithm">11. 完整估計演算法</a>
@@ -1512,6 +1513,269 @@
             <p>
               可以令 ν ∼ N(0, I) 並估計 covariance factor Σ；也可以讓 ν 本身有 covariance Ω。
               兩者若同時完全自由會有尺度冗餘。實作通常固定 ν 為標準常態，估計 Σ 的 Cholesky factor。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="simulation-qa">
+          <div class="chapter-heading">
+            <div class="chapter-number">8A</div>
+            <div>
+              <h2>p.23–24 問答：integrate out 到底在做什麼？</h2>
+              <p>釐清三個經常被混在一起的動作：人口平均、simulation integration，以及 inner-loop contraction。</p>
+            </div>
+          </div>
+
+          <div class="callout">
+            <span class="callout-title">先給直接答案</span>
+            <ol>
+              <li>對，aggregate market share 必須把 demographics <i>d</i><sub>i</sub> 與 random taste <i>v</i><sub>i</sub> 平均掉。</li>
+              <li>這個積分通常用 simulation 近似，但也可以使用離散人口類型、survey weights 或 numerical quadrature。</li>
+              <li><i>θ</i><sub>2</sub> 是 optimizer 更新的待估參數；<i>d</i><sub>i</sub>、<i>v</i><sub>i</sub> 是事先固定的積分節點，不是每輪重新「猜」的人口。</li>
+              <li>contraction 只發生在固定 <i>θ</i><sub>2</sub> 與固定 draws 後、反覆更新 <i>δ</i> 的 inner loop；更新 <i>θ</i><sub>2</sub> 的 outer loop 不是 contraction。</li>
+            </ol>
+          </div>
+
+          <h3>第一個關鍵：其實有兩層不同的積分</h3>
+
+          <div class="grid-2">
+            <div class="card teal">
+              <div class="label">Layer 1 · Analytic</div>
+              <h4>先積掉 ε<sub>ijt</sub></h4>
+              <p>
+                固定 <i>d</i><sub>i</sub>、<i>v</i><sub>i</sub> 後，因為 ε 是 T1EV，
+                可以解析地得到 conditional logit probability <i>P</i><sub>ijt</sub>。
+              </p>
+              <p class="mini"><strong>不需要 simulation。</strong></p>
+            </div>
+            <div class="card purple">
+              <div class="label">Layer 2 · Numerical</div>
+              <h4>再平均 d<sub>i</sub>、v<sub>i</sub></h4>
+              <p>
+                市場資料只看到所有消費者合在一起的 share，所以要對人口類型的分布
+                <i>F</i><sub>t</sub>(<i>d</i>,<i>v</i>) 加權平均。
+              </p>
+              <p class="mini"><strong>通常由 simulation 或其他數值積分完成。</strong></p>
+            </div>
+          </div>
+
+          <div class="equation compact">
+            <span class="mono">ε<sub>ijt</sub> ──解析積分──▶ P<sub>ijt</sub>(δ, θ<sub>2</sub> | d<sub>i</sub>, v<sub>i</sub>) ──人口平均──▶ s<sub>jt</sub>(δ, θ<sub>2</sub>)</span>
+          </div>
+
+          <div class="callout why">
+            <span class="callout-title">「Integrate out」不等於把 demographics 丟掉</span>
+            <p>
+              它的意思是 marginalization：先算每一類消費者的選擇機率，再依這類人在市場中出現的比例加權。
+              demographics 仍然透過 μ<sub>ijt</sub> 影響 share 與價格反應，只是不再保留個別消費者索引。
+            </p>
+          </div>
+
+          <h3>d<sub>i</sub> 與 v<sub>i</sub> 從哪裡來？</h3>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>物件</th>
+                  <th>典型來源</th>
+                  <th>在估計中扮演什麼角色？</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Demographics d<sub>rt</sub></strong></td>
+                  <td>實際 microdata、人口分組與權重，或從外部估計的人口分布抽樣。</td>
+                  <td>代表市場 <i>t</i> 的人口組成；通常在估計開始前固定。</td>
+                </tr>
+                <tr>
+                  <td><strong>Base taste draws η<sub>r</sub></strong></td>
+                  <td>從 normalization 後的分布抽取，例如 η<sub>r</sub> ∼ N(0,I)。</td>
+                  <td>近似不可觀察 taste distribution 的數值積分節點；不是實際某個人的估計值。</td>
+                </tr>
+                <tr>
+                  <td><strong>Heterogeneity θ<sub>2</sub></strong></td>
+                  <td>由 outer-loop optimizer 提出。</td>
+                  <td>決定 demographics 與 base draws 如何轉換成個人偏好差異。</td>
+                </tr>
+                <tr>
+                  <td><strong>Mean utility δ</strong></td>
+                  <td>給定 θ<sub>2</sub> 後，由 share inversion 解出。</td>
+                  <td>inner loop 中唯一反覆更新的物件。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <details class="derivation" data-derivation open>
+            <summary>展開：demographics 不一定要「模擬」</summary>
+            <div class="derivation-body">
+              <p><strong>少數離散人口類型：</strong>若低、中、高所得者的市場權重分別為 0.5、0.3、0.2，可以直接算：</p>
+              <div class="equation compact">
+                <span class="mono">s<sub>jt</sub> = 0.5P<sup>low</sup><sub>jt</sub> + 0.3P<sup>middle</sup><sub>jt</sub> + 0.2P<sup>high</sup><sub>jt</sub></span>
+              </div>
+              <p><strong>Consumer microdata：</strong>若有調查樣本與 survey weights <i>w</i><sub>rt</sub>，可以使用 empirical average：</p>
+              <div class="equation compact">
+                <span class="mono">ŝ<sub>jt</sub> = ∑<sub>r=1</sub><sup>R<sub>t</sub></sup>w<sub>rt</sub>P<sub>rjt</sub></span>
+              </div>
+              <p><strong>只有人口分布：</strong>若只知道所得、年齡等分布，可以從該分布抽取代表性人口。此時 d 是模擬的，但其分布應由外部資料校準，而不是 optimizer 任意選擇。</p>
+              <p>
+                若完全沒有 demographic information，就不能無中生有地識別 demographic interactions；
+                通常會將相應係數設為 0，或清楚說明所使用的外部校準。
+              </p>
+            </div>
+          </details>
+
+          <h3>simulation 如何近似 p.23 的積分？</h3>
+
+          <p>固定一組代表性消費者與權重：</p>
+          <div class="equation compact">
+            <span class="mono">{d<sub>rt</sub>, η<sub>r</sub>, w<sub>rt</sub>}<sub>r=1</sub><sup>R</sup>, &nbsp; ∑<sub>r</sub>w<sub>rt</sub> = 1</span>
+          </div>
+
+          <p>對每組候選 θ<sub>2</sub>，先將它們映射為個人偏好：</p>
+          <div class="equation compact">
+            <span class="mono">μ<sub>rjt</sub>(θ<sub>2</sub>) = x′<sub>jt</sub>Πd<sub>rt</sub> + x′<sub>jt</sub>Ση<sub>r</sub></span>
+          </div>
+
+          <p>再計算 conditional probabilities 並加權平均：</p>
+          <div class="equation compact">
+            <span class="mono">P<sub>rjt</sub> = exp(δ<sub>jt</sub>+μ<sub>rjt</sub>) / [1+∑<sub>ℓ</sub>exp(δ<sub>ℓt</sub>+μ<sub>rℓt</sub>)]</span>
+          </div>
+          <div class="equation compact">
+            <span class="mono">ŝ<sub>jt</sub>(δ,θ<sub>2</sub>) = ∑<sub>r=1</sub><sup>R</sup>w<sub>rt</sub>P<sub>rjt</sub></span>
+          </div>
+
+          <p>
+            等權 Monte Carlo 時，<span class="mono">w<sub>rt</sub> = 1/R</span>。
+            當 <i>R</i> 增加時，依大數法則或相應的數值積分收斂結果，
+            <span class="mono">ŝ<sub>jt</sub> → s<sub>jt</sub></span>。
+          </p>
+
+          <details class="derivation" data-derivation>
+            <summary>展開：如果 Ω 也要估，taste draws 怎麼保持固定？</summary>
+            <div class="derivation-body">
+              <p>不要每組 Ω 都重新從 N(0,Ω) 抽亂數。先固定抽取：</p>
+              <div class="equation compact">
+                <span class="mono">η<sub>r</sub> ∼ N(0,I), &nbsp; r = 1,…,R</span>
+              </div>
+              <p>對候選 covariance matrix Ω 做 Cholesky decomposition：</p>
+              <div class="equation compact">
+                <span class="mono">Ω = L(Ω)L(Ω)′, &nbsp; v<sub>r</sub>(Ω) = L(Ω)η<sub>r</sub></span>
+              </div>
+              <p>
+                固定的是 base draw η<sub>r</sub>；隨 θ<sub>2</sub> 改變的是轉換矩陣 L(Ω)。
+                這個 common-random-numbers 做法讓不同參數下的 shares 與 GMM objective 可平滑比較。
+              </p>
+            </div>
+          </details>
+
+          <h3>p.24 的清單：什麼固定、什麼更新？</h3>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>投影片步驟</th>
+                  <th>真正的計算</th>
+                  <th>這一步更新什麼？</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>1. Draw consumers</strong></td>
+                  <td>建立固定的 {d<sub>rt</sub>, η<sub>r</sub>, w<sub>rt</sub>}。</td>
+                  <td>估計開始前做一次；不是每輪重抽。</td>
+                </tr>
+                <tr>
+                  <td><strong>2. Guess θ<sub>2</sub></strong></td>
+                  <td>optimizer 提出 Π、Σ 或 Ω 等候選值。</td>
+                  <td>outer-loop 參數。</td>
+                </tr>
+                <tr>
+                  <td><strong>3. Solve δ(θ<sub>2</sub>)</strong></td>
+                  <td>固定 θ<sub>2</sub> 與 draws，用 model shares 配適 observed shares。</td>
+                  <td>只更新 δ；這是 contraction mapping。</td>
+                </tr>
+                <tr>
+                  <td><strong>4. Recover ξ</strong></td>
+                  <td>實作上先用 IV/GMM 解線性參數 θ<sub>1</sub>，再算 ξ = δ − Xθ<sub>1</sub>。</td>
+                  <td>θ<sub>1</sub> 與 implied ξ。</td>
+                </tr>
+                <tr>
+                  <td><strong>5. Evaluate GMM</strong></td>
+                  <td>計算 g(θ) = Z′ξ/N 與 Q(θ) = g(θ)′Wg(θ)。</td>
+                  <td>得到這組 θ<sub>2</sub> 的 objective value。</td>
+                </tr>
+                <tr>
+                  <td><strong>6. Update θ<sub>2</sub></strong></td>
+                  <td>非線性 optimizer 提出下一組 θ<sub>2</sub>，再回到步驟 3。</td>
+                  <td>這是 outer optimization，不是 contraction。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>固定 simulated population 後，為什麼仍有 contraction？</h3>
+
+          <p>
+            固定 θ<sub>2</sub>、d<sub>rt</sub>、η<sub>r</sub> 與 weights 後，
+            <span class="mono">ŝ(δ,θ<sub>2</sub>)</span> 是 δ 的確定函數，不再有抽樣隨機性。
+            定義：
+          </p>
+          <div class="equation compact">
+            <span class="mono">T<sub>j</sub>(δ) = δ<sub>j</sub> + log s<sup>obs</sup><sub>j</sub> − log ŝ<sub>j</sub>(δ)</span>
+          </div>
+
+          <details class="derivation" data-derivation open>
+            <summary>展開：有限模擬人口下的 contraction 計算</summary>
+            <div class="derivation-body">
+              <p>個人 conditional logit probability 滿足：</p>
+              <div class="equation compact">
+                <span class="mono">∂P<sub>rj</sub>/∂δ<sub>k</sub> = P<sub>rj</sub>[1{j=k} − P<sub>rk</sub>]</span>
+              </div>
+              <p>因此 simulated-share mapping 的 Jacobian 元素為：</p>
+              <div class="equation compact">
+                <span class="mono">∂T<sub>j</sub>/∂δ<sub>j</sub> = ∑<sub>r</sub>w<sub>r</sub>P<sub>rj</sub><sup>2</sup> / ŝ<sub>j</sub></span>
+              </div>
+              <div class="equation compact">
+                <span class="mono">∂T<sub>j</sub>/∂δ<sub>k</sub> = ∑<sub>r</sub>w<sub>r</sub>P<sub>rj</sub>P<sub>rk</sub> / ŝ<sub>j</sub>, &nbsp; k ≠ j</span>
+              </div>
+              <p>第 j 列的元素總和為：</p>
+              <div class="equation compact">
+                <span class="mono">∑<sub>k=1</sub><sup>J</sup>∂T<sub>j</sub>/∂δ<sub>k</sub> = 1 − [∑<sub>r</sub>w<sub>r</sub>P<sub>rj</sub>P<sub>r0</sub>] / ŝ<sub>j</sub> &lt; 1</span>
+              </div>
+              <p>
+                最後的不等式來自每個模擬消費者都有正的 outside-good probability P<sub>r0</sub>。
+                在有限效用、固定 draws 與標準正則條件下，mapping 因此會把 δ 的距離縮小，
+                反覆更新可收斂到 share-matching fixed point。
+              </p>
+            </div>
+          </details>
+
+          <div class="callout warning">
+            <span class="callout-title">為什麼不能在每次 inner iteration 重抽消費者？</span>
+            <p>
+              若每輪都重抽 d、v，第 m 輪和第 m+1 輪使用的是不同的 simulated-share function，
+              便不存在單一固定 mapping T(δ) 可以收斂。即使 δ 沒變，shares 也會因 Monte Carlo noise 改變。
+              因此同一組 draws 必須貫穿 inner loop 與 outer-loop parameter evaluations。
+            </p>
+          </div>
+
+          <div class="callout caution">
+            <span class="callout-title">Contraction 保證到哪裡為止？</span>
+            <p>
+              它保證的是：<strong>給定 θ<sub>2</sub> 與固定 draws</strong>，inner loop 能找到相應的 δ。
+              它不保證 outer-loop GMM objective 是凸的，也不保證 optimizer 一定找到 global minimum；
+              實作仍需多組初始值、gradient 與 objective-profile 檢查。
+            </p>
+          </div>
+
+          <div class="callout why">
+            <span class="callout-title">最精確的記憶句</span>
+            <p>
+              <strong>draws 是固定的積分節點；θ<sub>2</sub> 是外層估的；δ 是內層反演的。</strong><br>
+              Inner loop 有 contraction；outer loop 是一般非線性最佳化。
             </p>
           </div>
         </section>
