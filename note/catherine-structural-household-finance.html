@@ -1083,6 +1083,166 @@
             </div>
           </div>
 
+          <details open id="slide8-qa">
+            <summary>Slide 8 問答補充：把 model setup 當成一個家庭故事</summary>
+            <div>
+              <div class="big-idea">
+                <strong>這個家庭最怕的不是「平均報酬低」，而是兩種壞事同時發生</strong>
+                <p>
+                  想像一位還有很多年薪資可賺、金融財富卻不多的年輕家庭。平常股票有較高預期報酬；
+                  但如果股災發生的年份，也正是少數工作者遭遇嚴重、持續 career loss 的年份，
+                  家庭會同時失去金融財富與未來薪資現值。模型就是要算：為了避免這個 joint bad state，
+                  今天應少持多少股票、存多少安全資產，以及是否值得付固定成本進入股市。
+                </p>
+              </div>
+
+              <h3>每一期，故事依照五個鏡頭前進</h3>
+              <ol class="sequence">
+                <li>
+                  <strong>帶著既有狀態進場。</strong>
+                  家庭已有年齡、金融財富、住房狀態、持續性所得
+                  <span class="mono">z<sub>i,t−1</sub></span>、歷史所得／社安權益與是否參與股市等狀態。
+                </li>
+                <li>
+                  <strong>世界抽出 shocks。</strong>
+                  個人所得創新 <span class="mono">ζ<sub>it</sub></span> 從 good/bad mixture 抽出；
+                  aggregate wage 與股票市場也移動。景氣差時，bad component 的中心會往更左邊移。
+                </li>
+                <li>
+                  <strong>家庭衡量最壞狀態。</strong>
+                  因為所得 shock 具有 persistence，壞抽籤不只少一年薪水，還降低往後多年的 earnings
+                  與 human capital；若此時股票也跌，低消費狀態的邊際效用非常高。
+                </li>
+                <li>
+                  <strong>家庭做當期選擇。</strong>
+                  決定一般消費、租屋或購屋，以及金融淨值中股票比例
+                  <span class="mono">π</span>；購屋與股市參與各自受到 down payment、交易成本及 fixed cost 影響。
+                </li>
+                <li>
+                  <strong>選擇變成明天的狀態。</strong>
+                  未消費財富與資產報酬形成下期金融財富；本期所得狀態透過
+                  <span class="mono">ρ<sub>z</sub></span> 延續。家庭在仍然存活時重複同一問題，直到退休／生命終點。
+                </li>
+              </ol>
+
+              <h3>三層模型如何扣在一起？</h3>
+              <div class="derive">
+                <div class="derive-step">
+                  <span>Preference</span>
+                  <p>CRRA 使低消費狀態特別痛；消費品與住房共同產生效用，未來效用另受時間折現與存活機率加權。</p>
+                </div>
+                <div class="derive-step">
+                  <span>Income process</span>
+                  <p>AR(1) 讓 career shock 有長期後果；normal mixture 讓所得分配具有不對稱左尾，而非被迫對稱。</p>
+                </div>
+                <div class="derive-step">
+                  <span>Portfolio response</span>
+                  <p>bad tail 在股市差時加深，使 human capital 內含 market downside；家庭因此降低股票 exposure。</p>
+                </div>
+              </div>
+
+              <h3>為何 mixture 是模型不可少的零件？</h3>
+              <div class="grid-2">
+                <div class="card">
+                  <h4>單一 normal</h4>
+                  <p>
+                    分配對稱，第三動差固定為零；若提高 variance，左右兩尾會一起張開，
+                    無法表現「只有少數人掉入非常深的 career-loss 左尾」。
+                  </p>
+                </div>
+                <div class="card">
+                  <h4>Good/bad normal mixture</h4>
+                  <p>
+                    先以 <span class="mono">p<sub>z</sub></span> 決定是否抽到 bad component，
+                    再從該 component 抽實際 shock。兩個 component 的均值與 variance 不同，
+                    因而可獨立調整平均、分散程度與 skewness。
+                  </p>
+                </div>
+              </div>
+
+              <div class="eq">
+                衰退：Δl<sub>1,t</sub>&lt;0
+                &nbsp;⇒&nbsp;
+                μ<sup>−</sup><sub>z,t</sub>
+                = μ<sup>−</sup><sub>z</sub>+λ<sub>zl</sub>Δl<sub>1,t</sub>
+                更負
+                &nbsp;⇒&nbsp;
+                左尾 career loss 更嚴重。
+              </div>
+              <p>
+                關鍵不是每個人的薪資同比下降，而是<strong>衰退時抽到 bad component 的少數人更慘</strong>。
+                所以平均所得 shock 與股票報酬即使幾乎不相關，也不能把 human capital 當作無風險債券。
+              </p>
+
+              <h3>Slide 8 變數完整對照表</h3>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr><th>區塊</th><th>符號</th><th>定義</th><th>在故事中的角色</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>索引</td><td><span class="mono">i</span></td><td>家庭／個人</td><td>允許家庭面對不同所得抽籤與財務狀態。</td></tr>
+                    <tr><td>索引</td><td><span class="mono">t</span></td><td>時間或生命週期期別</td><td>決定距退休多遠、還有多少 human capital。</td></tr>
+                    <tr><td>索引</td><td><span class="mono">t<sub>0</sub></span></td><td>開始計算 value 的期別</td><td>家庭從此時的狀態開始規劃餘生。</td></tr>
+                    <tr><td>索引</td><td><span class="mono">T</span></td><td>模型的最後一期</td><td>生命週期規劃的終點。</td></tr>
+                    <tr><td>價值</td><td><span class="mono">V<sub>t₀</sub></span></td><td>從 t₀ 起的最大期望終身效用</td><td>用一個數字評價「目前狀態加上未來最適行為」。</td></tr>
+                    <tr><td>不確定性</td><td><span class="mono">E</span></td><td>對未來所得、資產報酬與其他 shocks 取期望</td><td>家庭現在不知道未來會走到哪個分支。</td></tr>
+                    <tr><td>偏好</td><td><span class="mono">β</span></td><td>主觀折現因子</td><td>β 越高越重視未來，通常累積更多財富。</td></tr>
+                    <tr><td>存活</td><td><span class="mono">m<sub>k</sub></span></td><td>第 k 期死亡機率</td><td><span class="mono">1−m<sub>k</sub></span> 是活過該期的機率。</td></tr>
+                    <tr><td>存活</td><td><span class="mono">Π<sub>k=0</sub><sup>t−1</sup>(1−m<sub>k</sub>)</span></td><td>活到第 t 期的累積機率</td><td>只有仍存活時，才能享受該期消費與住房。</td></tr>
+                    <tr><td>消費</td><td><span class="mono">C<sub>it</sub></span></td><td>非住房消費</td><td>食品、服務與其他一般消費。</td></tr>
+                    <tr><td>住房</td><td><span class="mono">H<sub>it</sub></span></td><td>住房服務流量</td><td><strong>此處不是 human capital</strong>；租屋與自有住宅都可提供住房服務。</td></tr>
+                    <tr><td>偏好</td><td><span class="mono">ν</span></td><td>住房在 Cobb–Douglas bundle 中的權重</td><td>ν 越高，家庭相對越重視住房服務。</td></tr>
+                    <tr><td>偏好</td><td><span class="mono">C<sup>1−ν</sup>H<sup>ν</sup></span></td><td>一般消費與住房的 composite good</td><td>CRRA utility 真正評價的當期生活水準。</td></tr>
+                    <tr><td>偏好</td><td><span class="mono">γ</span></td><td>相對風險趨避係數</td><td>越高越排斥低消費狀態，也會增加 precautionary saving、降低股票需求。</td></tr>
+                    <tr><td>投資</td><td><span class="mono">π<sub>it</sub></span></td><td>股票占金融淨值的比例</td><td>家庭的 risky-asset intensive margin。</td></tr>
+                    <tr><td>財富</td><td><span class="mono">W<sub>it</sub></span></td><td>金融淨值；本頁文字隱含、未另寫方程式</td><td><span class="mono">πW</span> 是股票美元部位；W 也決定 fixed cost 是否值得付。</td></tr>
+                    <tr><td>所得</td><td><span class="mono">z<sub>it</sub></span></td><td>earnings 的持續性成分</td><td>濃縮過去仍會影響未來薪資的 career state。</td></tr>
+                    <tr><td>所得</td><td><span class="mono">ρ<sub>z</sub></span></td><td>所得 state 的 persistence</td><td>越接近 1，一次壞 shock 對往後薪資與 human capital 影響越久。</td></tr>
+                    <tr><td>所得</td><td><span class="mono">ζ<sub>it</sub></span></td><td>本期新的 idiosyncratic earnings innovation</td><td>從 good/bad mixture 抽出的新 career shock。</td></tr>
+                    <tr><td>Mixture</td><td><span class="mono">p<sub>z</sub></span></td><td>抽到 bad component 的機率</td><td>控制嚴重負面 career outcomes 出現頻率。</td></tr>
+                    <tr><td>Mixture</td><td><span class="mono">1−p<sub>z</sub></span></td><td>抽到 good component 的機率</td><td>其餘較正常／良好的所得抽籤。</td></tr>
+                    <tr><td>Mixture</td><td><span class="mono">μ<sup>−</sup><sub>z,t</sub></span></td><td>bad component 的當期平均</td><td>越負代表抽到 bad component 時 career loss 越深。</td></tr>
+                    <tr><td>Mixture</td><td><span class="mono">μ<sup>+</sup><sub>z,t</sub></span></td><td>good component 的平均</td><td>正常／較好所得 shock 的中心。</td></tr>
+                    <tr><td>Mixture</td><td><span class="mono">(σ<sup>−</sup><sub>z</sub>)²</span></td><td>bad component 的 variance</td><td>即使同樣抽到 bad component，實際損失仍有多少分散。</td></tr>
+                    <tr><td>Mixture</td><td><span class="mono">(σ<sup>+</sup><sub>z</sub>)²</span></td><td>good component 的 variance</td><td>good outcomes 內部的分散程度。</td></tr>
+                    <tr><td>景氣</td><td><span class="mono">l<sub>1,t</sub></span></td><td>aggregate wage index</td><td>模型用來判斷總體勞動市場好壞的 macro state。</td></tr>
+                    <tr><td>景氣</td><td><span class="mono">Δl<sub>1,t</sub></span></td><td><span class="mono">l<sub>1,t</sub>−l<sub>1,t−1</sub></span></td><td>負值代表 aggregate wage environment 惡化。</td></tr>
+                    <tr><td>景氣</td><td><span class="mono">μ<sup>−</sup><sub>z</sub></span></td><td>bad-component mean 的長期基準</td><td>正常景氣下 bad outcome 的中心。</td></tr>
+                    <tr><td>景氣</td><td><span class="mono">λ<sub>zl</sub>&gt;0</span></td><td>bad mean 對 aggregate wage change 的 loading</td><td>越大表示所得左尾越 countercyclical。</td></tr>
+                    <tr><td>分配</td><td><span class="mono">N(μ,σ²)</span></td><td>平均 μ、variance σ² 的常態分配</td><td>mixture 中每一個條件分配的形狀。</td></tr>
+                    <tr><td>分配</td><td><span class="mono">w.p.</span></td><td>with probability</td><td>說明各 mixture component 被抽中的機率。</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h3>為何還要加入 Social Security、住房與 participation cost？</h3>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr><th>現實零件</th><th>它避免哪個錯誤故事？</th><th>主要影響的行為 margin</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>Social Security based on lifetime earnings</td><td>不能假設退休所得與工作期 career shocks 無關。</td><td>退休前儲蓄與 human-capital duration。</td></tr>
+                    <tr><td>Means-tested safety net</td><td>不能讓低所得 household 的消費無限制跌向零，否則會高估 tail risk。</td><td>低財富戶的 precautionary saving。</td></tr>
+                    <tr><td>Stock-market crashes</td><td>不能用對稱小波動低估金融財富的左尾。</td><td>股票 share 與 joint downside risk。</td></tr>
+                    <tr><td>Down payment / housing transaction costs</td><td>不能把住房當成隨時無成本變現的普通資產。</td><td>流動財富、own/rent 與股票 capacity。</td></tr>
+                    <tr><td>Fixed participation cost</td><td>不能假設每個人都持有一點股票；低財富戶可能最適地完全不進場。</td><td>participation extensive margin，尤其年輕家庭。</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="callout intuition">
+                <span class="callout-title">Slide 8 的一句話版本</span>
+                <p>
+                  Catherine (2022) 不是單純提高所得 variance，而是讓「股市差時，持續性所得 shock
+                  的左尾也特別差」。家庭為了不讓 financial wealth 與 human capital 同時崩跌，
+                  會降低股票 exposure；年輕人因 human capital 占總財富比重最大，這個機制最強。
+                </p>
+              </div>
+            </div>
+          </details>
+
           <h3>1. 生存加權的 lifetime utility</h3>
           <div class="eq">
             V<sub>t₀</sub> =
