@@ -1,0 +1,2526 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Aguirregabiria Lecture 12：Dynamic Games of Network Competition 中文導讀。用航空網路與 Walmart 店址網路說明動態網路競爭、MPE、NPL、revealed preference 與 moment inequalities。">
+  <title>Dynamic Games of Network Competition｜故事式導讀</title>
+  <style>
+    :root {
+      --canvas: #edf1ef;
+      --paper: #ffffff;
+      --paper-2: #f7f9f8;
+      --ink: #202927;
+      --muted: #64716d;
+      --line: #d6ddda;
+      --navy: #173c5a;
+      --navy-2: #2b668b;
+      --navy-soft: #e7f1f7;
+      --rust: #a54a30;
+      --rust-dark: #78321f;
+      --rust-soft: #f8eae4;
+      --green: #24705b;
+      --green-dark: #174d3e;
+      --green-soft: #e5f3ed;
+      --gold: #9b6a15;
+      --gold-soft: #f8efdc;
+      --purple: #6c527d;
+      --purple-soft: #f1eaf4;
+      --red: #a13d3a;
+      --red-soft: #f8e8e7;
+      --shadow: 0 15px 40px rgba(25, 39, 35, 0.075);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--canvas);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      line-height: 1.76;
+    }
+    a {
+      color: var(--rust-dark);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+    h1, h2, h3, h4 { letter-spacing: 0; }
+    h1 {
+      max-width: 1100px;
+      margin: 0 0 14px;
+      font-size: clamp(2rem, 4.8vw, 3.5rem);
+      line-height: 1.07;
+    }
+    h2 {
+      margin: 0;
+      font-size: clamp(1.36rem, 3vw, 1.75rem);
+      line-height: 1.3;
+    }
+    h3 {
+      margin: 27px 0 9px;
+      font-size: 1.14rem;
+      line-height: 1.42;
+    }
+    h4 { margin: 0 0 7px; font-size: 1rem; }
+    p { margin: 0 0 13px; }
+    ul, ol { margin: 8px 0 15px; padding-left: 1.35rem; }
+    li { margin: 5px 0; }
+    strong { font-weight: 820; }
+    code, .mono, .eq {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    code {
+      padding: 1px 5px;
+      border-radius: 4px;
+      color: var(--rust-dark);
+      background: var(--rust-soft);
+      font-size: 0.9em;
+    }
+    button { font: inherit; }
+    .reading-progress {
+      position: fixed;
+      z-index: 30;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--rust), var(--gold), var(--green));
+    }
+    .shell {
+      width: min(1490px, 100%);
+      min-width: 0;
+      margin: 0 auto;
+      padding: 25px;
+    }
+    .masthead {
+      overflow: hidden;
+      margin-bottom: 22px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+    .masthead-copy {
+      padding: 43px 44px 35px;
+      border-top: 7px solid var(--navy);
+      border-bottom: 1px solid var(--line);
+      background:
+        radial-gradient(circle at 93% 7%, rgba(43, 102, 139, 0.17), transparent 29%),
+        radial-gradient(circle at 68% 100%, rgba(165, 74, 48, 0.11), transparent 34%),
+        var(--paper);
+    }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--rust);
+      font-size: 0.79rem;
+      font-weight: 850;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .lead {
+      max-width: 1120px;
+      margin: 0;
+      color: #374844;
+      font-size: 1.08rem;
+    }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 20px;
+      margin-top: 21px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+    .meta span { min-width: 0; overflow-wrap: anywhere; }
+    .thesis-strip {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      background: var(--paper-2);
+    }
+    .thesis-step {
+      position: relative;
+      min-width: 0;
+      min-height: 158px;
+      padding: 19px 20px;
+      border-right: 1px solid var(--line);
+    }
+    .thesis-step:last-child { border-right: 0; }
+    .thesis-step::after {
+      position: absolute;
+      z-index: 2;
+      top: 50%;
+      right: -10px;
+      display: grid;
+      width: 20px;
+      height: 20px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      color: var(--rust);
+      background: var(--paper);
+      content: "→";
+      font-size: 0.72rem;
+      font-weight: 900;
+      transform: translateY(-50%);
+    }
+    .thesis-step:last-child::after { display: none; }
+    .thesis-step span {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 850;
+      letter-spacing: 0.045em;
+      text-transform: uppercase;
+    }
+    .thesis-step strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--navy);
+    }
+    .thesis-step:nth-child(2) strong { color: var(--rust-dark); }
+    .thesis-step:nth-child(3) strong { color: var(--gold); }
+    .thesis-step:nth-child(4) strong { color: var(--purple); }
+    .thesis-step:nth-child(5) strong { color: var(--green-dark); }
+    .thesis-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.5;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+    .toc {
+      position: sticky;
+      top: 17px;
+      max-height: calc(100vh - 34px);
+      overflow-y: auto;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--paper);
+      box-shadow: 0 9px 28px rgba(29, 37, 35, 0.06);
+    }
+    .toc-title {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 0.77rem;
+      font-weight: 850;
+      letter-spacing: 0.045em;
+      text-transform: uppercase;
+    }
+    .toc a {
+      display: block;
+      margin: 2px 0;
+      padding: 7px 9px;
+      border-left: 3px solid transparent;
+      border-radius: 4px;
+      color: #3e4a47;
+      text-decoration: none;
+      font-size: 0.82rem;
+      line-height: 1.34;
+    }
+    .toc a:hover { background: var(--paper-2); }
+    .toc a.active {
+      border-left-color: var(--rust);
+      color: var(--rust-dark);
+      background: var(--rust-soft);
+      font-weight: 760;
+    }
+    .toc-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+    .toc button {
+      padding: 6px 7px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      color: var(--muted);
+      background: var(--paper-2);
+      cursor: pointer;
+      font-size: 0.75rem;
+    }
+    .content { min-width: 0; }
+    .chapter {
+      margin-bottom: 22px;
+      padding: 31px 34px 34px;
+      scroll-margin-top: 18px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: var(--paper);
+      box-shadow: 0 10px 34px rgba(29, 37, 35, 0.055);
+    }
+    .chapter-head {
+      display: flex;
+      gap: 17px;
+      align-items: flex-start;
+      margin-bottom: 19px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--line);
+    }
+    .chapter-no {
+      flex: 0 0 auto;
+      display: grid;
+      width: 43px;
+      height: 43px;
+      place-items: center;
+      border-radius: 50%;
+      color: white;
+      background: var(--navy);
+      font-weight: 850;
+    }
+    .chapter-head p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.89rem;
+    }
+    .page-tag {
+      display: inline-block;
+      margin-left: 6px;
+      padding: 2px 7px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: var(--paper-2);
+      font-size: 0.69rem;
+      font-weight: 760;
+      vertical-align: 0.15em;
+    }
+    .part-label {
+      display: inline-block;
+      margin-bottom: 9px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      color: white;
+      background: var(--rust);
+      font-size: 0.72rem;
+      font-weight: 850;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .big-idea {
+      margin: 16px 0 18px;
+      padding: 17px 19px;
+      border-left: 5px solid var(--navy-2);
+      border-radius: 5px;
+      background: var(--navy-soft);
+    }
+    .big-idea strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--navy);
+    }
+    .big-idea p:last-child, .callout p:last-child { margin-bottom: 0; }
+    .callout {
+      margin: 16px 0;
+      padding: 15px 17px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--paper-2);
+    }
+    .callout.assumption {
+      border-left: 5px solid var(--gold);
+      background: var(--gold-soft);
+    }
+    .callout.intuition {
+      border-left: 5px solid var(--green);
+      background: var(--green-soft);
+    }
+    .callout.warning {
+      border-left: 5px solid var(--red);
+      background: var(--red-soft);
+    }
+    .callout.identification {
+      border-left: 5px solid var(--purple);
+      background: var(--purple-soft);
+    }
+    .callout-title {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--ink);
+      font-size: 0.84rem;
+      font-weight: 850;
+      letter-spacing: 0.02em;
+    }
+    .eq {
+      overflow-x: auto;
+      margin: 15px 0;
+      padding: 16px 18px;
+      border: 1px solid #c9d6dc;
+      border-radius: 7px;
+      color: #17364b;
+      background: #f4f8fa;
+      font-size: 0.91rem;
+      line-height: 1.72;
+      white-space: nowrap;
+    }
+    .eq .label {
+      float: right;
+      margin-left: 20px;
+      color: var(--muted);
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      font-size: 0.76rem;
+    }
+    .eq-stack {
+      display: grid;
+      gap: 8px;
+      margin: 15px 0;
+    }
+    .eq-stack .eq { margin: 0; }
+    .derive {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin: 16px 0;
+    }
+    .derive-step {
+      position: relative;
+      min-width: 0;
+      padding: 14px 15px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--paper-2);
+    }
+    .derive-step::after {
+      position: absolute;
+      top: 50%;
+      right: -10px;
+      z-index: 2;
+      color: var(--rust);
+      content: "→";
+      font-weight: 900;
+      transform: translateY(-50%);
+    }
+    .derive-step:last-child::after { content: ""; }
+    .derive-step span {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--rust);
+      font-size: 0.72rem;
+      font-weight: 850;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .derive-step p {
+      margin: 0;
+      color: #47534f;
+      font-size: 0.87rem;
+      line-height: 1.55;
+    }
+    .grid-2, .grid-3, .grid-4 {
+      display: grid;
+      gap: 12px;
+      margin: 15px 0;
+    }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .card {
+      min-width: 0;
+      padding: 15px 16px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--paper-2);
+    }
+    .card h4 { color: var(--navy); }
+    .card p, .card li {
+      color: #4d5955;
+      font-size: 0.88rem;
+      line-height: 1.57;
+    }
+    .card p:last-child, .card ul:last-child { margin-bottom: 0; }
+    .bridge {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 12px;
+      align-items: stretch;
+      margin: 17px 0;
+    }
+    .bridge-side {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--paper-2);
+    }
+    .bridge-side:first-child { border-top: 4px solid var(--rust); }
+    .bridge-side:last-child { border-top: 4px solid var(--green); }
+    .bridge-arrow {
+      align-self: center;
+      color: var(--gold);
+      font-size: 1.35rem;
+      font-weight: 900;
+    }
+    .table-wrap {
+      overflow-x: auto;
+      margin: 16px 0;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+    }
+    table {
+      width: 100%;
+      min-width: 680px;
+      border-collapse: collapse;
+      background: var(--paper);
+      font-size: 0.86rem;
+    }
+    th, td {
+      padding: 11px 12px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    th:last-child, td:last-child { border-right: 0; }
+    tr:last-child td { border-bottom: 0; }
+    th {
+      color: var(--navy);
+      background: var(--navy-soft);
+      font-size: 0.79rem;
+    }
+    td { color: #43504c; }
+    .sequence {
+      counter-reset: sequence;
+      margin: 16px 0;
+      padding: 0;
+      list-style: none;
+    }
+    .sequence li {
+      position: relative;
+      margin: 0;
+      padding: 0 0 18px 46px;
+    }
+    .sequence li::before {
+      position: absolute;
+      top: 1px;
+      left: 0;
+      display: grid;
+      width: 31px;
+      height: 31px;
+      place-items: center;
+      border: 2px solid var(--navy-2);
+      border-radius: 50%;
+      color: var(--navy);
+      background: white;
+      content: counter(sequence);
+      counter-increment: sequence;
+      font-size: 0.78rem;
+      font-weight: 850;
+    }
+    .sequence li::after {
+      position: absolute;
+      top: 32px;
+      bottom: 0;
+      left: 15px;
+      width: 2px;
+      background: var(--line);
+      content: "";
+    }
+    .sequence li:last-child { padding-bottom: 0; }
+    .sequence li:last-child::after { display: none; }
+    details {
+      margin: 12px 0;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--paper);
+    }
+    summary {
+      padding: 12px 15px;
+      color: var(--navy);
+      background: var(--paper-2);
+      cursor: pointer;
+      font-weight: 780;
+    }
+    details > div { padding: 14px 16px 4px; }
+    .mini { color: var(--muted); font-size: 0.83rem; }
+    .checklist {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px 15px;
+      margin: 14px 0;
+    }
+    .check {
+      position: relative;
+      padding: 11px 13px 11px 37px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--paper-2);
+      font-size: 0.87rem;
+    }
+    .check::before {
+      position: absolute;
+      top: 11px;
+      left: 13px;
+      color: var(--green);
+      content: "✓";
+      font-weight: 900;
+    }
+    footer {
+      padding: 14px 3px 25px;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 1080px) {
+      .thesis-strip { grid-template-columns: 1fr; }
+      .thesis-step {
+        min-height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .thesis-step:last-child { border-bottom: 0; }
+      .thesis-step::after {
+        top: auto;
+        right: 22px;
+        bottom: -10px;
+        transform: rotate(90deg);
+      }
+      .layout { grid-template-columns: 1fr; }
+      .toc {
+        position: relative;
+        top: auto;
+        max-height: none;
+      }
+      .toc nav {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 760px) {
+      .shell { padding: 10px; }
+      .masthead-copy { padding: 31px 23px 27px; }
+      .chapter { padding: 24px 19px 26px; }
+      .chapter-head { gap: 12px; }
+      .chapter-no { width: 37px; height: 37px; }
+      .derive, .grid-2, .grid-3, .grid-4, .checklist { grid-template-columns: 1fr; }
+      .derive-step::after {
+        top: auto;
+        right: 13px;
+        bottom: -14px;
+        transform: rotate(90deg);
+      }
+      .bridge { grid-template-columns: 1fr; }
+      .bridge-arrow { justify-self: center; transform: rotate(90deg); }
+      .toc nav { grid-template-columns: 1fr; }
+      .eq { font-size: 0.81rem; }
+    }
+    @media print {
+      body { background: white; font-size: 10.5pt; }
+      .reading-progress, .toc, .toc-actions { display: none !important; }
+      .shell { width: 100%; padding: 0; }
+      .layout { display: block; }
+      .masthead, .chapter {
+        margin: 0 0 12px;
+        box-shadow: none;
+      }
+      .masthead { break-inside: avoid-page; }
+      .chapter {
+        padding: 20px;
+        break-inside: auto;
+      }
+      details > div { display: block !important; }
+      summary { list-style: none; }
+      a { color: inherit; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="reading-progress" id="reading-progress" aria-hidden="true"></div>
+
+  <div class="shell">
+    <header class="masthead">
+      <div class="masthead-copy">
+        <p class="eyebrow">Industrial Organization · Dynamic Networks · Guided Note</p>
+        <h1>Dynamic Games of Network Competition</h1>
+        <p class="lead">
+          這份導讀把 87 頁投影片重排成一個故事：企業不是逐一選擇互不相干的市場，
+          而是在建造一張會改變需求、成本與競爭者反應的網路。航空公司的每一條航段、
+          Walmart 的每一家店，都會改變其他節點的價值；研究者真正要解的是
+          「如何從已實現的網路，反推出企業當初看見的跨市場與跨期誘因」。
+        </p>
+        <div class="meta">
+          <span>原講義：Victor Aguirregabiria，87 頁</span>
+          <span>案例：Aguirregabiria–Ho 航空網路 · Holmes (2011) Walmart</span>
+          <span>重點：模型 timing · MPE · NPL · revealed preference · moment inequalities</span>
+          <span><a href="../08.Aguirregabiria/Lecture_12_Dynamic_Games_Network_Competition/lecture_slides/slides_lecture_12_dynamic_games_network_competition_michigan_2026.pdf">開啟原始 PDF</a></span>
+          <span>更新：2026-08-07</span>
+        </div>
+      </div>
+      <div class="thesis-strip" aria-label="全篇推理主線">
+        <div class="thesis-step">
+          <span>Step 1</span>
+          <strong>一個節點會影響別處</strong>
+          <p>開一條航線或一家店，不只產生本地收入，也會改變轉機流量、運送成本與既有店銷售。</p>
+        </div>
+        <div class="thesis-step">
+          <span>Step 2</span>
+          <strong>今天會改變明天</strong>
+          <p>進入成本與不可逆開店，使目前網路成為未來決策的 state，而不是可以每期重選的靜態選項。</p>
+        </div>
+        <div class="thesis-step">
+          <span>Step 3</span>
+          <strong>完整問題大到算不動</strong>
+          <p>市場與地點一多，state/action space 呈指數成長；不能直接把 Bellman equation 硬解到底。</p>
+        </div>
+        <div class="thesis-step">
+          <span>Step 4</span>
+          <strong>用結構與選擇縮小問題</strong>
+          <p>航空模型聚合 state 並迭代 CCP；Walmart 用局部替代政策形成 revealed-preference inequalities。</p>
+        </div>
+        <div class="thesis-step">
+          <span>Step 5</span>
+          <strong>反事實拆開經濟機制</strong>
+          <p>估出 primitives 後逐一關掉需求、成本與策略效果，才知道 observed network 為何長成現在這樣。</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="toc" aria-label="目錄">
+        <span class="toc-title">閱讀路徑</span>
+        <nav>
+          <a href="#roadmap">00　一張圖看懂全篇</a>
+          <a href="#grammar">01　Network 的共同文法</a>
+          <a href="#comparison">02　兩個案例、兩種解法</a>
+          <a href="#airline-story">03　航空：為何形成 hub？</a>
+          <a href="#airline-state">04　航空：state、action、timing</a>
+          <a href="#airline-profit">05　航空：profit 逐項拆解</a>
+          <a href="#mpe">06　航空：動態賽局與 MPE</a>
+          <a href="#decentralization">07　捷徑一：地方經理</a>
+          <a href="#inclusive">08　捷徑二：inclusive state</a>
+          <a href="#airline-estimation">09　航空：三階段估計</a>
+          <a href="#npl">10　NPL 到底怎麼跑？</a>
+          <a href="#airline-results">11　航空：結果與反事實</a>
+          <a href="#spatial">12　從航線轉到空間網路</a>
+          <a href="#holmes-strategy">13　Holmes 的識別故事</a>
+          <a href="#walmart-demand">14　Walmart：nested logit</a>
+          <a href="#revenue">15　從 share 到 revenue</a>
+          <a href="#cannibalization">16　如何量化 cannibalization</a>
+          <a href="#walmart-profit">17　Walmart：profit 與 density</a>
+          <a href="#irreversibility">18　不可逆性為何製造 dynamics</a>
+          <a href="#inequalities">19　Moment inequalities 推導</a>
+          <a href="#deviations">20　為何交換開店年份？</a>
+          <a href="#walmart-results">21　Walmart：結果與限制</a>
+          <a href="#assumptions">22　假設總表與診斷</a>
+          <a href="#cheatsheet">23　最後速查表</a>
+        </nav>
+        <div class="toc-actions">
+          <button type="button" id="expand-all">展開細節</button>
+          <button type="button" id="collapse-all">收合細節</button>
+        </div>
+      </aside>
+
+      <main class="content">
+        <section class="chapter" id="roadmap">
+          <div class="chapter-head">
+            <div class="chapter-no">00</div>
+            <div>
+              <h2>一張圖看懂全篇</h2>
+              <p>先抓住問題的骨架，再進兩個案例。 <span class="page-tag">slides 2–7</span></p>
+            </div>
+          </div>
+
+          <div class="big-idea">
+            <strong>一句話版本</strong>
+            <p>
+              網路模型的核心不是「企業進不進某一個市場」，而是「進入這個市場之後，
+              它在其他市場的需求、成本與策略位置會怎麼改變」。
+            </p>
+          </div>
+
+          <div class="derive">
+            <div class="derive-step">
+              <span>Local choice</span>
+              <p>開航線、開店、增加一個產品或一個服務節點。</p>
+            </div>
+            <div class="derive-step">
+              <span>Network spillover</span>
+              <p>本地選擇改變其他市場的收益、成本或競爭者誘因。</p>
+            </div>
+            <div class="derive-step">
+              <span>Observed network</span>
+              <p>最後看見的網路，是許多 local margins 與未來選擇權共同作用的結果。</p>
+            </div>
+          </div>
+
+          <p>
+            想像你是航空公司：多飛一段 A–B，不只多賣 A–B 的直飛票；它也讓 C–A–B
+            這條轉機路徑成為可能。再想像你是 Walmart：在既有店旁邊開新店會搶走舊店顧客，
+            卻也可能讓配送、庫存與區域管理更便宜。這兩個例子的共通點，是<strong>同一家公司的節點彼此相連</strong>。
+          </p>
+
+          <div class="bridge">
+            <div class="bridge-side">
+              <h4>Case A：航空公司</h4>
+              <p>多家公司策略互動。除了網路 spillover，還要預測競爭者未來的進入與退出，因此是 dynamic game。</p>
+            </div>
+            <div class="bridge-arrow">↔</div>
+            <div class="bridge-side">
+              <h4>Case B：Walmart</h4>
+              <p>聚焦單一連鎖店的動態選址，競爭者被抽象化。難點主要是地點數量龐大與開店不可逆。</p>
+            </div>
+          </div>
+
+          <div class="callout intuition">
+            <span class="callout-title">讀這份投影片最重要的視角</span>
+            <p>
+              兩篇研究不是單純「套不同 estimator」。每一個 estimator 都是為了避開一個特定的
+              combinatorial explosion。先問「完整問題為何算不動」，再看作者犧牲了什麼、保留了什麼，
+              就會理解方法為何長成那個樣子。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="grammar">
+          <div class="chapter-head">
+            <div class="chapter-no">01</div>
+            <div>
+              <h2>Network 的共同文法：node、link 與 spillover</h2>
+              <p>把產業例子翻譯成同一套模型語言。 <span class="page-tag">slides 3–6</span></p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>產業</th><th>Node / local operation</th><th>Link / interconnection</th><th>主要 spillover</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>航空</td><td>航空公司在一個 city-pair 經營 nonstop segment</td><td>多個 segment 組成轉機 route</td><td>轉機需求、機場 economies of scope、entry deterrence</td></tr>
+                <tr><td>零售</td><td>連鎖店在一個地點開店</td><td>同一配送與管理網路中的鄰近門市</td><td>cannibalization、物流與管理 economies of density</td></tr>
+                <tr><td>銀行</td><td>銀行在某地吸收存款或放款</td><td>資金可跨地區重新配置</td><td>風險分散、存款作為貸款投入、two-sided effects</td></tr>
+                <tr><td>產品線</td><td>企業推出某特徵組合的產品</td><td>產品特徵空間中的鄰近程度</td><td>自我蠶食、共同研發或生產、產品 proliferation</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>為什麼「同一家公司」也會有 network externality？</h3>
+          <p>
+            Externality 在這裡不一定表示影響別家公司。它是說，一個 local decision 的 payoff
+            不能只由該地點本身決定。若在節點 <span class="mono">m</span> 的行動會改變節點
+            <span class="mono">m′</span> 的 profit，兩個局部問題就被連起來。寫成最簡單的形式：
+          </p>
+          <div class="eq">
+            π<sub>im</sub> = π<sub>im</sub>(a<sub>im</sub>,
+            a<sub>i,-m</sub>, a<sub>-i</sub>, state)
+          </div>
+          <p>
+            <span class="mono">a<sub>i,-m</sub></span> 是同一家企業在其他節點的選擇；
+            <span class="mono">a<sub>-i</sub></span> 是競爭者的選擇。前者帶來 own-network spillover，
+            後者帶來 strategic interaction。
+          </p>
+
+          <div class="callout warning">
+            <span class="callout-title">Network effect 不等於 network industry</span>
+            <p>
+              這裡未必是典型「使用者越多，平台越有價值」的直接網路效果。更廣義地說，只要不同
+              local operations 的 payoff 相互依存，就已經形成 network competition 問題。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="comparison">
+          <div class="chapter-head">
+            <div class="chapter-no">02</div>
+            <div>
+              <h2>兩個案例、兩種解法</h2>
+              <p>先用比較表定位後面的技術細節。</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>問題</th><th>航空網路</th><th>Walmart 網路</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>決策者</td><td>多家航空公司，彼此策略互動</td><td>單一連鎖企業；競爭者位置未明確建模</td></tr>
+                <tr><td>動態來源</td><td>進入成本、既有網路、未來競爭者反應</td><td>店面開設不可逆，今天的 store sequence 限制未來</td></tr>
+                <tr><td>最大的維度問題</td><td>整個產業網路是 state，可能狀態約為 2<sup>NM</sup></td><td>約 1,100 萬個 census blocks，單期 action space 為 2<sup>L</sup></td></tr>
+                <tr><td>主要降維方法</td><td>地方經理分權 + inclusive state + CCP/NPL</td><td>不解完整 DP；比較 observed policy 與精心設計的 local deviations</td></tr>
+                <tr><td>估計產物</td><td>dynamic-game parameters 與一個 CCP fixed point</td><td>由 moment inequalities 形成的參數 identified set / bounds</td></tr>
+                <tr><td>最大 tradeoff</td><td>聚合 state 與地方經理 objective 是強限制；均衡可能多重</td><td>只用必要條件，通常只能 partial identification；偏誤取決於 deviation 合理性</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="big-idea">
+            <strong>方法選擇的共同精神</strong>
+            <p>
+              作者都不試圖列舉所有可能網路。航空研究縮小每個決策者「需要記住的 state」；
+              Walmart 研究縮小「拿來和事實比較的 alternative policies」。一個縮 state，
+              一個縮 deviations。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="airline-story">
+          <div class="chapter-head">
+            <div class="chapter-no">03</div>
+            <div>
+              <span class="part-label">Part I · Airlines</span>
+              <h2>航空故事：消費者喜歡直飛，航空公司為何仍然 hubbing？</h2>
+              <p>先把 hub-and-spoke 背後的三股力量分開。 <span class="page-tag">slides 8–23</span></p>
+            </div>
+          </div>
+
+          <p>
+            <strong>Point-to-point (P2P)</strong> 讓城市對直接相連；<strong>hub-and-spoke (H&amp;S)</strong>
+            則把流量集中到少數 hub，再由 hub 接到 spokes。投影片用兩個 concentration ratios
+            描述航空公司有多「hub-oriented」：
+          </p>
+          <div class="eq-stack">
+            <div class="eq">CR<sub>i1</sub> = M<sub>i1</sub> / M<sub>i</sub></div>
+            <div class="eq">CR<sub>i2</sub> = (M<sub>i1</sub> + M<sub>i2</sub>) / M<sub>i</sub></div>
+          </div>
+          <p>
+            <span class="mono">M<sub>i</sub></span> 是航空公司 <span class="mono">i</span> 經營的 nonstop
+            city-pairs 數；<span class="mono">M<sub>i1</sub></span>、<span class="mono">M<sub>i2</sub></span>
+            是連到其最大、第二大機場的航段數。CR2 越高，表示很多航段集中在兩個核心機場。
+          </p>
+
+          <div class="grid-3">
+            <div class="card">
+              <h4>需求力量：偏向 P2P</h4>
+              <p>旅客通常討厭轉機。其他條件不變，H&amp;S 增加中停與時間成本，對 consumer welfare 不利。</p>
+            </div>
+            <div class="card">
+              <h4>成本力量：可能偏向 H&amp;S</h4>
+              <p>同一機場的登機門、人員、維修與地勤可共同使用。hub 規模越大，邊際或固定營運成本可能越低。</p>
+            </div>
+            <div class="card">
+              <h4>策略力量：偏向 H&amp;S</h4>
+              <p>某一航段不只賺 local passengers，也支撐 connecting passengers，因此 incumbent 可能願意守住看似虧損的市場，嚇阻 entrant。</p>
+            </div>
+          </div>
+
+          <h3>Entry deterrence 的故事</h3>
+          <ol class="sequence">
+            <li>既有航空公司用 A 當 hub，經營 A–B 與 A–C。</li>
+            <li>潛在進入者想進 A–B，而且其 local cost 甚至低於 incumbent。</li>
+            <li>若只看 A–B 本地需求，這個市場只能容納一家；照理 entrant 應該取代 incumbent。</li>
+            <li>但 incumbent 的 A–B 還是 C–A–B 轉機路線的一段。退出 A–B 會一起失去 connecting profit。</li>
+            <li>因此 incumbent 即使在 A–B 的 standalone profit 為負，也可能選擇留下。</li>
+            <li>entrant 預見進入後不會逼退 incumbent，雙方競爭下自己無利可圖，於是乾脆不進。</li>
+          </ol>
+
+          <div class="callout intuition">
+            <span class="callout-title">這裡真正的 commitment 是什麼？</span>
+            <p>
+              hub network 讓 incumbent 對某個 local segment 有「超越本地市場」的價值，因此它更可信地承諾會迎戰。
+              不是口頭說要打價格戰，而是網路結構改變了留下來的 payoff。
+            </p>
+          </div>
+
+          <div class="callout warning">
+            <span class="callout-title">為何不能把 hub size 當外生控制變數就結束？</span>
+            <p>
+              若研究 merger，合併後航空公司會重新安排 hub、進出航線；hub size 本身就是最適決策的結果。
+              把它固定，等於禁止模型預測 merger 最重要的中期調整。因此需要 endogenous network model。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="airline-state">
+          <div class="chapter-head">
+            <div class="chapter-no">04</div>
+            <div>
+              <span class="part-label">Part I · Airlines</span>
+              <h2>State、action 與 timing：航空公司每季到底在選什麼？</h2>
+              <p>讀懂下標，就讀懂了動態模型。 <span class="page-tag">slides 24–26</span></p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>符號</th><th>定義</th><th>在故事裡的意思</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><span class="mono">i = 1,…,N</span></td><td>航空公司；基準設定 N = 11</td><td>策略玩家</td></tr>
+                <tr><td><span class="mono">c = 1,…,C</span></td><td>城市；C = 55</td><td>網路端點</td></tr>
+                <tr><td><span class="mono">m = 1,…,M</span></td><td>無方向 city-pair；M = C(C−1)/2 = 1,485</td><td>是否經營 nonstop 的 local market</td></tr>
+                <tr><td><span class="mono">r</span></td><td>有方向的 round-trip route，可直飛或中停</td><td>消費者實際購買的產品</td></tr>
+                <tr><td><span class="mono">x<sub>imt</sub>∈{0,1}</span></td><td>本季是否在 city-pair m 經營 nonstop</td><td>進入本期時已存在的 segment</td></tr>
+                <tr><td><span class="mono">x<sub>it</sub>={x<sub>imt</sub>}<sub>m</sub></span></td><td>公司 i 的完整網路</td><td>哪些 routes 能被組合出來</td></tr>
+                <tr><td><span class="mono">x<sub>t</sub>={x<sub>it</sub>}<sub>i</sub></span></td><td>全產業網路</td><td>所有玩家目前的位置</td></tr>
+                <tr><td><span class="mono">a<sub>imt</sub>=x<sub>im,t+1</sub></span></td><td>本季選擇下季是否活躍</td><td>network investment，存在 time-to-build</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>一季的事件順序</h3>
+          <ol class="sequence">
+            <li><strong>進入本季：</strong>既有 network <span class="mono">x<sub>t</sub></span> 已知。</li>
+            <li><strong>價格競爭：</strong>目前可提供各 route 的航空公司進行 static Bertrand competition，形成價格、需求與 variable profits。</li>
+            <li><strong>網路決策：</strong>航空公司觀察 payoff-relevant state 與 private shocks，選 <span class="mono">a<sub>t</sub></span>。</li>
+            <li><strong>下季：</strong><span class="mono">x<sub>t+1</sub>=a<sub>t</sub></span>，今天的 action 變成明天的 state。</li>
+          </ol>
+
+          <div class="callout assumption">
+            <span class="callout-title">為什麼要放 time-to-build？</span>
+            <p>
+              航線配置不能瞬間隨價格結果任意切換；班表、登機門、人員與設備需要先安排。形式上，
+              <span class="mono">a<sub>t</sub>=x<sub>t+1</sub></span> 也讓「今天的選擇影響明天」
+              清楚進入 Bellman recursion。
+            </p>
+          </div>
+
+          <details>
+            <summary>city-pair、segment、route 與 product 為什麼不能混用？</summary>
+            <div>
+              <p>
+                A–B city-pair 是 local market；航空公司若在此 nonstop，便提供一個 segment。
+                但消費者的 route 可能是 C–A–B，因此由 C–A 與 A–B 兩段組成。需求定義在
+                route-airline product，而 network decision 定義在 nonstop city-pair。正因為一個 segment
+                可被多條 route 使用，才產生跨市場 network effect。
+              </p>
+            </div>
+          </details>
+        </section>
+
+        <section class="chapter" id="airline-profit">
+          <div class="chapter-head">
+            <div class="chapter-no">05</div>
+            <div>
+              <span class="part-label">Part I · Airlines</span>
+              <h2>Profit function 逐項拆解：哪裡把網路接起來？</h2>
+              <p>一條式子同時包含 product market 與 network investment。 <span class="page-tag">slides 27–28</span></p>
+            </div>
+          </div>
+
+          <div class="eq">
+            Π<sub>it</sub> =
+            Σ<sub>r∈L(x<sub>it</sub>)</sub>
+            (p<sub>irt</sub>−c<sub>irt</sub>)q<sub>irt</sub>
+            − Σ<sub>m=1</sub><sup>M</sup>
+            a<sub>imt</sub>[FC<sub>imt</sub>+(1−x<sub>imt</sub>)EC<sub>imt</sub>]
+          </div>
+
+          <div class="grid-3">
+            <div class="card">
+              <h4>Current variable profit</h4>
+              <p>
+                <span class="mono">(p−c)q</span> 對所有可由目前網路
+                <span class="mono">x<sub>it</sub></span> 提供的 routes 加總。今天的 network 決定今天有哪些產品能賣。
+              </p>
+            </div>
+            <div class="card">
+              <h4>Fixed operating cost</h4>
+              <p>
+                若 <span class="mono">a<sub>imt</sub>=1</span>，公司選擇下季維持或開始該 segment，
+                因而支付 <span class="mono">FC<sub>imt</sub></span>。
+              </p>
+            </div>
+            <div class="card">
+              <h4>Sunk entry cost</h4>
+              <p>
+                只有 <span class="mono">a=1</span> 且 <span class="mono">x=0</span> 時，
+                <span class="mono">(1−x)EC</span> 才出現。維持既有線不需重付 entry cost。
+              </p>
+            </div>
+          </div>
+
+          <h3>為什麼 sunk entry cost 會製造 persistence？</h3>
+          <p>
+            已在市場內的公司比較「捨不得退」，因為退掉後若想回來，未來必須再付
+            <span class="mono">EC</span>。因此同一個當期 variable profit，對 incumbent 與 outsider
+            會導致不同選擇。這種 state dependence 是動態模型的核心：
+          </p>
+          <div class="eq">
+            Cost(active next period) =
+            FC<sub>imt</sub> + 1{x<sub>imt</sub>=0}·EC<sub>imt</sub>
+          </div>
+
+          <h3>Hub effects 如何進入成本？</h3>
+          <div class="eq-stack">
+            <div class="eq">
+              FC<sub>imt</sub> =
+              γ<sub>1</sub><sup>FC</sup> + γ<sub>2</sub><sup>FC</sup>HUB<sub>imt</sub>
+              + γ<sub>3</sub><sup>FC</sup>DIST<sub>m</sub>
+              + airline FE + endpoint FE
+            </div>
+            <div class="eq">
+              EC<sub>imt</sub> =
+              η<sub>1</sub><sup>EC</sup> + η<sub>2</sub><sup>EC</sup>HUB<sub>imt</sub>
+              + η<sub>3</sub><sup>EC</sup>DIST<sub>m</sub>
+              + airline FE + endpoint FE
+            </div>
+          </div>
+          <p>
+            若 <span class="mono">γ<sub>2</sub></span> 或 <span class="mono">η<sub>2</sub></span> 為負，
+            hub 越大，營運或進入該 city-pair 越便宜。由於增加某個 segment 也可能增加機場 hub size，
+            一個 market 的 entry/exit 會改變其他 markets 的成本，網路就被內生地接起來。
+          </p>
+
+          <div class="callout warning">
+            <span class="callout-title">重要：profit equation 本身還不是 value function</span>
+            <p>
+              <span class="mono">Π<sub>it</sub></span> 是一期 flow payoff。forward-looking 公司比較的是
+              「今天 flow payoff + 未來 network 的 continuation value」。只看本期 profit 會漏掉
+              entry cost、未來轉機收入與競爭者反應所形成的 option value。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="mpe">
+          <div class="chapter-head">
+            <div class="chapter-no">06</div>
+            <div>
+              <span class="part-label">Part I · Airlines</span>
+              <h2>從 profit 到 dynamic game：為什麼需要 MPE？</h2>
+              <p>今天的航線同時改變自己與對手明天的 incentives。 <span class="page-tag">slides 29–30</span></p>
+            </div>
+          </div>
+
+          <p>
+            如果只有一家航空公司，解的是 dynamic program；有多家公司，而且每家公司知道自己的行動會改變
+            別人未來的選擇，便成為 dynamic game。對公司 <span class="mono">i</span>，概念性的 Bellman problem 是：
+          </p>
+          <div class="eq">
+            V<sub>i</sub>(s<sub>t</sub>,ε<sub>it</sub>) =
+            max<sub>a<sub>it</sub></sub>
+            { Π<sub>i</sub>(s<sub>t</sub>,a<sub>it</sub>,a<sub>−i,t</sub>,ε<sub>it</sub>)
+            + βE[V<sub>i</sub>(s<sub>t+1</sub>,ε<sub>i,t+1</sub>) | s<sub>t</sub>,a<sub>t</sub>] }
+          </div>
+
+          <h3>Markov strategy 的限制</h3>
+          <div class="eq">
+            σ<sub>i</sub>(x<sub>t</sub>,z<sub>t</sub>,ε<sub>it</sub>)
+          </div>
+          <p>
+            策略只依賴目前 payoff-relevant state，不依賴整段歷史本身。過去若重要，必須已濃縮在
+            <span class="mono">x<sub>t</sub></span>、其他 observable states
+            <span class="mono">z<sub>t</sub></span> 與 private payoff shock
+            <span class="mono">ε<sub>it</sub></span> 中。
+          </p>
+
+          <div class="callout assumption">
+            <span class="callout-title">為什麼需要 Markov assumption？</span>
+            <p>
+              若策略可依賴任意歷史，兩個目前網路完全相同的產業可能因為十年前的事件而採不同策略，
+              state 無法有限維度化，估計也無從累積相似觀察。Markov restriction 讓 current state
+              成為足夠的歷史摘要。
+            </p>
+          </div>
+
+          <h3>MPE 的 fixed-point 邏輯</h3>
+          <p>
+            一組策略 <span class="mono">{σ<sub>i</sub>}<sub>i=1</sub><sup>N</sup></span> 是 Markov
+            perfect equilibrium，若在<strong>每一個可能 state</strong>，每家公司把其他公司的策略當成給定時，
+            自己的策略都最大化其 value。換句話說：
+          </p>
+          <div class="derive">
+            <div class="derive-step">
+              <span>Belief</span>
+              <p>我相信競爭者會依照目前 state 採某些 entry/exit probabilities。</p>
+            </div>
+            <div class="derive-step">
+              <span>Best response</span>
+              <p>在這些 beliefs 下，我計算最適的 own policy。</p>
+            </div>
+            <div class="derive-step">
+              <span>Consistency</span>
+              <p>所有人的 best responses 恰好等於一開始拿來預測的 policies。</p>
+            </div>
+          </div>
+
+          <div class="callout warning">
+            <span class="callout-title">為什麼完整解法會爆炸？</span>
+            <p>
+              每家航空公司在 1,485 個 city-pairs 都有 0/1 狀態。若用模型設定的 11 家公司，
+              已有 <span class="mono">2<sup>11×1,485</sup>≈10<sup>4,917</sup></span> 種產業網路；
+              p.30 按實證規模報告約 <span class="mono">10<sup>10,000</sup></span>。真正的問題不是
+              Bellman equation 不會寫，而是根本無法列舉 state、儲存 value 或計算每個 transition。
+            </p>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>完整問題中的維度</th><th>原始 object</th><th>為何爆炸</th><th>後面的處理</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Joint action</td><td><span class="mono">a<sub>it</sub>∈{0,1}<sup>M</sup></span></td><td>一家航空公司要在 <span class="mono">2<sup>M</sup></span> 張下期網路中選一張</td><td>拆成 M 位 local managers，各自做 binary choice</td></tr>
+                <tr><td>Industry state</td><td><span class="mono">(x<sub>t</sub>,z<sub>t</sub>)</span></td><td>所有公司、所有 city-pairs 的現況都可能影響未來</td><td>壓縮為 local inclusive state <span class="mono">x*=(x,R,HUB)</span></td></tr>
+                <tr><td>Equilibrium strategy</td><td><span class="mono">σ<sub>i</sub>(x<sub>t</sub>,z<sub>t</sub>,ε<sub>it</sub>)</span></td><td>每家公司都要在每個完整 state 上有一個策略</td><td>改以每位 manager 的 CCP <span class="mono">P<sub>im</sub>(x*)</span> 描述</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="chapter" id="decentralization">
+          <div class="chapter-head">
+            <div class="chapter-no">07</div>
+            <div>
+              <span class="part-label">Part I · Airlines</span>
+              <h2>捷徑一：把航空公司拆成很多地方經理</h2>
+              <p>分權本身不是關鍵，地方經理最大化什麼才是。 <span class="page-tag">slide 31</span></p>
+            </div>
+          </div>
+
+          <p>
+            作者把每家航空公司的 network choice 拆成 <span class="mono">M</span> 個 local managers。
+            經理 <span class="mono">(i,m)</span> 只選該 city-pair 下季是否活躍：
+            <span class="mono">a<sub>imt</sub>∈{0,1}</span>。
+          </p>
+          <div class="eq">
+            a<sub>it</sub>∈{0,1}<sup>M</sup>（2<sup>M</sup> 種 joint actions）
+            &nbsp;→&nbsp;
+            M 個問題，各自只有 a<sub>imt</sub>∈{0,1}
+          </div>
+          <div class="eq">
+            Π<sub>imt</sub> =
+            R<sub>imt</sub> − a<sub>imt</sub>[FC<sub>imt</sub>
+            +(1−x<sub>imt</sub>)EC<sub>imt</sub>]
+          </div>
+          <p>
+            其中 <span class="mono">R<sub>imt</sub></span> 不是只有 A–B 直飛產品的 profit，
+            而是<strong>所有使用 segment m 的 routes</strong>之 variable profits 加總。
+            所以 A–B 經理會把 C–A–B 的收益也算進來。
+          </p>
+
+          <h3>用 A–B segment 把 objective 說成一個故事</h3>
+          <ol class="sequence">
+            <li>A–B manager 先計算 A–B 直飛產品的 variable profit。</li>
+            <li>再加入所有把 A–B 當作一段的 connecting routes，例如 C–A–B、D–A–B。</li>
+            <li>若下季要 active，就扣掉 fixed cost；若本期原本 inactive，還要額外扣 sunk entry cost。</li>
+            <li>因此即使 A–B 的 standalone profit 為負，只要它支撐的 connecting profits 足夠大，manager 仍可能留下；這正是 entry deterrence 得以保留的原因。</li>
+          </ol>
+
+          <div class="grid-2">
+            <div class="card">
+              <h4>保留下來的 network effect</h4>
+              <p>local manager 仍內部化該 segment 對所有 connecting routes 的影響，因此不會把 entry deterrence 故事切掉。</p>
+            </div>
+            <div class="card">
+              <h4>被限制的 coordination</h4>
+              <p>經理不一定完整內部化其 action 對其他 segment 經理未來政策、全公司資源配置或更高階互補性的影響。</p>
+            </div>
+          </div>
+
+          <div class="callout assumption">
+            <span class="callout-title">「分權 without loss of generality」只說了一半</span>
+            <p>
+              任一 centralized optimum 理論上可透過適當 transfer prices 分散執行，因此「由地方經理下決策」
+              本身可以只是組織語言。但一旦指定地方經理只最大化上面這個
+              <span class="mono">Π<sub>imt</sub></span>，就成為實質限制。估計可行性正是來自這個 objective restriction。
+            </p>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <h4>可等價重寫的部分</h4>
+              <p>
+                如果總部能任意設計 state-dependent transfer prices，就能把每條 segment 對全公司其他部門的
+                marginal contribution 記到 local manager 帳上，使 decentralized choices 實作 centralized optimum。
+              </p>
+            </div>
+            <div class="card">
+              <h4>真正需要相信的部分</h4>
+              <p>
+                論文沒有保留任意複雜的 transfer-price function，而是指定一個簡單 local objective。
+                它必須足以近似總部真正關心的 network contribution，才不會扭曲 entry/exit incentives。
+              </p>
+            </div>
+          </div>
+
+          <div class="callout warning">
+            <span class="callout-title">Local payoffs 不是一套可直接相加的公司會計</span>
+            <p>
+              同一條 connecting route 可能同時使用兩個 segments，因此其 profit 會出現在不只一位 manager 的
+              <span class="mono">R<sub>imt</sub></span> 中。這不妨礙每位 manager 衡量自己的 segment contribution，
+              但表示把所有 local objectives 相加不一定等於 airline total profit；這是行為／組織限制，不是 accounting identity。
+            </p>
+          </div>
+
+          <div class="callout intuition">
+            <span class="callout-title">把它想成 scope 的選擇</span>
+            <p>
+              原本一個玩家一次選 1,485 維的 action vector；現在變成 1,485 個 binary local problems。
+              這還沒有解決 state 太大的問題，但先把「聯合 action space」拆開了。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="inclusive">
+          <div class="chapter-head">
+            <div class="chapter-no">08</div>
+            <div>
+              <span class="part-label">Part I · Airlines</span>
+              <h2>捷徑二：inclusive state 如何把整張網路壓縮？</h2>
+              <p>讓地方經理只記住對自己 payoff 最重要的摘要。 <span class="page-tag">slides 32–33</span></p>
+            </div>
+          </div>
+
+          <div class="eq">
+            x<sub>imt</sub><sup>*</sup> =
+            (x<sub>imt</sub>, R<sub>imt</sub>, HUB<sub>imt</sub>)
+          </div>
+          <p>
+            地方經理不再把整個 <span class="mono">x<sub>t</sub></span> 當 state，而只記三件事：
+            自己目前是否 active、所有用到自己 segment 的 route profits、兩端機場的 hub 規模。
+            這三個量被當成完整產業網路對此 local problem 的 payoff-relevant summary。
+          </p>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Inclusive-state 成分</th><th>它濃縮的資訊</th><th>manager 心中的問題</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><span class="mono">x<sub>imt</sub></span></td><td>incumbent status 與 sunk-cost history</td><td>我已經在市場內，還是進入時必須多付 <span class="mono">EC</span>？</td></tr>
+                <tr><td><span class="mono">R<sub>imt</sub></span></td><td>local demand、價格、競爭者與 connecting routes 共同形成的 current variable profit</td><td>這條 segment 現在總共支撐多少收益？</td></tr>
+                <tr><td><span class="mono">HUB<sub>imt</sub></span></td><td>兩端機場的 network scale、scope economies 與 strategic embeddedness</td><td>這條 segment 位於多核心的 network 位置？</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="eq">
+            Pr(x<sub>im,t+1</sub><sup>*</sup> |
+            x<sub>imt</sub><sup>*</sup>,a<sub>imt</sub>,x<sub>t</sub>,z<sub>t</sub>)
+            =
+            Pr(x<sub>im,t+1</sub><sup>*</sup> |
+            x<sub>imt</sub><sup>*</sup>,a<sub>imt</sub>)
+          </div>
+
+          <h3>這個 controlled first-order Markov assumption 說了什麼？</h3>
+          <p>
+            一旦知道 local summary <span class="mono">x*</span> 與自己的 action，
+            整張產業網路或更早歷史不再提供預測下一期 local summary 的額外資訊。這叫做
+            <strong>closure</strong>：地方經理的問題可在小 state space 內自行遞迴。
+          </p>
+
+          <div class="derive">
+            <div class="derive-step">
+              <span>Full world</span>
+              <p>競爭者在各地的網路、需求與成本共同決定明天。</p>
+            </div>
+            <div class="derive-step">
+              <span>Compression</span>
+              <p>把這些資訊濃縮成本地 revenue 與 hub size。</p>
+            </div>
+            <div class="derive-step">
+              <span>Local recursion</span>
+              <p>只用 <span class="mono">(x*,a)</span> 的 transition 計算 continuation value。</p>
+            </div>
+          </div>
+
+          <p>
+            如果這個 conditional independence 成立，local Bellman problem 就能在小 state space 內封閉：
+          </p>
+          <div class="eq">
+            V<sub>im</sub>(x*) =
+            max<sub>a∈{0,1}</sub>
+            { R − a[FC+(1−x)EC]
+            + βE[V<sub>im</sub>(x*′) | x*,a] }
+          </div>
+          <p>
+            右邊只需要 local flow payoff 與
+            <span class="mono">Pr(x*′|x*,a)</span>，不用再為完整
+            <span class="mono">(x<sub>t</sub>,z<sub>t</sub>)</span> 建立 value table。
+          </p>
+
+          <div class="callout warning">
+            <span class="callout-title">這不是 BLP 裡的 log-sum inclusive value</span>
+            <p>
+              名字相似，但這裡的 inclusive values 是 dynamic state aggregation：
+              用少數 payoff summaries 近似整張 network 的作用。它不是把消費者選項效用取
+              <span class="mono">log Σ exp(·)</span> 的 nested-logit inclusive value。
+            </p>
+          </div>
+
+          <div class="callout intuition">
+            <span class="callout-title">降維沒有把競爭者或 dynamics 當成外生</span>
+            <p>
+              rivals 的網路仍會影響當期 <span class="mono">R</span>、<span class="mono">HUB</span>，也會透過
+              <span class="mono">Pr(x*′|x*,a)</span> 影響 continuation value。作者做的是把對手的詳細航網壓縮成
+              dashboard 與其 transition，而不是假設對手不存在。
+            </p>
+          </div>
+
+          <h3>「可以算」不等於「aggregation 已被證明正確」</h3>
+          <div class="grid-2">
+            <div class="card">
+              <h4>Bellman contraction 能說什麼？</h4>
+              <p>
+                給定 transition、對手策略且 <span class="mono">β&lt;1</span> 時，local Bellman operator
+                通常可讓 reduced model 的 value iteration 收斂。
+              </p>
+            </div>
+            <div class="card">
+              <h4>它不能說什麼？</h4>
+              <p>
+                它不能證明 <span class="mono">(x,R,HUB)</span> 真的是 full network 的 sufficient statistic。
+                收斂只代表 reduced model 解得穩，不代表 reduction 沒有漏資訊。
+              </p>
+            </div>
+          </div>
+
+          <div class="callout identification">
+            <span class="callout-title">一個會讓 aggregation 失敗的反例</span>
+            <p>
+              兩個 A–B markets 今天可能有完全相同的 <span class="mono">x</span>、<span class="mono">R</span> 與
+              <span class="mono">HUB</span>；但第一個市場的 rival 正在鄰近機場建立大型 hub，第二個 rival 的航網則在遠端。
+              若這些 full-network differences 仍能預測明年的 entry threat，則
+              <span class="mono">Pr(x*′|x*,a,x<sub>t</sub>,z<sub>t</sub>)</span> 不會等於
+              <span class="mono">Pr(x*′|x*,a)</span>，inclusive state 就不充分。
+            </p>
+          </div>
+
+          <div class="callout assumption">
+            <span class="callout-title">代價：可能遺漏具有預測力的全局資訊</span>
+            <p>
+              兩個產業網路可能有相同的 local revenue 與 hub size，卻因競爭者在遠端的佈局不同而有不同未來。
+              若如此，Markov aggregation 失敗。實證上應檢查在控制 <span class="mono">x*</span> 後，
+              其他 full-network summaries 是否仍能預測 <span class="mono">x*′</span> 或 entry choices。
+            </p>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>降維帶來的 gain</th><th>對應的 tradeoff</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Joint action 從 <span class="mono">2<sup>M</sup></span> 種 network layouts 降成 binary local choices</td><td>放棄任意的 centralized coordination、fleet/gate 共用與跨 segments 的高階互補</td></tr>
+                <tr><td>State 從 full industry network 降成三個 local summaries</td><td>相同 <span class="mono">x*</span> 的兩張不同網路被視為同一狀態，可能漏掉 competitor identity 與 future threats</td></tr>
+                <tr><td>可直接估 local transition 與 CCP</td><td>資料仍需涵蓋足夠的 <span class="mono">(R,HUB)</span> 範圍；連續 state 的平滑、離散化與 pooling 會引入新限制</td></tr>
+                <tr><td>保留 connecting profits 與 entry deterrence</td><td>只保留進入 <span class="mono">R<sub>imt</sub></span> 的 spillovers；其他全公司 effects 可能被忽略</td></tr>
+                <tr><td>歷史 equilibrium 下的 transition 可用來算 continuation value</td><td>大型 merger 或政策可能改變 transition law；超出歷史 support 的 counterfactual 更依賴模型假設</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p>
+            降維後，一個 MPE 可用每個地方經理的 conditional choice probability 描述：
+          </p>
+          <div class="eq">
+            P<sub>im</sub>(x<sub>imt</sub><sup>*</sup>)
+            = Pr(a<sub>imt</sub>=1 | x<sub>imt</sub><sup>*</sup>)
+          </div>
+          <p>
+            equilibrium 存在，但通常可能多重。降維讓每個 equilibrium 比較容易表示與計算，並沒有自動完成
+            equilibrium selection；不同起始 CCP 可能指向不同 fixed points。這一點會在 NPL 與 counterfactuals 再出現。
+          </p>
+
+          <div class="big-idea">
+            <strong>兩層降維的交換條件</strong>
+            <p>
+              第一層以「local objective 足以代表 segment 對公司的貢獻」換取小 action space；第二層以
+              「<span class="mono">(x,R,HUB)</span> 足以預測 local future」換取小 state space。
+              可計算性不是免費得到，而是用 organizational restriction 與 Markov-sufficiency restriction 換來。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="airline-estimation">
+          <div class="chapter-head">
+            <div class="chapter-no">09</div>
+            <div>
+              <span class="part-label">Part I · Airlines</span>
+              <h2>三階段估計：先把本期 profit 拼好，再估 dynamics</h2>
+              <p>每一階段都替下一階段提供一塊 structural object。 <span class="page-tag">slides 34–37</span></p>
+            </div>
+          </div>
+
+          <ol class="sequence">
+            <li>
+              <strong>Demand：</strong>用 BLP-style IV demand system 估旅客對 fare、nonstop、hub size
+              等特徵的反應，得到每個 product 的 demand 與 markup 關係。
+            </li>
+            <li>
+              <strong>Marginal cost：</strong>把 demand elasticities 放進 static Bertrand pricing FOCs，
+              由 observed prices 倒推出 <span class="mono">c<sub>irt</sub></span>，再估 hub size 如何改變成本。
+            </li>
+            <li>
+              <strong>Dynamic entry/exit：</strong>前兩步已給出 local revenue
+              <span class="mono">R<sub>imt</sub></span>；再用 NPL 從 observed network transitions
+              估 fixed costs、sunk entry costs 與 payoff shocks。
+            </li>
+          </ol>
+
+          <div class="big-idea">
+            <strong>為何不一次全部 joint estimate？</strong>
+            <p>
+              理論上可以，但計算量會更大，且每個資料變異辨認什麼更難看清。分階段利用
+              「價格與市場份額主要辨認 demand/markup；進出與 persistence 主要辨認 FC/EC」
+              的結構，把問題模組化。
+            </p>
+          </div>
+
+          <h3>Stage 1：為何 fare 需要 IV？</h3>
+          <p>
+            observed fare 與 unobserved product quality 通常正相關：更好的班次、服務或商務旅客需求，
+            同時提高價格與市場份額。OLS 會把高價伴隨高需求誤讀成消費者不怕漲價，故 price coefficient
+            往零偏。投影片的 fare coefficient 從 OLS 的 −0.329 變成 IV 的 −1.366，正符合這個故事。
+          </p>
+          <div class="eq">
+            Demand shock ξ ↑ ⇒ fare ↑ 且 share ↑
+            ⇒ Cov(fare,ξ)&gt;0 ⇒ OLS price sensitivity toward 0
+          </div>
+
+          <div class="callout identification">
+            <span class="callout-title">競爭者 hub size 作為 IV 需要什麼 exclusion？</span>
+            <p>
+              它必須透過競爭環境、成本或 equilibrium price 改變本公司票價，卻不能在控制模型中的產品特徵後，
+              直接和本公司未觀察 demand quality 相關。若大家同時因共同的城市需求 shock 擴張 hub，
+              exclusion 便值得懷疑；城市、時間與市場控制及 robustness 很重要。
+            </p>
+          </div>
+
+          <h3>Stage 2：pricing FOC 如何倒推 marginal cost？</h3>
+          <p>
+            多產品 Bertrand 的一般 FOC 可寫成：
+          </p>
+          <div class="eq">
+            q<sub>jr</sub>(p) +
+            Σ<sub>k∈products of firm i</sub>
+            (p<sub>ik</sub>−c<sub>ik</sub>)
+            ∂q<sub>ik</sub>/∂p<sub>jr</sub> = 0
+          </div>
+          <p>
+            Stage 1 提供 demand derivatives，價格與數量在資料中可見，因此能解出 markups
+            <span class="mono">p−c</span>，進而回推出 <span class="mono">c</span>。
+            hub-size cost coefficients為負，和 airport economies of scope 一致。
+          </p>
+
+          <h3>Stage 3：什麼 variation 分開 FC 與 EC？</h3>
+          <div class="grid-2">
+            <div class="card">
+              <h4>FC：維持 active 的成本</h4>
+              <p>主要由既有航線在不同 revenue、hub size、distance 下的 continuation/exit 行為辨認。</p>
+            </div>
+            <div class="card">
+              <h4>EC：從 inactive 轉 active 的額外成本</h4>
+              <p>主要由 entry rarity、entry thresholds 與進入後的 persistence 辨認；若 entry 很少但一進就久留，通常指向較大 sunk EC。</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="chapter" id="npl">
+          <div class="chapter-head">
+            <div class="chapter-no">10</div>
+            <div>
+              <span class="part-label">Part I · Airlines</span>
+              <h2>NPL 到底怎麼跑？為何它比每次重解完整賽局便宜？</h2>
+              <p>把 equilibrium fixed point 拆成「估參數」與「更新策略」兩個迴圈。</p>
+            </div>
+          </div>
+
+          <p>
+            動態賽局最麻煩的地方，是 likelihood 中每試一組參數
+            <span class="mono">θ</span>，理論上都要重新解一個 MPE。Nested Pseudo Likelihood
+            的主意是：先暫時把競爭者的 CCPs 當成已知，再估 best response；接著才更新 CCPs。
+          </p>
+
+          <ol class="sequence">
+            <li>
+              <strong>初始化 CCP：</strong>由資料中的 entry/continuation frequencies 或 first-stage
+              flexible choice model 得到 <span class="mono">P<sup>(0)</sup></span>。
+            </li>
+            <li>
+              <strong>把 P 暫時固定：</strong>用 <span class="mono">P<sup>(k)</sup></span> 預測其他 managers
+              的未來行動與 local-state transition，計算每個 action 的 continuation value。
+            </li>
+            <li>
+              <strong>估 structural parameters：</strong>選
+              <span class="mono">θ<sup>(k+1)</sup></span> 最大化 observed actions 的 pseudo-likelihood。
+              這一步是在「競爭者照既定 CCP 行動」條件下估自己的 best-response payoff。
+            </li>
+            <li>
+              <strong>更新 CCP：</strong>把新參數放回 choice-specific values，生成模型隱含的
+              <span class="mono">P<sup>(k+1)</sup>=Ψ(θ<sup>(k+1)</sup>,P<sup>(k)</sup>)</span>。
+            </li>
+            <li>
+              <strong>重複：</strong>直到參數與 CCP 不再明顯改變，亦即策略 beliefs 與模型 best responses 彼此一致。
+            </li>
+          </ol>
+
+          <div class="eq">
+            Equilibrium consistency:
+            P = Ψ(θ,P)
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <h4>NPL 的 benefit</h4>
+              <ul>
+                <li>不用在 optimizer 每試一個 θ 時，從零開始解完整 MPE。</li>
+                <li>CCPs 把其他玩家策略對 continuation value 的影響濃縮成可估的 objects。</li>
+                <li>能利用 local-choice likelihood 與 large panel of market-manager observations。</li>
+              </ul>
+            </div>
+            <div class="card">
+              <h4>NPL 沒有免費解決的問題</h4>
+              <ul>
+                <li><span class="mono">Ψ</span> 不保證是 global contraction。</li>
+                <li>多重 equilibria 時，不同起點可能收斂到不同 fixed points。</li>
+                <li>若 first-stage CCP 或 state transition 很差，誤差會傳進 continuation values。</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="callout warning">
+            <span class="callout-title">「重複就一定收斂」不是定理</span>
+            <p>
+              Bellman operator 在標準 discounting 下常是 contraction，但 NPL 更新的是
+              <strong>equilibrium policy map</strong>，不是單一代理人的 Bellman value operator。
+              strategic feedback 可能使其不收斂、循環或只局部收斂。因此要檢查不同起點、收斂準則，
+              並誠實處理 equilibrium selection。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="airline-results">
+          <div class="chapter-head">
+            <div class="chapter-no">11</div>
+            <div>
+              <span class="part-label">Part I · Airlines</span>
+              <h2>結果與反事實：真正推動 hubbing 的是哪一條機制？</h2>
+              <p>估計係數告訴方向，counterfactual 才告訴量的重要性。 <span class="page-tag">slides 35–44</span></p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>估計結果</th><th>投影片數值</th><th>經濟解讀</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Nonstop demand utility</td><td>IV estimate 2.080</td><td>旅客明顯偏好直飛，確認 H&amp;S 對 itinerary quality 有需求面代價。</td></tr>
+                <tr><td>Hub size 對 marginal cost</td><td>origin −0.023；destination −0.016</td><td>hub 規模擴大伴隨成本下降，支持 airport scope economies。</td></tr>
+                <tr><td>Hub size 對 quarterly FC</td><td>−1.02（千美元）</td><td>既有大 hub 使維持 segment 稍便宜。</td></tr>
+                <tr><td>Hub size 對 EC</td><td>−9.26（千美元）</td><td>hub 對 sunk entry cost 的降低遠大於對 FC 的降低，是最強的 network mechanism。</td></tr>
+                <tr><td>平均 FC / EC</td><td>119.15 / 249.56（千美元）</td><td>進入的額外 sunk component 很大，會產生強烈 state dependence 與 network persistence。</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p class="mini">
+            註：投影片模型頁以 11 家航空公司說明，dynamic estimation 表則報告 22 家航空公司、
+            1,485 markets、3 quarters、共 98,010 observations；此處保留投影片各自的報告口徑。
+          </p>
+
+          <h3>反事實在做什麼？</h3>
+          <p>
+            研究者不是把資料中的 hub 拆掉，而是在估計模型裡一次關掉一種
+            <span class="mono">HUB</span> coefficient，重新求 equilibrium network，再比較 CR2。
+            若關掉某機制後 CR2 大幅下降，表示 observed hubbing 很依賴該機制。
+          </p>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Carrier</th><th>Observed CR2</th><th>Zero hub effect：variable profits</th><th>Zero：fixed costs</th><th>Zero：entry costs</th><th>No entry deterrence</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Southwest</td><td>18.2</td><td>17.3</td><td>15.6</td><td>8.9</td><td>16.0</td></tr>
+                <tr><td>American</td><td>42.0</td><td>39.1</td><td>36.5</td><td>17.6</td><td>29.8</td></tr>
+                <tr><td>United</td><td>45.7</td><td>42.5</td><td>39.3</td><td>17.8</td><td>32.0</td></tr>
+                <tr><td>Delta</td><td>48.0</td><td>43.7</td><td>34.0</td><td>18.7</td><td>25.0</td></tr>
+                <tr><td>Continental</td><td>68.3</td><td>62.1</td><td>58.0</td><td>27.3</td><td>43.0</td></tr>
+                <tr><td>Northwest</td><td>49.2</td><td>44.3</td><td>36.9</td><td>18.7</td><td>26.6</td></tr>
+                <tr><td>US Airways</td><td>45.3</td><td>41.7</td><td>39.0</td><td>18.1</td><td>34.4</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="big-idea">
+            <strong>最重要的 quantitative conclusion</strong>
+            <p>
+              demand、variable cost 與 fixed-cost hub effects 雖統計顯著，卻只能解釋少部分 hubbing；
+              關掉 entry-cost economies 時，所有航空公司的 CR2 都劇烈下降。strategic entry deterrence
+              對 Delta、Northwest 等大型 carriers 也很重要，但整體排名第二。
+            </p>
+          </div>
+
+          <h3>「No entry deterrence」是怎麼做的？</h3>
+          <p>
+            讓地方經理的 revenue 只包含該 city-pair 的 nonstop product，不再算使用此 segment
+            的 connecting-flight revenue。如此一來，incumbent 不會因 C–A–B 的 profit 而死守 A–B，
+            Hendricks-style deterrence channel 被切斷。
+          </p>
+
+          <div class="callout warning">
+            <span class="callout-title">Counterfactual 的可信度取決於哪些東西？</span>
+            <p>
+              結果不只靠估計係數，也靠地方經理 objective、inclusive-state transition、
+              equilibrium selection 與「關掉一個 channel 時其他 primitives 不變」等假設。
+              因此反事實不是 reduced-form extrapolation，而是整套 structural assumptions 的聯合產物。
+            </p>
+          </div>
+
+          <details>
+            <summary>投影片留下的研究問題</summary>
+            <div>
+              <ul>
+                <li>hub size 為何大幅降低 entry cost：純技術、登機門配置，還是機場與航空公司的長約／租金分享？</li>
+                <li>更長期的 hubbing 與 de-hubbing 能否由同一模型解釋？</li>
+                <li>merger 後 endogenous network reconfiguration 如何改變中長期價格、覆蓋與 welfare？</li>
+              </ul>
+            </div>
+          </details>
+        </section>
+
+        <section class="chapter" id="spatial">
+          <div class="chapter-head">
+            <div class="chapter-no">12</div>
+            <div>
+              <span class="part-label">Part II · Retail</span>
+              <h2>從航線轉到空間網路：店址也是一組彼此相連的選擇</h2>
+              <p>geographic space 也可換成 product-characteristics space。 <span class="page-tag">slides 45–53</span></p>
+            </div>
+          </div>
+
+          <p>
+            把一座城市切成 <span class="mono">L</span> 個可行地點，每個地點
+            <span class="mono">ℓ</span> 有人口、所得、租金等特徵
+            <span class="mono">x<sub>ℓ</sub></span>。企業 <span class="mono">i</span> 的選擇是：
+          </p>
+          <div class="eq">
+            a<sub>i</sub> = (a<sub>i1</sub>,…,a<sub>iL</sub>),
+            &nbsp; a<sub>iℓ</sub>∈{0,1}
+          </div>
+          <p>
+            每一個向量都是一張 store network；全零代表不進入。若有 L 個地點，單一企業便有
+            <span class="mono">2<sup>L</sup></span> 種 layout。
+          </p>
+
+          <div class="grid-4">
+            <div class="card">
+              <h4>Demand</h4>
+              <p>哪裡有顧客流量？人口與 demographics 如何影響選店？</p>
+            </div>
+            <div class="card">
+              <h4>Location cost</h4>
+              <p>租金、工資與土地價值在哪裡比較高？</p>
+            </div>
+            <div class="card">
+              <h4>Own network</h4>
+              <p>新店搶舊店顧客，卻可能節省配送與管理成本。</p>
+            </div>
+            <div class="card">
+              <h4>Rivals</h4>
+              <p>競爭者的位置帶來 spatial differentiation，也可能誘發 preemption。</p>
+            </div>
+          </div>
+
+          <div class="callout intuition">
+            <span class="callout-title">從地理空間到產品空間</span>
+            <p>
+              把經緯度換成 K 維產品特徵、把公里換成 characteristics distance，同一框架就可問：
+              新產品會搶走自家哪些產品？相似產品是否共用研發與生產？是否以 product proliferation
+              擋住 competitor？因此這不是只屬於 retail geography 的模型。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="holmes-strategy">
+          <div class="chapter-head">
+            <div class="chapter-no">13</div>
+            <div>
+              <span class="part-label">Part II · Retail</span>
+              <h2>Holmes 的識別故事：為何要先估 cannibalization？</h2>
+              <p>同一個 dense pattern 可能有兩種完全不同的解釋。 <span class="page-tag">slides 54–61</span></p>
+            </div>
+          </div>
+
+          <p>
+            Walmart 從 Arkansas 向外擴張時，門市呈現很強的地理聚集。作者想量化兩股相反力量：
+          </p>
+          <div class="bridge">
+            <div class="bridge-side">
+              <h4>Cannibalization</h4>
+              <p>新店的一部分客戶原本就在附近舊 Walmart 購物。全公司新增 revenue 小於新店自身 revenue。</p>
+            </div>
+            <div class="bridge-arrow">vs.</div>
+            <div class="bridge-side">
+              <h4>Economies of density</h4>
+              <p>相鄰店面可共用配送、庫存調度、區域管理與勞工重新配置，使每家店成本下降。</p>
+            </div>
+          </div>
+
+          <div class="callout identification">
+            <span class="callout-title">若只看 store openings，兩者無法分開</span>
+            <p>
+              Walmart 願意在舊店旁開新店，可能因為新店其實沒搶走多少舊店 sales；
+              也可能因為它雖搶走很多 sales，但配送節省更大。相同 observed clustering
+              可由「低 cannibalization」或「高 density savings」產生。
+            </p>
+          </div>
+
+          <h3>兩階段 empirical strategy</h3>
+          <ol class="sequence">
+            <li>
+              <strong>先估 demand system：</strong>對每個 hypothetical new store，預測顧客來自 outside retailers
+              還是既有 Walmart，從而量化 revenue cannibalization。
+            </li>
+            <li>
+              <strong>再用 revealed preference：</strong>給定已知的 revenue loss，Walmart 仍選擇 clustered
+              expansion，表示背後必須有足夠的 cost savings；用 observed opening sequence 對其定界。
+            </li>
+          </ol>
+
+          <div class="big-idea">
+            <strong>識別的核心是一個 opportunity-cost argument</strong>
+            <p>
+              demand model 告訴我們「選這個地點放棄多少 revenue」；location choice 告訴我們 Walmart
+              仍然選了它。能補償這個 revenue sacrifice 的剩餘部分，就揭露了 density economies。
+            </p>
+          </div>
+
+          <h3>資料各自負責什麼？</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>資料</th><th>主要用途</th><th>為何不可少</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>2005 store-level sales、employment、size</td><td>估 demand 與 store revenue</td><td>沒有 consumer counts，只能從 revenue 連回選店 shares</td></tr>
+                <tr><td>1962–2005 所有 stores / distribution centers 的位置與開設日</td><td>重建 observed dynamic policy</td><td>辨認 expansion sequence、distance to DC 與 local deviations</td></tr>
+                <tr><td>Census-block demographics、wages、rents</td><td>控制 demand 與 location-specific costs</td><td>避免把人口密度或租金差異誤認成 network effect</td></tr>
+                <tr><td>Walmart 年報自陳約 1% cannibalization</td><td>external validation 與 constrained calibration</td><td>提供需求模型之外的 benchmark，並建立 density-economy lower bound</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout assumption">
+            <span class="callout-title">Holmes 刻意抽象掉 competitor locations</span>
+            <p>
+              這讓模型聚焦 own-store cannibalization 與 density cost，但代價是 observed sequence
+              若其實受到 Kmart 或其他 entrants 的 preemption 驅動，估出的 density economies
+              可能吸收部分 strategic motive。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="walmart-demand">
+          <div class="chapter-head">
+            <div class="chapter-no">14</div>
+            <div>
+              <span class="part-label">Part II · Retail</span>
+              <h2>Walmart demand：nested logit 在這裡扮演什麼角色？</h2>
+              <p>先在每個 census block 模擬消費者去哪裡買。 <span class="page-tag">slides 62–64</span></p>
+            </div>
+          </div>
+
+          <p>
+            消費者住在 census block <span class="mono">ℓ</span> 的 centroid；
+            <span class="mono">H<sub>ℓt</sub></span> 是人口。對 general merchandise 與 groceries，
+            每位消費者分別支出 <span class="mono">λ<sup>gen</sup></span> 與
+            <span class="mono">λ<sup>gro</sup></span>。可選 alternatives 是 25 miles 內的 Walmart stores，
+            加上一個代表所有其他 retailers 的 outside composite。
+          </p>
+
+          <div class="eq-stack">
+            <div class="eq">
+              u<sub>i0ℓt</sub> =
+              γ<sub>0</sub> + γ<sub>1</sub>ln(m<sub>ℓt</sub>)
+              + γ′<sub>z</sub>z<sub>ℓt</sub> + ε<sub>i0ℓt</sub><sup>(1)</sup>
+            </div>
+            <div class="eq">
+              u<sub>ijℓt</sub> =
+              −ξ<sub>0</sub>distance(ℓ,j)
+              −ξ<sub>1</sub>distance(ℓ,j)ln(m<sub>ℓt</sub>)
+              + γ′<sub>x</sub>x<sub>j</sub>
+              + ε<sub>iℓt</sub><sup>(1)</sup>
+              +(1−σ)ε<sub>ijℓt</sub><sup>(2)</sup>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>成分</th><th>直覺</th><th>為何需要</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><span class="mono">ln(m<sub>ℓt</sub>)</span> in outside utility</td><td>人口密集區有更多非 Walmart 選擇</td><td>不把 urban retail variety 誤解成 Walmart 距離效果</td></tr>
+                <tr><td><span class="mono">−ξ<sub>0</sub>distance</span></td><td>旅行成本使較遠門市較不吸引人</td><td>從店址預測 trade area 與 cannibalization</td></tr>
+                <tr><td><span class="mono">distance×ln density</span></td><td>距離成本可隨 urban density 改變</td><td>允許同樣五英里在城市與鄉村有不同含義</td></tr>
+                <tr><td><span class="mono">x<sub>j</sub></span></td><td>store age、size、format 等門市特徵</td><td>避免把較好門市的吸引力誤歸因於位置</td></tr>
+                <tr><td><span class="mono">ε<sup>(1)</sup>, ε<sup>(2)</sup>, σ</span></td><td>Walmart nest 的共同 taste 與店別 taste</td><td>允許 Walmart stores 彼此是較接近的 substitutes</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout intuition">
+            <span class="callout-title">Nested logit 的故事</span>
+            <p>
+              消費者先有「去 Walmart 還是其他 retailer」的共同偏好，再在附近 Walmart stores
+              之間依距離與特徵分配。較大的 within-Walmart correlation 意味著新增一家 Walmart
+              時，較多 sales 從其他 Walmart 移轉，而不是從 outside good 搶來。
+            </p>
+          </div>
+
+          <div class="callout warning">
+            <span class="callout-title">這一步不是在解 Walmart 的動態問題</span>
+            <p>
+              demand model 只是給定一張 store network 後，算每個 block 的 static choice shares。
+              它的輸出會成為後面 dynamic location problem 的 revenue component。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="revenue">
+          <div class="chapter-head">
+            <div class="chapter-no">15</div>
+            <div>
+              <span class="part-label">Part II · Retail</span>
+              <h2>資料只有 store revenue，如何從 model shares 接上去？</h2>
+              <p>把每個 block 的人口、支出與 choice probability 加總。 <span class="page-tag">slides 64–71</span></p>
+            </div>
+          </div>
+
+          <p>
+            模型預測的是 block-to-store share
+            <span class="mono">s<sub>jℓt</sub></span>，資料觀察的卻是 store annual revenue
+            <span class="mono">R<sub>jt</sub></span>。兩者靠「人數 × 每人支出」連起來。
+          </p>
+
+          <h3>Regular store：只賣 general merchandise</h3>
+          <div class="eq">
+            R<sub>jt</sub><sup>gen</sup> =
+            λ<sup>gen</sup>
+            Σ<sub>ℓ∈B(j)</sub>
+            H<sub>ℓt</sub>s<sub>jℓt</sub><sup>gen</sup>
+          </div>
+
+          <h3>Supercenter：general merchandise + groceries</h3>
+          <div class="eq">
+            R<sub>jt</sub> =
+            Σ<sub>ℓ∈B(j)</sub>H<sub>ℓt</sub>
+            [λ<sup>gen</sup>s<sub>jℓt</sub><sup>gen</sup>
+            +λ<sup>gro</sup>s<sub>jℓt</sub><sup>gro</sup>]
+          </div>
+          <p>
+            <span class="mono">B(j)</span> 是距離門市 <span class="mono">j</span> 25 miles 內的 blocks。
+            對每個 block，share 告訴有多少比例去店 j；乘人口得到 shoppers 數，再乘 category spending
+            得 revenue，最後跨 blocks 加總。
+          </p>
+
+          <div class="derive">
+            <div class="derive-step">
+              <span>Demand primitives</span>
+              <p>距離、人口密度、store characteristics、nested-logit parameters。</p>
+            </div>
+            <div class="derive-step">
+              <span>Block-level shares</span>
+              <p>每個 block 有多少消費者選店 j 或 outside option。</p>
+            </div>
+            <div class="derive-step">
+              <span>Store revenue</span>
+              <p>跨 blocks 加總支出，和 Nielsen 的 store sales 對接。</p>
+            </div>
+          </div>
+
+          <div class="callout assumption">
+            <span class="callout-title">固定 category expenditure 的用途與代價</span>
+            <p>
+              假設每人支出 <span class="mono">λ<sup>gen</sup></span>、<span class="mono">λ<sup>gro</sup></span>
+              讓「去哪裡買」直接映射到 store revenue，不必另建 quantity basket 與 price model。
+              代價是 Walmart expansion 若同時改變總支出或 category prices，模型不會完整捕捉。
+            </p>
+          </div>
+
+          <p>
+            估計結果的直覺是：outside good 在密集地區較有吸引力；距離 Walmart 越遠，Walmart share 越低，
+            且距離與人口密度的效果高度非線性。這些 travel-pattern estimates 決定「新店會從哪裡抽走顧客」。
+          </p>
+        </section>
+
+        <section class="chapter" id="cannibalization">
+          <div class="chapter-head">
+            <div class="chapter-no">16</div>
+            <div>
+              <span class="part-label">Part II · Retail</span>
+              <h2>如何量化 cannibalization？為何 1% 會變成 lower-bound trick？</h2>
+              <p>把實際新店暫時拿掉，再比較既有店的反事實 sales。 <span class="page-tag">slides 61、72–73</span></p>
+            </div>
+          </div>
+
+          <div class="eq">
+            Cannibalization Rate<sub>t</sub> =
+            100 × [
+            Saleŝ<sub>t</sub>(without new stores) /
+            Saleŝ<sub>t</sub>(with actual new stores) − 1]
+          </div>
+
+          <ol class="sequence">
+            <li>固定當年既有店，利用 demand model 預測它們在<strong>實際新店存在</strong>時的 sales。</li>
+            <li>從 choice set 暫時移除當年新店，重新計算 shares 與既有店 sales。</li>
+            <li>沒有新店時，部分顧客回流到既有 Walmart，因此分子較大；差額就是被新店搶走的 sales。</li>
+          </ol>
+
+          <p>
+            unrestricted demand model 在 2002–2005 產生約 1.27%–1.43% 的 cannibalization；
+            Walmart 年報自陳約 1%。作者也估 constrained model，使 2005 rate 等於 1%。
+          </p>
+
+          <h3>為什麼把 cannibalization 壓低，得到 density economies 的 lower bound？</h3>
+          <div class="derive">
+            <div class="derive-step">
+              <span>Observed fact</span>
+              <p>Walmart 願意在相近地區繼續開店。</p>
+            </div>
+            <div class="derive-step">
+              <span>Assume less sacrifice</span>
+              <p>若每家新店只搶舊店 1%，聚集造成的 revenue opportunity cost 較小。</p>
+            </div>
+            <div class="derive-step">
+              <span>Need less compensation</span>
+              <p>只需要較小的 cost saving 就能合理化 observed clustering，因此估得較保守的 density economy。</p>
+            </div>
+          </div>
+
+          <div class="callout intuition">
+            <span class="callout-title">Revealed preference 的單調性</span>
+            <p>
+              若你認為 Walmart 明知會犧牲更多舊店 sales 仍選擇聚集，就必須推論它獲得更大的成本好處。
+              因此 assumed cannibalization 越大，所需的 density savings 越大。
+            </p>
+          </div>
+
+          <div class="callout warning">
+            <span class="callout-title">1% 不是自然常數</span>
+            <p>
+              它是 Walmart 對特定年份、全公司 pre-existing stores 的 aggregate estimate。
+              真實 cannibalization 會隨地區、時間與 network density 改變。把它用來 constrain
+              demand 是一種有方向性的 robustness／bounding choice，不代表每家新店都恰好 1%。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="walmart-profit">
+          <div class="chapter-head">
+            <div class="chapter-no">17</div>
+            <div>
+              <span class="part-label">Part II · Retail</span>
+              <h2>從 revenue 到 profit：density economies 究竟放在哪裡？</h2>
+              <p>先用可觀察資料拼 variable profit，再讓 fixed cost 含 distribution distance。 <span class="page-tag">slides 74–76</span></p>
+            </div>
+          </div>
+
+          <h3>第一步：拆 variable costs</h3>
+          <div class="eq">
+            VP<sub>ℓt</sub> =
+            R<sub>ℓt</sub> −
+            [CMer<sub>ℓt</sub>+CLabor<sub>ℓt</sub>+CLand<sub>ℓt</sub>]
+          </div>
+          <div class="eq-stack">
+            <div class="eq">
+              (R<sub>ℓt</sub>−CMer<sub>ℓt</sub>)/R<sub>ℓt</sub> = μ
+            </div>
+            <div class="eq">
+              CLabor<sub>ℓt</sub> =
+              w<sub>ℓt</sub>υ<sub>Labor</sub>R<sub>ℓt</sub>
+            </div>
+            <div class="eq">
+              CLand<sub>ℓt</sub> =
+              υ<sub>Land</sub>ValueLand<sub>ℓt</sub>
+            </div>
+          </div>
+
+          <h3>代回後得到可計算的 variable profit</h3>
+          <div class="eq">
+            VP<sub>ℓt</sub> =
+            (μ−υ<sub>Labor</sub>w<sub>ℓt</sub>−υ<sub>Land</sub>r<sub>ℓt</sub>)
+            R<sub>ℓt</sub>,
+            &nbsp; r<sub>ℓt</sub>=ValueLand<sub>ℓt</sub>/R<sub>ℓt</sub>
+          </div>
+          <p>
+            推導只是在做代數：gross margin 給
+            <span class="mono">R−CMer=μR</span>；labor cost 與 revenue 成比例；
+            land cost 寫成 property value 的固定百分比。投影片校準
+            <span class="mono">μ=24%</span>、
+            <span class="mono">υ<sub>Labor</sub>=3.61 workers per $1m sales</span>、
+            <span class="mono">υ<sub>Land</sub>=20%</span>。
+          </p>
+
+          <div class="callout assumption">
+            <span class="callout-title">為何需要這些 accounting assumptions？</span>
+            <p>
+              研究者觀察 store sales、employment、local wage、land value，卻沒有每家店完整的
+              economic-profit ledger。這些比例假設把可見資料轉成 location-level variable profits，
+              才能把 observed choice 的收益面先固定，再從剩餘選址 margin 辨認 fixed costs。
+            </p>
+          </div>
+
+          <h3>第二步：固定成本與配送距離</h3>
+          <div class="eq-stack">
+            <div class="eq">
+              FC<sub>ℓt</sub> =
+              f<sub>ℓt</sub> + τd<sub>ℓt</sub><sup>DC</sup>
+            </div>
+            <div class="eq">
+              f<sub>ℓt</sub> =
+              ω<sub>0</sub>+ω<sub>1</sub>ln(m<sub>ℓt</sub>)
+              +ω<sub>2</sub>[ln(m<sub>ℓt</sub>)]<sup>2</sup>
+            </div>
+          </div>
+          <p>
+            <span class="mono">d<sub>ℓt</sub><sup>DC</sup></span> 是 store 到最近 distribution center
+            的距離；<span class="mono">τ&gt;0</span> 是每多一 mile、每家 store、每年增加的成本。
+            當 stores 與 DCs 密集成網路，平均距離下降，這就是模型中的 economies of density。
+          </p>
+
+          <div class="callout warning">
+            <span class="callout-title">符號小提醒</span>
+            <p>
+              投影片在 fixed-cost 式中寫 <span class="mono">(ω<sub>0</sub>,ω<sub>1</sub>,ω<sub>2</sub>)</span>，
+              後面又把待估參數標成 <span class="mono">θ=(τ,ω<sub>0</sub>,ω<sub>1</sub>)</span>，
+              但同時保留兩個 population-density exposure terms。這是下標標示上的不一致；
+              經濟內容是「配送距離係數 + 人口密度一次與二次項」。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="irreversibility">
+          <div class="chapter-head">
+            <div class="chapter-no">18</div>
+            <div>
+              <span class="part-label">Part II · Retail</span>
+              <h2>不可逆性為何是 Walmart 模型唯一的 dynamic source？</h2>
+              <p>沒有 exit，今天開的店會永久留在未來 choice set。 <span class="page-tag">slides 77–78</span></p>
+            </div>
+          </div>
+
+          <p>
+            令 <span class="mono">a<sub>ℓt</sub><sup>g</sup>∈{0,1}</span> 表示 t 年在 block
+            <span class="mono">ℓ</span> 是否已有 type <span class="mono">g</span> 的 store。
+            Walmart 選整條 store-opening sequence：
+          </p>
+          <div class="eq">
+            σ = {a<sub>t</sub>: t=1,2,…}
+          </div>
+          <p>
+            概念上的 value 是所有未來 stores profits 的折現和：
+          </p>
+          <div class="eq">
+            V<sub>t</sub>(σ) =
+            Σ<sub>s=0</sub><sup>T</sup>β<sup>s</sup>
+            Σ<sub>ℓ=1</sub><sup>L</sup>
+            [a<sub>ℓ,t+s</sub><sup>gen</sup>Π<sub>ℓ,t+s</sub><sup>gen</sup>
+            +a<sub>ℓ,t+s</sub><sup>gro</sup>Π<sub>ℓ,t+s</sub><sup>gro</sup>]
+          </div>
+          <div class="eq">
+            Irreversibility:
+            &nbsp; a<sub>t</sub> ≥ a<sub>t−1</sub>
+          </div>
+
+          <h3>若沒有不可逆性，會發生什麼？</h3>
+          <p>
+            若店可零成本關掉、重開，而且沒有其他 adjustment cost，Walmart 每期只需選當期最賺的 layout，
+            昨天的 store network 不再限制今天，問題大致可逐期分開。不可逆性使今天的錯誤地點在未來每期都要付代價；
+            同時，早開店能提早享受利潤與 density savings。
+          </p>
+
+          <div class="grid-3">
+            <div class="card">
+              <h4>Current payoff</h4>
+              <p>這家店現在帶來多少 incremental variable profit，扣掉 fixed/distribution cost？</p>
+            </div>
+            <div class="card">
+              <h4>Future network</h4>
+              <p>開店後會如何改變未來 cannibalization、配送距離與下一批店的相對價值？</p>
+            </div>
+            <div class="card">
+              <h4>Option cost</h4>
+              <p>一旦開了不能撤回；現在利用位置會消耗未來調整 network 的彈性。</p>
+            </div>
+          </div>
+
+          <div class="callout warning">
+            <span class="callout-title">為何不直接解 Bellman equation？</span>
+            <p>
+              約 1,100 萬個 census blocks 意味著 action space 約
+              <span class="mono">2<sup>11,000,000</sup></span>。即使只評估少數 stores 的組合，
+              store sequence 仍是天文數量。Holmes 因此不求完整 policy function，而只利用
+              observed policy 必須勝過特定 deviations 的必要條件。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="inequalities">
+          <div class="chapter-head">
+            <div class="chapter-no">19</div>
+            <div>
+              <span class="part-label">Part II · Retail</span>
+              <h2>Moment inequalities：從「Walmart 沒有後悔」推導參數界線</h2>
+              <p>這是 revealed preference 的動態版本。 <span class="page-tag">slides 78–81</span></p>
+            </div>
+          </div>
+
+          <h3>Step 1：optimality implication</h3>
+          <p>
+            若 observed opening sequence <span class="mono">σ<sup>obs</sup></span> 最適，
+            對任何可行 alternative sequence <span class="mono">σ</span> 都有：
+          </p>
+          <div class="eq">
+            V<sub>t</sub>(σ<sup>obs</sup>) − V<sub>t</sub>(σ) ≥ 0
+          </div>
+          <p>
+            這句話不要求研究者知道 Walmart 的 value 有多大，只要求 observed choice
+            不比一個明確可行的 counterfactual choice 差。
+          </p>
+
+          <h3>Step 2：把 value difference 分成已知部分與待估成本</h3>
+          <div class="eq">
+            V<sub>t</sub>(σ<sup>obs</sup>) − V<sub>t</sub>(σ)
+            = y<sub>t</sub>(σ) − x<sub>t</sub>(σ)θ
+          </div>
+          <ul>
+            <li>
+              <span class="mono">y<sub>t</sub>(σ)</span>：兩條 policies 的 discounted variable-profit difference。
+              demand 與 accounting steps 已讓它可計算。
+            </li>
+            <li>
+              <span class="mono">x<sub>t</sub>(σ)</span>：兩條 policies 在 DC distance、人口密度與平方項上的
+              discounted exposure difference。
+            </li>
+            <li>
+              <span class="mono">θ</span>：distance cost 與 location fixed-cost coefficients。
+            </li>
+          </ul>
+          <p>
+            因 fixed cost 對參數是線性的，每個 deviation 都在
+            <span class="mono">θ</span> 空間切出一個 half-space：
+          </p>
+          <div class="eq">
+            y<sub>t</sub>(σ) − x<sub>t</sub>(σ)θ ≥ 0
+          </div>
+
+          <h3>Step 3：乘上 nonnegative instruments，再取期望</h3>
+          <div class="eq">
+            m<sub>k,σ</sub>(θ<sub>0</sub>) =
+            E[z<sub>kt</sub>{y<sub>t</sub>(σ)−x<sub>t</sub>(σ)θ<sub>0</sub>}] ≥ 0,
+            &nbsp; z<sub>kt</sub>≥0
+          </div>
+          <p>
+            為何要求 <span class="mono">z≥0</span>？因為乘以負數會翻轉 inequality。
+            predetermined instruments 可讓不同 state 或年份的 revealed-preference comparisons
+            得到不同權重，產生更多辨認方向。
+          </p>
+
+          <h3>Step 4：樣本中只懲罰 violated inequalities</h3>
+          <div class="eq">
+            Θ̂<sub>I</sub> =
+            set of arg min<sub>θ</sub>
+            Σ<sub>k,σ</sub> min{0,m̂<sub>k,σ</sub>(θ)}<sup>2</sup>
+          </div>
+          <p>
+            若某個 sample moment 為正，它符合 model restriction，不需懲罰；若為負，代表該參數使 alternative
+            看起來比 observed policy 更好，違反 optimality，因此平方負部。所有不等式的交集通常是一個
+            <strong>identified set</strong>，而不是唯一點。
+          </p>
+
+          <div class="callout identification">
+            <span class="callout-title">為什麼是 partial identification？</span>
+            <p>
+              一個 observed choice 只告訴我們「它至少不差於 alternative」，沒有告訴價值剛好相等。
+              每個 inequality 只排除一側參數；除非 comparisons 極其豐富，通常會留下整個參數區間。
+              這不是 estimator 失敗，而是資料與 optimality restrictions 真正提供的資訊量。
+            </p>
+          </div>
+
+          <details>
+            <summary>把一條 inequality 畫成直覺</summary>
+            <div>
+              <p>
+                假設 swap policy 會讓 variable profit 多 10，但配送 miles 也多 4。observed policy 較好要求
+                <span class="mono">0−10 + 4τ ≥ 0</span>，亦即 <span class="mono">τ≥2.5</span>。
+                這條 comparison 給 τ 一個下界。另一個反方向 deviation 可能給上界；
+                多個 bounds 的交集形成 identified interval。
+              </p>
+            </div>
+          </details>
+        </section>
+
+        <section class="chapter" id="deviations">
+          <div class="chapter-head">
+            <div class="chapter-no">20</div>
+            <div>
+              <span class="part-label">Part II · Retail</span>
+              <h2>為何交換兩家店的開店年份，是特別有力的 deviation？</h2>
+              <p>pairwise resequencing 在保持可行的同時，改變作者想辨認的 margin。 <span class="page-tag">slides 82–84</span></p>
+            </div>
+          </div>
+
+          <p>
+            若 observed sequence 是店 1 在 1962 開、店 2 在 1964 開，deviation 只把兩者年份交換，
+            其他每家店與每個 opening year 全部不變。
+          </p>
+
+          <div class="bridge">
+            <div class="bridge-side">
+              <h4>Observed sequence</h4>
+              <p>1962：開靠近既有 cluster 的店 j；1964：開當時距 cluster 較遠的店 j′。</p>
+            </div>
+            <div class="bridge-arrow">⇄</div>
+            <div class="bridge-side">
+              <h4>Store-density-decreasing deviation</h4>
+              <p>1962 先開遠店 j′，1964 才開近店 j；兩年間的 Walmart network 較分散。</p>
+            </div>
+          </div>
+
+          <h3>Pairwise swap 有四個優點</h3>
+          <div class="grid-2">
+            <div class="card">
+              <h4>1. 保持 expansion scale</h4>
+              <p>每年總開店數大致不變，不需建模為何某年公司整體擴張快或慢。</p>
+            </div>
+            <div class="card">
+              <h4>2. 接近 observed policy</h4>
+              <p>不是比較完全不同的幻想版 Walmart，只做局部排序變動，對未建模誤差較穩健。</p>
+            </div>
+            <div class="card">
+              <h4>3. 專門移動目標 state</h4>
+              <p>可挑會明確增加／降低 store density 或 population density 的 pairs，讓 inequality 對 τ 或 ω 更敏感。</p>
+            </div>
+            <div class="card">
+              <h4>4. 大量 common terms 抵消</h4>
+              <p>相同兩家店最後都會開，差別只是 timing；很多長期 profit 與 aggregate shocks 在 value difference 中消掉。</p>
+            </div>
+          </div>
+
+          <div class="callout intuition">
+            <span class="callout-title">這像一個由企業自己做出的 matched comparison</span>
+            <p>
+              作者不問「為何開 j 而永遠不開 j′」，而問「為何 j 要比 j′ 早兩年」。
+              這個較窄的排序問題，正好揭露 Walmart 對早期 density benefits 與 cannibalization costs 的權衡。
+            </p>
+          </div>
+
+          <div class="callout warning">
+            <span class="callout-title">局部 deviations 的 tradeoff</span>
+            <p>
+              它們只提供 global optimality 的必要條件，不證明 observed sequence 在所有可能 policies 中最優。
+              只要所選 swaps 沒有足夠改變某一 state exposure，那個參數就可能界得很寬。
+              另一方面，若真實決策受未建模的 store-specific constraint 影響，即使小 swap 也可能不是可行替代方案。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="walmart-results">
+          <div class="chapter-head">
+            <div class="chapter-no">21</div>
+            <div>
+              <span class="part-label">Part II · Retail</span>
+              <h2>Walmart 結果：每 mile 的成本為何不只是卡車油錢？</h2>
+              <p>估計的 τ 捕捉整套「靠得近」的組織價值。 <span class="page-tag">slides 85–87</span></p>
+            </div>
+          </div>
+
+          <div class="big-idea">
+            <strong>Baseline estimate</strong>
+            <p>
+              <span class="mono">τ = $3,500</span> per mile, store, year。
+              若 5,000 家 Walmart stores 每家都離 distribution center 遠 100 miles，
+              年成本會增加近 20 億美元：
+              <span class="mono">5,000 × 100 × $3,500 = $1.75bn</span>，約為投影片所稱「almost $2 billion」。
+            </p>
+          </div>
+
+          <p>
+            這個估計約是單純 trucking-cost saving 的四倍。Holmes 因此把超出的部分解讀為：
+          </p>
+          <ul>
+            <li><strong>Just-in-time inventory flexibility：</strong>離 DC 近，可更快補貨並回應 local demand shocks，減少缺貨與過度庫存。</li>
+            <li><strong>Managerial economies of density：</strong>區域管理、人員支援與 labor relocation 更容易。</li>
+            <li><strong>其他未單獨建模的 logistics complementarities：</strong>τ 是 reduced-form cost index，不是只有每 mile 的卡車帳單。</li>
+          </ul>
+
+          <h3>政策含義</h3>
+          <p>
+            若 zoning、divestiture 或其他政策大幅限制 Walmart store density，成本可能顯著上升。
+            但 welfare 判斷不能停在 Walmart 成本：還要計入消費者可及性、local competitors、勞動市場、
+            market power 與城市外部性。這篇估計主要提供企業 cost side 的一塊。
+          </p>
+
+          <div class="callout warning">
+            <span class="callout-title">最關鍵的 omitted mechanism：preemption</span>
+            <p>
+              若 Walmart 早期沿某路線密集開店，是為了搶先封鎖 Kmart 或未來 entrants，
+              observed willingness to cluster 不全是配送 savings。模型忽略明確的 competitor locations
+              與 preemption，可能讓 τ 吸收部分策略價值。投影片也把這列為重要限制。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="assumptions">
+          <div class="chapter-head">
+            <div class="chapter-no">22</div>
+            <div>
+              <h2>假設總表：每一個捷徑換來什麼、可能犧牲什麼？</h2>
+              <p>結構模型的可信度來自清楚知道 identifying assumptions 在哪裡。</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>假設／做法</th><th>為什麼需要</th><th>若失敗，可能誤讀什麼</th><th>可做的診斷</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Airline Markov strategies</td><td>讓 current state 足以描述策略，不追蹤完整歷史</td><td>歷史性合約、聲譽或 retaliation 若未進 state，continuation values 錯置</td><td>加入歷史摘要，檢查其是否仍預測 choices</td></tr>
+                <tr><td>Local-manager objective</td><td>把高維聯合 network action 拆成 binary local decisions</td><td>忽略全公司 coordination 或跨 segments 的額外互補</td><td>用替代 revenue scopes／organizational partitions 做 robustness</td></tr>
+                <tr><td>Inclusive-state transition</td><td>讓 local DP 在低維 state space 關閉</td><td>遠端 competitor network 若有額外預測力，aggregation bias</td><td>測 full-network summaries 是否預測 x*′ 或 residual entry</td></tr>
+                <tr><td>Competitors’ hub sizes as IV</td><td>處理 fare 與 unobserved quality endogeneity</td><td>共同 demand shocks 使 exclusion 失敗，price sensitivity 有偏</td><td>豐富 fixed effects、替代 instruments、placebo outcomes</td></tr>
+                <tr><td>Static Bertrand pricing within quarter</td><td>由 demand derivatives 與 prices 反推 marginal costs</td><td>價格勾結、capacity constraints 或 intertemporal pricing 被誤當 cost</td><td>替代 conduct models、markup sensitivity</td></tr>
+                <tr><td>NPL equilibrium fixed point</td><td>連接 observed CCPs 與 structural best responses</td><td>多重均衡或不收斂影響 estimates/counterfactual selection</td><td>多起點、不同初始化、回報 fixed points 與 stability</td></tr>
+                <tr><td>Walmart competitor abstraction</td><td>聚焦 own-network cannibalization 與 density</td><td>preemption 或 rival avoidance 被吸收到 τ</td><td>加入 rival exposure、分年代／區域比較</td></tr>
+                <tr><td>Nested-logit substitution pattern</td><td>用 store revenue 估 block-level shares</td><td>過強的 within-Walmart substitution restriction改變 cannibalization</td><td>替代 nests、random coefficients、外部 foot-traffic validation</td></tr>
+                <tr><td>Constant spending λ</td><td>把 shares 直接轉成 revenue</td><td>network expansion 對總 category spending 或 prices 的影響被忽略</td><td>用 household expenditure / price data 校準</td></tr>
+                <tr><td>Profit accounting ratios</td><td>由 sales、wage、land data 推算 local profit</td><td>location-specific margins 或 labor technology 被誤當 fixed cost</td><td>變動 μ、labor intensity、land rental rate</td></tr>
+                <tr><td>Irreversible openings</td><td>製造 dynamic link，讓 opening order 有價值</td><td>若 closure/conversion 常見，模型高估 commitment</td><td>納入 exits、store conversions 或 salvage values</td></tr>
+                <tr><td>Observed policy optimal</td><td>形成 revealed-preference inequalities</td><td>管理失誤、資本限制或 politics 使 inequalities 不成立</td><td>允許 optimization error/slack，使用接近 observed 的 deviations</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="big-idea">
+            <strong>閱讀 structural model 的四問法</strong>
+            <p>
+              誰在最大化什麼？進入本期時哪些是 state、哪些是 action？資料中的哪種 variation
+              分開哪些 parameters？為了算得動，作者在哪裡縮小了 state、action、belief 或 alternative-policy space？
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="cheatsheet">
+          <div class="chapter-head">
+            <div class="chapter-no">23</div>
+            <div>
+              <h2>最後速查表</h2>
+              <p>把整份投影片壓縮成討論課可直接使用的版本。</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>看到這個 object</th><th>立刻想到</th><th>要追問的問題</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><span class="mono">x<sub>imt</sub></span></td><td>目前的 local network state</td><td>它如何改變可提供的 routes 與 future entry cost？</td></tr>
+                <tr><td><span class="mono">a<sub>imt</sub>=x<sub>im,t+1</sub></span></td><td>time-to-build</td><td>成本何時付？新 capacity 何時可用？</td></tr>
+                <tr><td><span class="mono">(1−x)EC</span></td><td>sunk entry cost 與 state dependence</td><td>entry rarity/persistence 如何辨認 EC？</td></tr>
+                <tr><td><span class="mono">R<sub>imt</sub></span></td><td>使用此 segment 的所有 routes profit</td><td>地方經理內部化哪些 network spillovers？</td></tr>
+                <tr><td><span class="mono">x*=(x,R,HUB)</span></td><td>inclusive-state aggregation</td><td>full network 是否仍有額外預測力？</td></tr>
+                <tr><td><span class="mono">P=Ψ(θ,P)</span></td><td>MPE CCP fixed point / NPL</td><td>是否多重？迭代是否穩定？</td></tr>
+                <tr><td>Zero hub-size counterfactual</td><td>逐一關掉 network channel</td><td>其他 primitives 與 equilibrium selection 如何處理？</td></tr>
+                <tr><td><span class="mono">s<sub>jℓt</sub></span></td><td>block-to-store choice share</td><td>substitution pattern 是否合理？</td></tr>
+                <tr><td><span class="mono">R<sub>jt</sub>=ΣHλs</span></td><td>share-to-revenue bridge</td><td>固定支出 λ 是否適當？</td></tr>
+                <tr><td>Cannibalization rate</td><td>移除新店後的反事實既有店 sales</td><td>更高 cannibalization 為何要求更高 density savings？</td></tr>
+                <tr><td><span class="mono">FC=f+τd<sup>DC</sup></span></td><td>distribution-distance cost</td><td>τ 是否吸收 JIT、管理或 preemption？</td></tr>
+                <tr><td><span class="mono">a<sub>t</sub>≥a<sub>t−1</sub></span></td><td>irreversibility</td><td>沒有這條限制時還剩多少 dynamics？</td></tr>
+                <tr><td><span class="mono">V(obs)−V(dev)≥0</span></td><td>dynamic revealed preference</td><td>deviation 真可行嗎？observed policy 有何 optimization error？</td></tr>
+                <tr><td><span class="mono">y−xθ≥0</span></td><td>parameter half-space</td><td>哪些 deviations 提供上界、哪些提供下界？</td></tr>
+                <tr><td><span class="mono">Σmin{0,m̂}<sup>2</sup></span></td><td>只懲罰 violated moments</td><td>identified set 多寬？sampling uncertainty 如何處理？</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="big-idea">
+            <strong>全篇最值得帶走的一句話</strong>
+            <p>
+              動態網路模型的難處，是一個小行動同時改變別處與未來；實證研究的藝術，
+              則是在不可能列舉整張網路的情況下，找到足夠可信的 state summary 或 policy comparisons，
+              讓 observed network choices 仍能揭露 underlying demand、cost 與 strategic motives。
+            </p>
+          </div>
+
+          <details>
+            <summary>討論課可直接使用的 12 個問題</summary>
+            <div>
+              <ol>
+                <li>這個產業裡的 node、link 與 network spillover 分別是什麼？</li>
+                <li>一個 local action 影響同公司其他市場，還是也影響競爭者？</li>
+                <li>模型的 dynamics 來自 sunk cost、irreversibility，還是 rivals’ future responses？</li>
+                <li>航空 profit 中為何 action 是 <span class="mono">a<sub>t</sub>=x<sub>t+1</sub></span>？</li>
+                <li>地方經理 objective 保留了哪些跨 route effects、忽略了哪些 coordination？</li>
+                <li>inclusive-state assumption 的 conditional independence 可否被資料挑戰？</li>
+                <li>NPL fixed-point map 為何不等於 Bellman contraction？</li>
+                <li>airline counterfactual 中 statistical significance 與 quantitative importance 有何不同？</li>
+                <li>Holmes 為何一定要先估 demand，才能談 density economies？</li>
+                <li>把 cannibalization 固定在 1% 為何給出 cost savings 的 lower bound？</li>
+                <li>pairwise resequencing 為何比任意 alternative store network 更可信？</li>
+                <li>若 preemption 很重要，航空與 Walmart 兩個結果會各自受到什麼影響？</li>
+              </ol>
+            </div>
+          </details>
+        </section>
+      </main>
+    </div>
+
+    <footer>
+      本筆記依據 Victor Aguirregabiria 的〈Dynamic Games of Network Competition〉講義整理；
+      公式沿用講義符號並補上推導、timing、識別與假設用途。若投影片表格口徑或下標有不一致，
+      筆記已在相應位置標示。建議閱讀時將本導讀與原 PDF 並排對照。
+    </footer>
+  </div>
+
+  <script>
+    (() => {
+      const progress = document.getElementById("reading-progress");
+      const tocLinks = [...document.querySelectorAll(".toc a")];
+      const sections = tocLinks
+        .map((link) => document.querySelector(link.getAttribute("href")))
+        .filter(Boolean);
+
+      const updateProgress = () => {
+        const root = document.documentElement;
+        const max = root.scrollHeight - root.clientHeight;
+        const ratio = max > 0 ? root.scrollTop / max : 0;
+        progress.style.width = `${Math.min(100, Math.max(0, ratio * 100))}%`;
+      };
+
+      const updateActive = () => {
+        const marker = window.scrollY + 125;
+        let active = sections[0];
+        for (const section of sections) {
+          if (section.offsetTop <= marker) active = section;
+        }
+        tocLinks.forEach((link) => {
+          link.classList.toggle(
+            "active",
+            active && link.getAttribute("href") === `#${active.id}`
+          );
+        });
+      };
+
+      const onScroll = () => {
+        updateProgress();
+        updateActive();
+      };
+
+      document.getElementById("expand-all").addEventListener("click", () => {
+        document.querySelectorAll("details").forEach((item) => {
+          item.open = true;
+        });
+      });
+
+      document.getElementById("collapse-all").addEventListener("click", () => {
+        document.querySelectorAll("details").forEach((item) => {
+          item.open = false;
+        });
+      });
+
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", onScroll);
+      onScroll();
+    })();
+  </script>
+</body>
+</html>
