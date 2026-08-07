@@ -1,0 +1,2041 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Mark Egan Demand Estimation 講義與 BLP random-coefficients logit 的逐步推導筆記">
+  <title>Demand Estimation × BLP｜逐步推導筆記</title>
+  <style>
+    :root {
+      --canvas: #eef1f4;
+      --paper: #ffffff;
+      --paper-2: #f7f9fb;
+      --ink: #18232d;
+      --muted: #64717d;
+      --line: #d8dee5;
+      --blue: #245b89;
+      --blue-dark: #183f62;
+      --blue-soft: #e7f0f8;
+      --teal: #24786f;
+      --teal-dark: #185850;
+      --teal-soft: #e4f3f0;
+      --amber: #a66a12;
+      --amber-soft: #fbf0db;
+      --red: #a84940;
+      --red-soft: #f9e9e7;
+      --purple: #765589;
+      --purple-soft: #f1eaf5;
+      --shadow: 0 16px 42px rgba(24, 35, 45, 0.075);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--canvas);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      line-height: 1.76;
+    }
+    a {
+      color: var(--blue-dark);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+    h1, h2, h3, h4 { letter-spacing: 0; }
+    h1 {
+      max-width: 1050px;
+      margin: 0 0 12px;
+      font-size: clamp(2.1rem, 5vw, 3.55rem);
+      line-height: 1.05;
+    }
+    h2 {
+      margin: 0;
+      font-size: clamp(1.36rem, 3vw, 1.72rem);
+      line-height: 1.28;
+    }
+    h3 {
+      margin: 25px 0 9px;
+      font-size: 1.13rem;
+      line-height: 1.42;
+    }
+    h4 {
+      margin: 0 0 7px;
+      font-size: 0.98rem;
+    }
+    p { margin: 0 0 13px; }
+    ul, ol { margin: 8px 0 15px; padding-left: 1.35rem; }
+    li { margin: 5px 0; }
+    strong { font-weight: 820; }
+    code, .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    code {
+      padding: 1px 5px;
+      border-radius: 4px;
+      color: var(--blue-dark);
+      background: var(--blue-soft);
+      font-size: 0.9em;
+    }
+    button { font: inherit; }
+    .reading-progress {
+      position: fixed;
+      z-index: 20;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--blue), var(--teal));
+    }
+    .shell {
+      width: min(1460px, 100%);
+      min-width: 0;
+      margin: 0 auto;
+      padding: 25px;
+    }
+    .masthead {
+      overflow: hidden;
+      margin-bottom: 22px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+    .masthead-copy {
+      padding: 42px 43px 34px;
+      border-top: 7px solid var(--blue);
+      border-bottom: 1px solid var(--line);
+      background:
+        radial-gradient(circle at 92% 5%, rgba(36, 120, 111, 0.14), transparent 26%),
+        radial-gradient(circle at 70% 100%, rgba(36, 91, 137, 0.10), transparent 34%),
+        var(--paper);
+    }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--teal);
+      font-size: 0.79rem;
+      font-weight: 850;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .lead {
+      max-width: 1050px;
+      margin: 0;
+      color: #344755;
+      font-size: 1.08rem;
+    }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 20px;
+      margin-top: 20px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+    .meta span { min-width: 0; overflow-wrap: anywhere; }
+    .logic-strip {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      background: var(--paper-2);
+    }
+    .logic-step {
+      position: relative;
+      min-width: 0;
+      min-height: 145px;
+      padding: 19px 20px;
+      border-right: 1px solid var(--line);
+    }
+    .logic-step:last-child { border-right: 0; }
+    .logic-step::after {
+      position: absolute;
+      z-index: 2;
+      top: 50%;
+      right: -10px;
+      display: grid;
+      width: 20px;
+      height: 20px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      color: var(--blue);
+      background: var(--paper);
+      content: "→";
+      font-size: 0.72rem;
+      font-weight: 900;
+      transform: translateY(-50%);
+    }
+    .logic-step:last-child::after { display: none; }
+    .logic-step span {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 850;
+      letter-spacing: 0.045em;
+      text-transform: uppercase;
+    }
+    .logic-step strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--blue-dark);
+    }
+    .logic-step:nth-child(2) strong,
+    .logic-step:nth-child(4) strong { color: var(--teal-dark); }
+    .logic-step:nth-child(3) strong { color: var(--amber); }
+    .logic-step:nth-child(5) strong { color: var(--purple); }
+    .logic-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.5;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 282px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+    .toc {
+      position: sticky;
+      top: 17px;
+      max-height: calc(100vh - 34px);
+      overflow-y: auto;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--paper);
+      box-shadow: 0 9px 28px rgba(24, 35, 45, 0.06);
+    }
+    .toc-title {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 0.77rem;
+      font-weight: 850;
+      letter-spacing: 0.045em;
+      text-transform: uppercase;
+    }
+    .toc a {
+      display: block;
+      padding: 6px 9px;
+      border-left: 3px solid transparent;
+      color: #425564;
+      font-size: 0.84rem;
+      line-height: 1.44;
+      text-decoration: none;
+    }
+    .toc a:hover,
+    .toc a:focus-visible,
+    .toc a.active {
+      border-left-color: var(--teal);
+      color: var(--teal-dark);
+      background: var(--teal-soft);
+    }
+    .toc-tools {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+    .toc-tools button {
+      padding: 7px 8px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--blue-dark);
+      background: var(--paper-2);
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 760;
+    }
+    .toc-tools button:hover,
+    .toc-tools button:focus-visible {
+      border-color: var(--blue);
+      background: var(--blue-soft);
+    }
+    main {
+      min-width: 0;
+      padding: 2px 34px 34px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+    .chapter {
+      scroll-margin-top: 18px;
+      padding: 34px 0 39px;
+      border-bottom: 1px solid var(--line);
+    }
+    .chapter:last-child { border-bottom: 0; }
+    .chapter-heading {
+      display: grid;
+      grid-template-columns: 45px minmax(0, 1fr);
+      gap: 13px;
+      align-items: start;
+      margin-bottom: 21px;
+    }
+    .chapter-number {
+      display: grid;
+      width: 41px;
+      height: 41px;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--blue);
+      font-size: 0.87rem;
+      font-weight: 850;
+    }
+    .chapter:nth-child(3n + 2) .chapter-number { background: var(--teal); }
+    .chapter:nth-child(3n) .chapter-number { background: var(--amber); }
+    .chapter-heading p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 0.93rem;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin: 16px 0;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin: 16px 0;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .card {
+      min-width: 0;
+      padding: 16px 17px;
+      border: 1px solid var(--line);
+      border-top: 3px solid var(--blue);
+      border-radius: 8px;
+      background: var(--paper-2);
+    }
+    .card.teal { border-top-color: var(--teal); }
+    .card.amber { border-top-color: var(--amber); }
+    .card.red { border-top-color: var(--red); }
+    .card.purple { border-top-color: var(--purple); }
+    .card p:last-child,
+    .card ul:last-child { margin-bottom: 0; }
+    .label {
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 0.73rem;
+      font-weight: 850;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .callout {
+      margin: 17px 0;
+      padding: 15px 18px;
+      border-left: 4px solid var(--blue);
+      background: var(--blue-soft);
+    }
+    .callout.why {
+      border-left-color: var(--teal);
+      background: var(--teal-soft);
+    }
+    .callout.warning {
+      border-left-color: var(--red);
+      background: var(--red-soft);
+    }
+    .callout.caution {
+      border-left-color: var(--amber);
+      background: var(--amber-soft);
+    }
+    .callout.purple {
+      border-left-color: var(--purple);
+      background: var(--purple-soft);
+    }
+    .callout p:last-child,
+    .callout ul:last-child,
+    .callout ol:last-child { margin-bottom: 0; }
+    .callout-title {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 0.77rem;
+      font-weight: 880;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .equation {
+      overflow-x: auto;
+      margin: 16px 0;
+      padding: 16px 19px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfd;
+      text-align: center;
+    }
+    .equation math {
+      min-width: max-content;
+      color: #173c58;
+      font-size: clamp(1rem, 2vw, 1.13rem);
+    }
+    .equation .eq-caption {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 0.83rem;
+      text-align: center;
+    }
+    .equation.compact { padding: 12px 15px; }
+    .step-list {
+      display: grid;
+      gap: 12px;
+      margin: 17px 0;
+      counter-reset: step;
+    }
+    .step {
+      display: grid;
+      grid-template-columns: 38px minmax(0, 1fr);
+      gap: 12px;
+      padding: 15px 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper-2);
+      counter-increment: step;
+    }
+    .step::before {
+      display: grid;
+      width: 33px;
+      height: 33px;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--teal);
+      content: counter(step);
+      font-size: 0.79rem;
+      font-weight: 850;
+    }
+    .step h4 { margin-top: 3px; color: var(--blue-dark); }
+    .step p:last-child { margin-bottom: 0; }
+    .derivation {
+      margin: 16px 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+    .derivation summary {
+      padding: 13px 16px;
+      color: var(--blue-dark);
+      background: var(--paper-2);
+      cursor: pointer;
+      font-weight: 820;
+      list-style-position: inside;
+    }
+    .derivation[open] summary { border-bottom: 1px solid var(--line); }
+    .derivation-body { padding: 16px 18px 4px; }
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 22px;
+      margin: 18px 0;
+    }
+    .flow-item {
+      position: relative;
+      min-width: 0;
+      padding: 14px 12px;
+      border: 1px solid var(--line);
+      border-top: 3px solid var(--blue);
+      border-radius: 8px;
+      background: var(--paper-2);
+      text-align: center;
+    }
+    .flow-item::after {
+      position: absolute;
+      top: 50%;
+      right: -20px;
+      color: var(--muted);
+      content: "→";
+      font-weight: 900;
+      transform: translateY(-50%);
+    }
+    .flow-item:last-child::after { content: ""; }
+    .flow-item:nth-child(2),
+    .flow-item:nth-child(4) { border-top-color: var(--teal); }
+    .flow-item:nth-child(3) { border-top-color: var(--amber); }
+    .flow-item:nth-child(5) { border-top-color: var(--purple); }
+    .flow-item strong,
+    .flow-item span { display: block; }
+    .flow-item span {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.81rem;
+      line-height: 1.45;
+    }
+    .table-wrap {
+      overflow-x: auto;
+      margin: 16px 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--paper);
+      font-size: 0.9rem;
+    }
+    caption {
+      padding: 11px 13px;
+      color: var(--muted);
+      background: var(--paper-2);
+      font-size: 0.82rem;
+      text-align: left;
+    }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+    }
+    th {
+      color: #314754;
+      background: #f1f5f7;
+      font-weight: 820;
+    }
+    tr:last-child td { border-bottom: 0; }
+    .nowrap { white-space: nowrap; }
+    .tag {
+      display: inline-block;
+      margin: 1px 3px 1px 0;
+      padding: 2px 7px;
+      border-radius: 999px;
+      color: var(--blue-dark);
+      background: var(--blue-soft);
+      font-size: 0.75rem;
+      font-weight: 790;
+    }
+    .tag.teal { color: var(--teal-dark); background: var(--teal-soft); }
+    .tag.amber { color: var(--amber); background: var(--amber-soft); }
+    .tag.red { color: var(--red); background: var(--red-soft); }
+    .checklist {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 18px;
+      margin: 15px 0;
+      padding: 0;
+      list-style: none;
+    }
+    .checklist li {
+      position: relative;
+      margin: 0;
+      padding: 10px 12px 10px 36px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--paper-2);
+    }
+    .checklist li::before {
+      position: absolute;
+      top: 10px;
+      left: 12px;
+      color: var(--teal);
+      content: "✓";
+      font-weight: 900;
+    }
+    .sign-note {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: stretch;
+      overflow: hidden;
+      margin: 16px 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper-2);
+    }
+    .sign-box { padding: 16px; text-align: center; }
+    .sign-box strong { display: block; color: var(--blue-dark); }
+    .sign-box span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+    .sign-equals {
+      display: grid;
+      place-items: center;
+      padding: 0 13px;
+      color: var(--teal);
+      font-weight: 900;
+    }
+    .mini {
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+    .back-top {
+      display: inline-block;
+      margin-top: 12px;
+      font-size: 0.82rem;
+    }
+    footer {
+      padding: 22px 0 7px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-align: center;
+    }
+
+    @media (max-width: 1160px) {
+      .logic-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .logic-step { border-bottom: 1px solid var(--line); }
+      .logic-step:nth-child(2n) { border-right: 0; }
+      .logic-step:last-child { grid-column: 1 / -1; border-bottom: 0; }
+      .logic-step::after { display: none; }
+      .layout { grid-template-columns: 1fr; }
+      .toc {
+        position: static;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        max-height: none;
+      }
+      .toc-title,
+      .toc-tools { grid-column: 1 / -1; }
+      .flow { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+      .flow-item::after { content: ""; }
+      .flow-item:last-child { grid-column: 1 / -1; }
+      .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 740px) {
+      html, body { max-width: 100%; overflow-x: clip; }
+      .shell { padding: 12px; }
+      .masthead-copy { padding: 28px 22px 25px; }
+      .logic-strip,
+      .grid-2,
+      .grid-3,
+      .grid-4,
+      .flow,
+      .toc,
+      .checklist,
+      .sign-note { grid-template-columns: 1fr; }
+      .logic-step,
+      .logic-step:nth-child(2n),
+      .logic-step:last-child {
+        grid-column: auto;
+        min-height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .logic-step:last-child { border-bottom: 0; }
+      .flow-item:last-child { grid-column: auto; }
+      .sign-equals { padding: 3px; }
+      main { padding: 2px 20px 25px; }
+      .chapter-heading { grid-template-columns: 38px minmax(0, 1fr); }
+      .chapter-number { width: 34px; height: 34px; }
+      .equation { padding: 13px 10px; }
+      .step { grid-template-columns: 34px minmax(0, 1fr); padding: 13px; }
+      .step::before { width: 30px; height: 30px; }
+    }
+    @media print {
+      body { background: #fff; }
+      .reading-progress,
+      .toc,
+      .toc-tools,
+      .back-top { display: none !important; }
+      .shell { width: 100%; padding: 0; }
+      .masthead, main { border: 0; box-shadow: none; }
+      .masthead-copy { padding: 24px 0; }
+      .logic-strip { border: 1px solid var(--line); }
+      .layout { display: block; }
+      main { padding: 0; }
+      .chapter { break-inside: avoid; }
+      .derivation { break-inside: avoid; }
+      .derivation:not([open]) .derivation-body { display: block; }
+      a { color: inherit; }
+    }
+  </style>
+</head>
+<body id="top">
+  <div class="reading-progress" aria-hidden="true"></div>
+
+  <div class="shell">
+    <header class="masthead">
+      <div class="masthead-copy">
+        <p class="eyebrow">DSE 2026 · Demand Estimation Reading Note</p>
+        <h1>Demand Estimation × BLP</h1>
+        <p class="lead">
+          從隨機效用、simple logit 與 Berry inversion 開始，逐步走到價格內生性、
+          random coefficients、BLP contraction mapping 與 GMM。每一步都回答兩個問題：
+          <strong>我們做了什麼？為什麼可以這樣做？</strong>
+        </p>
+        <div class="meta">
+          <span><strong>講義：</strong>Mark Egan, Notes on Demand Estimation</span>
+          <span><strong>課程：</strong>Summer 2026</span>
+          <span><strong>原始 PDF：</strong><a href="../05.Egan/egan_demand_estimation.pdf">05.Egan/egan_demand_estimation.pdf</a></span>
+          <span><strong>閱讀方式：</strong>先看主線，再展開每段推導</span>
+        </div>
+      </div>
+
+      <div class="logic-strip" aria-label="BLP 估計主線">
+        <div class="logic-step">
+          <span>Observed data</span>
+          <strong>價格、特徵、市占率</strong>
+          <p>資料只呈現市場均衡結果，尚未告訴我們需求曲線與消費者偏好。</p>
+        </div>
+        <div class="logic-step">
+          <span>Choice model</span>
+          <strong>效用 → 選擇機率</strong>
+          <p>T1EV 誤差給出 conditional logit；偏好異質性再對消費者積分。</p>
+        </div>
+        <div class="logic-step">
+          <span>Inner loop</span>
+          <strong>市占率 → 平均效用</strong>
+          <p>給定異質性參數，用 contraction mapping 找到配適市占率的 δ。</p>
+        </div>
+        <div class="logic-step">
+          <span>Outer loop</span>
+          <strong>平均效用 → 偏好參數</strong>
+          <p>用 IV/GMM 讓反推出來的需求衝擊 ξ 與工具變數正交。</p>
+        </div>
+        <div class="logic-step">
+          <span>Economic output</span>
+          <strong>彈性、markup、反事實</strong>
+          <p>結合供給端後，可以研究合併、進入、新產品、價格與福利。</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <nav class="toc" aria-label="閱讀目錄">
+        <span class="toc-title">閱讀路線</span>
+        <a href="#roadmap">0. 全貌：兩層反演</a>
+        <a href="#notation">1. 符號與資料</a>
+        <a href="#utility">2. 隨機效用模型</a>
+        <a href="#logit">3. T1EV 與 logit 機率</a>
+        <a href="#shares">4. 市占率與 Berry inversion</a>
+        <a href="#endogeneity">5. 價格內生性與 IV</a>
+        <a href="#elasticity">6. 彈性、IIA 與限制</a>
+        <a href="#heterogeneity">7. BLP 偏好異質性</a>
+        <a href="#integration">8. 個人機率與市場積分</a>
+        <a href="#inner-loop">9. Inner loop：contraction</a>
+        <a href="#outer-loop">10. Outer loop：GMM</a>
+        <a href="#algorithm">11. 完整估計演算法</a>
+        <a href="#post-estimation">12. 彈性、markup 與福利</a>
+        <a href="#diagnostics">13. 識別與實作檢查</a>
+        <a href="#cheatsheet">14. 一頁速查表</a>
+        <div class="toc-tools" aria-label="推導顯示工具">
+          <button type="button" id="expand-all">展開推導</button>
+          <button type="button" id="collapse-all">收合推導</button>
+        </div>
+      </nav>
+
+      <main>
+        <section class="chapter" id="roadmap">
+          <div class="chapter-heading">
+            <div class="chapter-number">0</div>
+            <div>
+              <h2>全貌：BLP 是兩層反演</h2>
+              <p>先不要被公式淹沒；整套方法只是在回答「偏好如何從市占率中被辨認出來」。</p>
+            </div>
+          </div>
+
+          <div class="callout">
+            <span class="callout-title">一句話版本</span>
+            <p>
+              <strong>Inner loop</strong> 對每組偏好異質性參數找出能配適市占率的平均效用；
+              <strong>outer loop</strong> 再用經濟上的排除限制，判斷哪組偏好參數可信。
+            </p>
+          </div>
+
+          <div class="flow" aria-label="BLP 計算流程">
+            <div class="flow-item">
+              <strong>猜 θ₂</strong>
+              <span>異質性參數</span>
+            </div>
+            <div class="flow-item">
+              <strong>解 δ(θ₂)</strong>
+              <span>模型 shares = 觀察 shares</span>
+            </div>
+            <div class="flow-item">
+              <strong>估 θ₁</strong>
+              <span>平均係數的 IV/GMM</span>
+            </div>
+            <div class="flow-item">
+              <strong>算 ξ</strong>
+              <span>δ − Xθ₁</span>
+            </div>
+            <div class="flow-item">
+              <strong>最小化 Q</strong>
+              <span>讓 Z′ξ 接近 0</span>
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <div class="card">
+              <div class="label">資料層</div>
+              <h4>我們看得到</h4>
+              <p>價格 <i>p</i>、產品特徵 <i>x</i>、銷量 <i>q</i>、市場規模 <i>M</i> 與市占率 <i>s</i>。</p>
+            </div>
+            <div class="card teal">
+              <div class="label">結構層</div>
+              <h4>我們想知道</h4>
+              <p>平均偏好、偏好異質性、價格敏感度、未觀察品質與替代模式。</p>
+            </div>
+            <div class="card amber">
+              <div class="label">識別層</div>
+              <h4>我們額外需要</h4>
+              <p>價格或產品設計的外生變化，讓需求衝擊不會被誤認成價格偏好。</p>
+            </div>
+          </div>
+
+          <div class="callout why">
+            <span class="callout-title">為什麼不能只看「價格與銷量的相關」？</span>
+            <p>
+              價格與數量是供需同時決定的均衡結果。高需求衝擊通常同時推高價格與銷量；
+              因此正相關不代表需求曲線向上，而可能只是需求曲線向外移動。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="notation">
+          <div class="chapter-heading">
+            <div class="chapter-number">1</div>
+            <div>
+              <h2>符號、選擇集合與市場資料</h2>
+              <p>先把索引與資料層級固定，後面的每個等式才不會混淆。</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <caption>核心符號</caption>
+              <thead>
+                <tr>
+                  <th>符號</th>
+                  <th>定義</th>
+                  <th>資料／模型層級</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td class="nowrap"><i>i</i></td><td>消費者</td><td>個人</td></tr>
+                <tr><td class="nowrap"><i>j</i> = 1,…,<i>J</i><sub>t</sub></td><td>市場內的產品</td><td>產品 × 市場</td></tr>
+                <tr><td class="nowrap"><i>j</i> = 0</td><td>outside good：不購買或選樣本外產品</td><td>市場</td></tr>
+                <tr><td class="nowrap"><i>t</i></td><td>市場；可以是地區 × 時間</td><td>市場</td></tr>
+                <tr><td class="nowrap"><i>p</i><sub>jt</sub>, <i>x</i><sub>jt</sub></td><td>價格與可觀察產品特徵</td><td>產品 × 市場</td></tr>
+                <tr><td class="nowrap"><i>ξ</i><sub>jt</sub></td><td>未觀察產品品質／需求衝擊</td><td>產品 × 市場</td></tr>
+                <tr><td class="nowrap"><i>ε</i><sub>ijt</sub></td><td>個人—產品特有偏好衝擊</td><td>個人 × 產品 × 市場</td></tr>
+                <tr><td class="nowrap"><i>M</i><sub>t</sub></td><td>潛在市場規模</td><td>市場</td></tr>
+                <tr><td class="nowrap"><i>s</i><sub>jt</sub> = <i>q</i><sub>jt</sub>/<i>M</i><sub>t</sub></td><td>產品市占率</td><td>產品 × 市場</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="equation" aria-label="outside share definition">
+            <math display="block">
+              <msub><mi>s</mi><mrow><mn>0</mn><mi>t</mi></mrow></msub>
+              <mo>=</mo>
+              <mn>1</mn>
+              <mo>−</mo>
+              <munderover>
+                <mo>∑</mo>
+                <mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow>
+                <msub><mi>J</mi><mi>t</mi></msub>
+              </munderover>
+              <msub><mi>s</mi><mrow><mi>j</mi><mi>t</mi></mrow></msub>
+            </math>
+            <p class="eq-caption">一人選一項的設定下，inside shares 加 outside share 必須等於 1。</p>
+          </div>
+
+          <div class="callout caution">
+            <span class="callout-title">市場規模不是純技術選擇</span>
+            <p>
+              改變 <i>M</i><sub>t</sub> 就會改變 outside share，進而改變反演出的平均效用。
+              例如存款市場的潛在市場可以是人口、家戶數或總可投資資產；三者代表不同的經濟問題。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="utility">
+          <div class="chapter-heading">
+            <div class="chapter-number">2</div>
+            <div>
+              <h2>隨機效用模型：把選擇寫成效用最大化</h2>
+              <p>離散選擇模型不直接對數量下假設，而是先描述每個人的選擇規則。</p>
+            </div>
+          </div>
+
+          <div class="equation" aria-label="simple logit indirect utility">
+            <math display="block">
+              <msub><mi>u</mi><mrow><mi>i</mi><mi>j</mi><mi>t</mi></mrow></msub>
+              <mo>=</mo>
+              <mi>α</mi><msub><mi>p</mi><mrow><mi>j</mi><mi>t</mi></mrow></msub>
+              <mo>+</mo>
+              <msubsup><mi>x</mi><mrow><mi>j</mi><mi>t</mi></mrow><mo>′</mo></msubsup><mi>β</mi>
+              <mo>+</mo>
+              <msub><mi>ξ</mi><mrow><mi>j</mi><mi>t</mi></mrow></msub>
+              <mo>+</mo>
+              <msub><mi>ε</mi><mrow><mi>i</mi><mi>j</mi><mi>t</mi></mrow></msub>
+            </math>
+          </div>
+
+          <div class="grid-2">
+            <div class="card teal">
+              <div class="label">共同部分</div>
+              <h4>ξ<sub>jt</sub>：產品需求衝擊</h4>
+              <p>同一市場內所有消費者共同面對，計量學家看不到，但廠商通常在定價時看得到。</p>
+              <p class="mini">例：品牌聲譽、服務品質、地點便利、未記錄廣告。</p>
+            </div>
+            <div class="card purple">
+              <div class="label">個人部分</div>
+              <h4>ε<sub>ijt</sub>：私人偏好衝擊</h4>
+              <p>同一產品對不同人不同，用來把確定性的效用排序轉換為選擇機率。</p>
+              <p class="mini">它不是產品層級回歸中的殘差。</p>
+            </div>
+          </div>
+
+          <p>將所有消費者共同的部分定義為 mean utility：</p>
+
+          <div class="equation compact" aria-label="mean utility definition">
+            <math display="block">
+              <msub><mi>δ</mi><mrow><mi>j</mi><mi>t</mi></mrow></msub>
+              <mo>≡</mo>
+              <mi>α</mi><msub><mi>p</mi><mrow><mi>j</mi><mi>t</mi></mrow></msub>
+              <mo>+</mo>
+              <msubsup><mi>x</mi><mrow><mi>j</mi><mi>t</mi></mrow><mo>′</mo></msubsup><mi>β</mi>
+              <mo>+</mo>
+              <msub><mi>ξ</mi><mrow><mi>j</mi><mi>t</mi></mrow></msub>
+            </math>
+          </div>
+
+          <p>消費者的問題是：</p>
+
+          <div class="equation compact" aria-label="consumer utility maximization">
+            <math display="block">
+              <msubsup><mi>j</mi><mi>i</mi><mo>*</mo></msubsup>
+              <mo>=</mo>
+              <munder><mo>arg max</mo><mrow><mi>j</mi><mo>∈</mo><mo>{</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>J</mi><mi>t</mi></msub><mo>}</mo></mrow></munder>
+              <mrow><mo>{</mo><msub><mi>δ</mi><mrow><mi>j</mi><mi>t</mi></mrow></msub><mo>+</mo><msub><mi>ε</mi><mrow><mi>i</mi><mi>j</mi><mi>t</mi></mrow></msub><mo>}</mo></mrow>
+            </math>
+          </div>
+
+          <div class="callout why">
+            <span class="callout-title">為什麼要放 outside good 並把它的效用設為 0？</span>
+            <p>
+              所有產品效用同時加上一個常數不會改變選擇。因此資料只能識別相對效用，
+              不能識別絕對水準。令 <i>δ</i><sub>0t</sub> = 0 是位置 normalization，
+              使 inside goods 的效用都解釋成「相對於不購買」。
+            </p>
+          </div>
+
+          <div class="sign-note" aria-label="price coefficient sign conventions">
+            <div class="sign-box">
+              <strong>Egan 講義</strong>
+              <span>效用寫 αp，正常情況 α &lt; 0</span>
+            </div>
+            <div class="sign-equals">等價</div>
+            <div class="sign-box">
+              <strong>常見 BLP 寫法</strong>
+              <span>效用寫 −αp，並定義 α &gt; 0</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="chapter" id="logit">
+          <div class="chapter-heading">
+            <div class="chapter-number">3</div>
+            <div>
+              <h2>T1EV 假設如何導出 logit 機率？</h2>
+              <p>封閉解不是免費的：它來自特定分配、獨立性與尺度 normalization。</p>
+            </div>
+          </div>
+
+          <p>假設個人偏好衝擊獨立同分配：</p>
+
+          <div class="equation compact" aria-label="Type one extreme value distribution">
+            <math display="block">
+              <msub><mi>ε</mi><mrow><mi>i</mi><mi>j</mi><mi>t</mi></mrow></msub>
+              <mo>∼</mo>
+              <mtext>i.i.d. Type-I Extreme Value</mtext>
+            </math>
+          </div>
+
+          <p>其累積分配函數是 <span class="mono">F(e) = exp{−exp(−e)}</span>。產品 <i>j</i> 被選擇的事件是：</p>
+
+          <div class="equation" aria-label="choice probability event">
+            <math display="block">
+              <msub><mi>P</mi><mrow><mi>i</mi><mi>j</mi><mi>t</mi></mrow></msub>
+              <mo>=</mo>
+              <mi>Pr</mi>
+              <mrow>
+                <mo>(</mo>
+                <msub><mi>δ</mi><mrow><mi>j</mi><mi>t</mi></mrow></msub>
+                <mo>+</mo>
+                <msub><mi>ε</mi><mrow><mi>i</mi><mi>j</mi><mi>t</mi></mrow></msub>
+                <mo>≥</mo>
+                <msub><mi>δ</mi><mrow><mi>k</mi><mi>t</mi></mrow></msub>
+                <mo>+</mo>
+                <msub><mi>ε</mi><mrow><mi>i</mi><mi>k</mi><mi>t</mi></mrow></msub>
+                <mo>,</mo>
+                <mspace width="0.3em"/>
+                <mi>∀</mi><mi>k</mi>
+                <mo>)</mo>
+              </mrow>
+            </math>
+          </div>
+
+          <details class="derivation" data-derivation>
+            <summary>展開：從最大效用事件積分到 logit 公式</summary>
+            <div class="derivation-body">
+              <p>先令 <i>V</i><sub>j</sub> = <i>δ</i><sub>jt</sub>，並給定 <i>ε</i><sub>j</sub> = <i>e</i>。產品 <i>j</i> 勝過產品 <i>k</i> 等價於：</p>
+              <div class="equation compact">
+                <span class="mono">ε<sub>k</sub> ≤ e + V<sub>j</sub> − V<sub>k</sub></span>
+              </div>
+              <p>由跨產品獨立性，給定 <i>ε</i><sub>j</sub> = <i>e</i> 時，同時勝過所有產品的機率可相乘：</p>
+              <div class="equation compact">
+                <span class="mono">P<sub>j</sub> = ∫ f(e) ∏<sub>k≠j</sub> F(e + V<sub>j</sub> − V<sub>k</sub>) de</span>
+              </div>
+              <p>代入 T1EV 的 <i>F</i> 與密度 <i>f</i>，被積分式化為：</p>
+              <div class="equation compact">
+                <span class="mono">e<sup>−e</sup> exp{−A e<sup>−e</sup>}, &nbsp; A = e<sup>−V<sub>j</sub></sup>∑<sub>ℓ</sub>e<sup>V<sub>ℓ</sub></sup></span>
+              </div>
+              <p>令 <i>y</i> = e<sup>−e</sup>，積分等於 1/<i>A</i>，因此：</p>
+              <div class="equation compact">
+                <span class="mono">P<sub>j</sub> = e<sup>V<sub>j</sub></sup> / ∑<sub>ℓ</sub>e<sup>V<sub>ℓ</sub></sup></span>
+              </div>
+            </div>
+          </details>
+
+          <div class="equation" aria-label="multinomial logit probability">
+            <math display="block">
+              <msub><mi>P</mi><mrow><mi>i</mi><mi>j</mi><mi>t</mi></mrow></msub>
+              <mo>=</mo>
+              <mfrac>
+                <mrow><mi>exp</mi><mo>(</mo><msub><mi>δ</mi><mrow><mi>j</mi><mi>t</mi></mrow></msub><mo>)</mo></mrow>
+                <mrow>
+                  <mn>1</mn><mo>+</mo>
+                  <munderover><mo>∑</mo><mrow><mi>ℓ</mi><mo>=</mo><mn>1</mn></mrow><msub><mi>J</mi><mi>t</mi></msub></munderover>
+                  <mi>exp</mi><mo>(</mo><msub><mi>δ</mi><mrow><mi>ℓ</mi><mi>t</mi></mrow></msub><mo>)</mo>
+                </mrow>
+              </mfrac>
+            </math>
+          </div>
+
+          <div class="grid-3">
+            <div class="card">
+              <div class="label">得到什麼</div>
+              <h4>封閉解</h4>
+              <p>不必做多維數值積分，就能直接算個人選擇機率。</p>
+            </div>
+            <div class="card amber">
+              <div class="label">付出什麼</div>
+              <h4>i.i.d. 誤差</h4>
+              <p>未觀察偏好在產品間沒有相關性，埋下 IIA 問題。</p>
+            </div>
+            <div class="card purple">
+              <div class="label">還 normalization 什麼</div>
+              <h4>效用尺度</h4>
+              <p>資料只識別所有效用係數相對於 ε 尺度的比率。</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="chapter" id="shares">
+          <div class="chapter-heading">
+            <div class="chapter-number">4</div>
+            <div>
+              <h2>從個人機率到市占率，再到 Berry inversion</h2>
+              <p>simple logit 最漂亮的一步：非線性 choice probability 可以被解析反演。</p>
+            </div>
+          </div>
+
+          <p>
+            市場內有大量消費者時，依大數法則，選擇產品 <i>j</i> 的人口比例會接近個人選擇機率。
+            因此：
+          </p>
+
+          <div class="equation" aria-label="simple logit market share">
+            <math display="block">
+              <msub><mi>s</mi><mrow><mi>j</mi><mi>t</mi></mrow></msub>
+              <mo>=</mo>
+              <mfrac>
+                <mrow><mi>exp</mi><mo>(</mo><msub><mi>δ</mi><mrow><mi>j</mi><mi>t</mi></mrow></msub><mo>)</mo></mrow>
+                <mrow>
+                  <mn>1</mn><mo>+</mo>
+                  <munderover><mo>∑</mo><mrow><mi>ℓ</mi><mo>=</mo><mn>1</mn></mrow><msub><mi>J</mi><mi>t</mi></msub></munderover>
+                  <mi>exp</mi><mo>(</mo><msub><mi>δ</mi><mrow><mi>ℓ</mi><mi>t</mi></mrow></msub><mo>)</mo>
+                </mrow>
+              </mfrac>
+            </math>
+          </div>
+
+          <div class="step-list">
+            <div class="step">
+              <div>
+                <h4>寫出 outside share</h4>
+                <p><span class="mono">s<sub>0t</sub> = 1 / D<sub>t</sub></span>，其中 <span class="mono">D<sub>t</sub> = 1 + ∑<sub>ℓ</sub>exp(δ<sub>ℓt</sub>)</span>。</p>
+              </div>
+            </div>
+            <div class="step">
+              <div>
+                <h4>inside share 除以 outside share</h4>
+                <p>共同分母完全消掉：<span class="mono">s<sub>jt</sub>/s<sub>0t</sub> = exp(δ<sub>jt</sub>)</span>。</p>
+              </div>
+            </div>
+            <div class="step">
+              <div>
+                <h4>取對數</h4>
+                <p>得到解析反演：<span class="mono">δ<sub>jt</sub> = log(s<sub>jt</sub>) − log(s<sub>0t</sub>)</span>。</p>
+              </div>
+            </div>
+            <div class="step">
+              <div>
+                <h4>代回平均效用</h4>
+                <p>把反演後的 δ 寫成價格、特徵與未觀察品質的回歸方程。</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="equation" aria-label="Berry simple logit inversion equation">
+            <math display="block">
+              <mi>log</mi><msub><mi>s</mi><mrow><mi>j</mi><mi>t</mi></mrow></msub>
+              <mo>−</mo>
+              <mi>log</mi><msub><mi>s</mi><mrow><mn>0</mn><mi>t</mi></mrow></msub>
+              <mo>=</mo>
+              <mi>α</mi><msub><mi>p</mi><mrow><mi>j</mi><mi>t</mi></mrow></msub>
+              <mo>+</mo>
+              <msubsup><mi>x</mi><mrow><mi>j</mi><mi>t</mi></mrow><mo>′</mo></msubsup><mi>β</mi>
+              <mo>+</mo>
+              <msub><mi>ξ</mi><mrow><mi>j</mi><mi>t</mi></mrow></msub>
+            </math>
+            <p class="eq-caption">Berry（1994）simple-logit demand equation。</p>
+          </div>
+
+          <div class="callout why">
+            <span class="callout-title">為什麼這個反演如此重要？</span>
+            <p>
+              左側完全由 observed shares 決定，原本的非線性聯立市占率方程因此變成線性回歸。
+              BLP inner loop 就是把這個解析反演推廣到有 random coefficients、無封閉反解的情況。
+            </p>
+          </div>
+
+          <details class="derivation" data-derivation>
+            <summary>補充：為什麼也可以用 market fixed effects？</summary>
+            <div class="derivation-body">
+              <p>直接取 inside share 的對數：</p>
+              <div class="equation compact">
+                <span class="mono">log s<sub>jt</sub> = αp<sub>jt</sub> + x′<sub>jt</sub>β + ξ<sub>jt</sub> − log D<sub>t</sub></span>
+              </div>
+              <p>
+                <span class="mono">−log D<sub>t</sub></span> 對市場 <i>t</i> 內所有產品都相同，
+                因此可以由 unrestricted market fixed effect 吸收。但這只處理共同分母；
+                <strong>不會</strong>處理價格與 ξ 的相關。
+              </p>
+            </div>
+          </details>
+        </section>
+
+        <section class="chapter" id="endogeneity">
+          <div class="chapter-heading">
+            <div class="chapter-number">5</div>
+            <div>
+              <h2>價格內生性：為什麼 OLS 不是需求曲線？</h2>
+              <p>廠商看得到需求衝擊再定價，使高品質、高價格與高市占率同時出現。</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card red">
+              <div class="label">Demand shock</div>
+              <h4>ξ<sub>jt</sub> 高</h4>
+              <p>消費者在相同價格下更願意選產品 <i>j</i>，需求曲線向外移動。</p>
+            </div>
+            <div class="card amber">
+              <div class="label">Firm response</div>
+              <h4>廠商提高 p<sub>jt</sub></h4>
+              <p>若廠商知道 ξ 很高，最適價格通常也較高，因此 Cov(<i>p</i>, ξ) &gt; 0。</p>
+            </div>
+          </div>
+
+          <details class="derivation" data-derivation open>
+            <summary>展開：OLS 偏誤的方向</summary>
+            <div class="derivation-body">
+              <p>將產品特徵 <i>x</i> partial out，OLS 價格係數的機率極限為：</p>
+              <div class="equation compact">
+                <span class="mono">plim α̂<sub>OLS</sub> = α + Cov(p̃, ξ) / Var(p̃)</span>
+              </div>
+              <p>
+                講義寫效用為 α<i>p</i>，所以真實 α 通常小於 0。若 Cov(<i>p</i>, ξ) &gt; 0，
+                偏誤為正，估計值就會「比較不負」。
+              </p>
+              <div class="equation compact">
+                <span class="mono">真實 α = −2 &nbsp; → &nbsp; OLS α̂ = −0.8</span>
+              </div>
+              <p>因此估計出的價格敏感度 −α 太小，看起來消費者比實際上更不在乎價格。</p>
+            </div>
+          </details>
+
+          <div class="callout warning">
+            <span class="callout-title">供需圖的訊息</span>
+            <p>
+              單一均衡點不能告訴我們觀察到的是需求還是供給。若有只移動供給的變數，
+              多個由供給位移造成的均衡點才會沿著同一條需求曲線排列。
+            </p>
+          </div>
+
+          <h3>有效工具變數的兩個條件</h3>
+
+          <div class="grid-2">
+            <div class="card teal">
+              <div class="label">1 · Relevance</div>
+              <h4>工具必須預測價格</h4>
+              <p><span class="mono">Cov(z<sub>jt</sub>, p<sub>jt</sub> | x<sub>jt</sub>) ≠ 0</span></p>
+            </div>
+            <div class="card purple">
+              <div class="label">2 · Exogeneity</div>
+              <h4>工具不能隨需求衝擊變動</h4>
+              <p><span class="mono">E[z<sub>jt</sub>ξ<sub>jt</sub>] = 0</span></p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <caption>講義中的價格工具變數</caption>
+              <thead>
+                <tr>
+                  <th>工具</th>
+                  <th>為何影響價格？</th>
+                  <th>主要威脅</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>成本／供給 shifters</strong><br><span class="tag">funding cost</span><span class="tag">regulatory cost</span></td>
+                  <td>改變邊際成本與最適價格。</td>
+                  <td>成本變數也可能改變服務品質，或反映當地共同需求。</td>
+                </tr>
+                <tr>
+                  <td><strong>Hausman instruments</strong><br><span class="tag teal">其他市場同產品價格</span></td>
+                  <td>跨市場共享成本衝擊，所以其他市場價格能預測本市場價格。</td>
+                  <td>全國廣告、品牌新聞等共同需求衝擊使 exclusion 失敗。</td>
+                </tr>
+                <tr>
+                  <td><strong>BLP instruments</strong><br><span class="tag amber">own/rival characteristics</span></td>
+                  <td>產品空間中的競爭與蠶食改變 markup，進而改變價格。</td>
+                  <td>廠商若因預期 ξ 而內生設計產品，特徵本身也不外生。</td>
+                </tr>
+                <tr>
+                  <td><strong>GIV／covariance restrictions</strong></td>
+                  <td>利用需求與供給衝擊的協方差限制構造可識別變化。</td>
+                  <td>可信度完全依賴經濟上的 covariance restrictions。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <details class="derivation" data-derivation>
+            <summary>展開：典型 BLP instruments 的形式與直覺</summary>
+            <div class="derivation-body">
+              <div class="equation compact">
+                <span class="mono">z<sup>own</sup><sub>jt</sub> = ∑<sub>k≠j, f(k)=f(j)</sub>x<sub>kt</sub></span>
+              </div>
+              <div class="equation compact">
+                <span class="mono">z<sup>rival</sup><sub>jt</sub> = ∑<sub>k: f(k)≠f(j)</sub>x<sub>kt</sub></span>
+              </div>
+              <p>
+                競爭者產品越接近 <i>j</i>，廠商通常越難維持高 markup；自家相似產品則會造成內部蠶食。
+                因此其他產品的特徵在控制 <i>x</i><sub>jt</sub> 後仍能預測價格。
+                但工具有效需要其他產品特徵與 <i>ξ</i><sub>jt</sub> 正交。
+              </p>
+            </div>
+          </details>
+        </section>
+
+        <section class="chapter" id="elasticity">
+          <div class="chapter-heading">
+            <div class="chapter-number">6</div>
+            <div>
+              <h2>Simple logit 的彈性、IIA 與紅巴士／藍巴士</h2>
+              <p>simple logit 好算，但替代模式主要由市占率決定，而不是產品相似性。</p>
+            </div>
+          </div>
+
+          <details class="derivation" data-derivation open>
+            <summary>展開：own-price 與 cross-price elasticity 推導</summary>
+            <div class="derivation-body">
+              <p>因為 <span class="mono">s<sub>j</sub> = exp(δ<sub>j</sub>)/D</span>，所以：</p>
+              <div class="equation compact">
+                <span class="mono">∂s<sub>j</sub>/∂δ<sub>j</sub> = s<sub>j</sub>(1−s<sub>j</sub>)</span>
+              </div>
+              <p>又因講義的 <span class="mono">∂δ<sub>j</sub>/∂p<sub>j</sub> = α</span>，所以：</p>
+              <div class="equation compact">
+                <span class="mono">∂s<sub>j</sub>/∂p<sub>j</sub> = αs<sub>j</sub>(1−s<sub>j</sub>)</span>
+              </div>
+              <div class="equation compact">
+                <span class="mono">η<sub>jj</sub> = (∂s<sub>j</sub>/∂p<sub>j</sub>)(p<sub>j</sub>/s<sub>j</sub>) = αp<sub>j</sub>(1−s<sub>j</sub>)</span>
+              </div>
+              <p>若 <i>k</i> ≠ <i>j</i>，改變 <i>p</i><sub>k</sub> 只透過共同分母影響 <i>s</i><sub>j</sub>：</p>
+              <div class="equation compact">
+                <span class="mono">∂s<sub>j</sub>/∂p<sub>k</sub> = −αs<sub>j</sub>s<sub>k</sub></span>
+              </div>
+              <div class="equation compact">
+                <span class="mono">η<sub>jk</sub> = −αs<sub>k</sub>p<sub>k</sub></span>
+              </div>
+              <p>α &lt; 0 時，own elasticity 為負，cross elasticity 為正。</p>
+            </div>
+          </details>
+
+          <div class="callout caution">
+            <span class="callout-title">限制出現在 cross elasticity</span>
+            <p>
+              對固定的漲價產品 <i>k</i>，所有目的地產品 <i>j</i> 的 cross elasticity 都是
+              <span class="mono">−αs<sub>k</sub>p<sub>k</sub></span>。它不看產品 <i>j</i> 是否和 <i>k</i> 相似。
+            </p>
+          </div>
+
+          <h3>IIA 的代數</h3>
+          <div class="equation compact" aria-label="IIA share ratio">
+            <math display="block">
+              <mfrac>
+                <msub><mi>s</mi><mi>j</mi></msub>
+                <msub><mi>s</mi><mi>k</mi></msub>
+              </mfrac>
+              <mo>=</mo>
+              <mi>exp</mi>
+              <mo>(</mo>
+              <msub><mi>δ</mi><mi>j</mi></msub>
+              <mo>−</mo>
+              <msub><mi>δ</mi><mi>k</mi></msub>
+              <mo>)</mo>
+            </math>
+            <p class="eq-caption">加入或刪除第三個產品，不會改變既有兩產品的 share ratio。</p>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <div class="label">原本</div>
+              <h4>汽車 C ＋ 紅巴士 R</h4>
+              <p>若兩者效用相同，simple logit 給 <span class="mono">s<sub>C</sub> = s<sub>R</sub> = 1/2</span>。</p>
+            </div>
+            <div class="card red">
+              <div class="label">加入完全相同的藍巴士</div>
+              <h4>模型把 C、R、B 各給 1/3</h4>
+              <p>合理直覺通常是汽車仍有 1/2，原本的巴士乘客再由紅、藍各分一半。</p>
+            </div>
+          </div>
+
+          <div class="callout why">
+            <span class="callout-title">問題的來源</span>
+            <p>
+              每新增一個產品，i.i.d. logit 就新增一個獨立的 ε 抽樣機會。
+              即使藍巴士在可觀察特徵上是紅巴士的複製品，模型仍把它視為新的獨立效用來源。
+              BLP 的目的就是讓相似產品的未觀察選擇傾向透過共同偏好係數產生相關。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="heterogeneity">
+          <div class="chapter-heading">
+            <div class="chapter-number">7</div>
+            <div>
+              <h2>BLP：把偏好係數變成消費者特有</h2>
+              <p>random coefficients 讓替代關係取決於「哪些人同時喜歡哪些產品」。</p>
+            </div>
+          </div>
+
+          <div class="equation" aria-label="BLP random coefficients utility">
+            <math display="block">
+              <msub><mi>u</mi><mrow><mi>i</mi><mi>j</mi><mi>t</mi></mrow></msub>
+              <mo>=</mo>
+              <msubsup><mi>x</mi><mrow><mi>j</mi><mi>t</mi></mrow><mo>′</mo></msubsup>
+              <msub><mi>β</mi><mi>i</mi></msub>
+              <mo>−</mo>
+              <msub><mi>α</mi><mi>i</mi></msub>
+              <msub><mi>p</mi><mrow><mi>j</mi><mi>t</mi></mrow></msub>
+              <mo>+</mo>
+              <msub><mi>ξ</mi><mrow><mi>j</mi><mi>t</mi></mrow></msub>
+              <mo>+</mo>
+              <msub><mi>ε</mi><mrow><mi>i</mi><mi>j</mi><mi>t</mi></mrow></msub>
+            </math>
+          </div>
+
+          <p>一個方便的異質性參數化是：</p>
+
+          <div class="equation compact">
+            <span class="mono">β<sub>i</sub> = β + Πd<sub>i</sub> + Σν<sub>i</sub>, &nbsp; ν<sub>i</sub> ∼ N(0, I)</span>
+          </div>
+          <div class="equation compact">
+            <span class="mono">α<sub>i</sub> = α + π′<sub>p</sub>d<sub>i</sub> + σ′<sub>p</sub>ν<sub>i</sub></span>
+          </div>
+
+          <div class="grid-2">
+            <div class="card teal">
+              <div class="label">Observed heterogeneity</div>
+              <h4>d<sub>i</sub>：人口特徵</h4>
+              <p>所得、年齡、財富等可直接讓產品偏好與價格敏感度因人而異。</p>
+            </div>
+            <div class="card purple">
+              <div class="label">Unobserved heterogeneity</div>
+              <h4>ν<sub>i</sub>：隨機偏好</h4>
+              <p>即使人口特徵相同，消費者仍可能有不同的特徵偏好。</p>
+            </div>
+          </div>
+
+          <p>將效用拆成三塊：</p>
+
+          <div class="equation compact" aria-label="BLP mean utility">
+            <span class="mono">δ<sub>jt</sub> = x′<sub>jt</sub>β − αp<sub>jt</sub> + ξ<sub>jt</sub></span>
+            <p class="eq-caption">所有消費者共同的 mean utility。</p>
+          </div>
+          <div class="equation compact" aria-label="BLP individual deviation">
+            <span class="mono">μ<sub>ijt</sub> = x′<sub>jt</sub>(Πd<sub>i</sub> + Σν<sub>i</sub>) − p<sub>jt</sub>(π′<sub>p</sub>d<sub>i</sub> + σ′<sub>p</sub>ν<sub>i</sub>)</span>
+            <p class="eq-caption">因人口特徵與 taste draws 而異的個人偏離。</p>
+          </div>
+          <div class="equation compact" aria-label="BLP utility decomposition">
+            <span class="mono">u<sub>ijt</sub> = δ<sub>jt</sub> + μ<sub>ijt</sub> + ε<sub>ijt</sub></span>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>部分</th>
+                  <th>誰共享？</th>
+                  <th>估計中的角色</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>δ<sub>jt</sub></strong></td>
+                  <td>同一市場所有消費者</td>
+                  <td>inner loop 從 observed shares 反演；含未觀察品質 ξ。</td>
+                </tr>
+                <tr>
+                  <td><strong>μ<sub>ijt</sub></strong></td>
+                  <td>因消費者而異</td>
+                  <td>產生異質性、產品相似性與較真實的替代模式。</td>
+                </tr>
+                <tr>
+                  <td><strong>ε<sub>ijt</sub></strong></td>
+                  <td>個人—產品特有</td>
+                  <td>保留 conditional logit 封閉解。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout why">
+            <span class="callout-title">為什麼相似產品會變成近替代品？</span>
+            <p>
+              若兩個 ETF 都追蹤同一指數，對該指數係數很高的消費者會同時給兩者較高的 μ。
+              當其中一個漲價，這群人自然較可能轉向另一個；替代關係因此由產品特徵與偏好分布共同決定。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="integration">
+          <div class="chapter-heading">
+            <div class="chapter-number">8</div>
+            <div>
+              <h2>條件 logit 機率與市場積分</h2>
+              <p>給定一個人的偏好，他仍是 logit；市場 share 則是把所有類型的人平均起來。</p>
+            </div>
+          </div>
+
+          <p>固定 <i>d</i><sub>i</sub>、<i>ν</i><sub>i</sub> 與 <i>δ</i> 後，ε 仍為 T1EV，因此：</p>
+
+          <div class="equation" aria-label="BLP individual conditional choice probability">
+            <math display="block">
+              <msub><mi>P</mi><mrow><mi>i</mi><mi>j</mi><mi>t</mi></mrow></msub>
+              <mo>=</mo>
+              <mfrac>
+                <mrow>
+                  <mi>exp</mi>
+                  <mo>(</mo>
+                  <msub><mi>δ</mi><mrow><mi>j</mi><mi>t</mi></mrow></msub>
+                  <mo>+</mo>
+                  <msub><mi>μ</mi><mrow><mi>i</mi><mi>j</mi><mi>t</mi></mrow></msub>
+                  <mo>)</mo>
+                </mrow>
+                <mrow>
+                  <mn>1</mn><mo>+</mo>
+                  <munderover><mo>∑</mo><mrow><mi>ℓ</mi><mo>=</mo><mn>1</mn></mrow><msub><mi>J</mi><mi>t</mi></msub></munderover>
+                  <mi>exp</mi>
+                  <mo>(</mo>
+                  <msub><mi>δ</mi><mrow><mi>ℓ</mi><mi>t</mi></mrow></msub>
+                  <mo>+</mo>
+                  <msub><mi>μ</mi><mrow><mi>i</mi><mi>ℓ</mi><mi>t</mi></mrow></msub>
+                  <mo>)</mo>
+                </mrow>
+              </mfrac>
+            </math>
+          </div>
+
+          <p>市場 share 是對人口偏好分配積分：</p>
+
+          <div class="equation" aria-label="BLP aggregate market share integral">
+            <math display="block">
+              <msub><mi>s</mi><mrow><mi>j</mi><mi>t</mi></mrow></msub>
+              <mo>(</mo><mi>δ</mi><mo>,</mo><msub><mi>θ</mi><mn>2</mn></msub><mo>)</mo>
+              <mo>=</mo>
+              <mo>∫</mo>
+              <msub><mi>P</mi><mrow><mi>i</mi><mi>j</mi><mi>t</mi></mrow></msub>
+              <mo>(</mo><mi>δ</mi><mo>,</mo><msub><mi>θ</mi><mn>2</mn></msub><mo>)</mo>
+              <mi>dF</mi>
+              <mo>(</mo><msub><mi>d</mi><mi>i</mi></msub><mo>,</mo><msub><mi>ν</mi><mi>i</mi></msub><mo>)</mo>
+            </math>
+          </div>
+
+          <div class="callout why">
+            <span class="callout-title">為什麼現在沒有 simple-logit 的封閉反演？</span>
+            <p>
+              分母中的 μ 對每個人不同；市場 share 是許多不同 logit 分母的平均，
+              不能再用 <span class="mono">s<sub>j</sub>/s<sub>0</sub></span> 直接消去共同分母。
+            </p>
+          </div>
+
+          <h3>用 simulation 近似積分</h3>
+          <div class="equation compact" aria-label="simulated BLP market shares">
+            <math display="block">
+              <msub><mover><mi>s</mi><mo>^</mo></mover><mrow><mi>j</mi><mi>t</mi></mrow></msub>
+              <mo>=</mo>
+              <mfrac><mn>1</mn><mi>R</mi></mfrac>
+              <munderover><mo>∑</mo><mrow><mi>r</mi><mo>=</mo><mn>1</mn></mrow><mi>R</mi></munderover>
+              <msub><mi>P</mi><mrow><mi>r</mi><mi>j</mi><mi>t</mi></mrow></msub>
+            </math>
+          </div>
+
+          <ul class="checklist">
+            <li>抽取人口特徵與標準常態 taste draws。</li>
+            <li>用同一組 draws 貫穿所有 optimizer iterations。</li>
+            <li>可用低差異序列減少 simulation noise。</li>
+            <li>用 log-sum-exp 避免 exponentials overflow。</li>
+          </ul>
+
+          <div class="callout caution">
+            <span class="callout-title">參數化提醒</span>
+            <p>
+              可以令 ν ∼ N(0, I) 並估計 covariance factor Σ；也可以讓 ν 本身有 covariance Ω。
+              兩者若同時完全自由會有尺度冗餘。實作通常固定 ν 為標準常態，估計 Σ 的 Cholesky factor。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="inner-loop">
+          <div class="chapter-heading">
+            <div class="chapter-number">9</div>
+            <div>
+              <h2>Inner loop：contraction mapping</h2>
+              <p>固定異質性 θ₂，找出能讓模型市占率等於觀察市占率的 δ。</p>
+            </div>
+          </div>
+
+          <div class="equation compact" aria-label="BLP share matching condition">
+            <math display="block">
+              <msup><mi>s</mi><mtext>obs</mtext></msup>
+              <mo>=</mo>
+              <msup><mi>s</mi><mtext>model</mtext></msup>
+              <mo>(</mo><mi>δ</mi><mo>,</mo><msub><mi>θ</mi><mn>2</mn></msub><mo>)</mo>
+            </math>
+          </div>
+
+          <p>標準更新為：</p>
+
+          <div class="equation" aria-label="BLP contraction mapping update">
+            <math display="block">
+              <msubsup><mi>δ</mi><mi>j</mi><mrow><mo>(</mo><mi>r</mi><mo>+</mo><mn>1</mn><mo>)</mo></mrow></msubsup>
+              <mo>=</mo>
+              <msubsup><mi>δ</mi><mi>j</mi><mrow><mo>(</mo><mi>r</mi><mo>)</mo></mrow></msubsup>
+              <mo>+</mo>
+              <mi>log</mi><msubsup><mi>s</mi><mi>j</mi><mtext>obs</mtext></msubsup>
+              <mo>−</mo>
+              <mi>log</mi><msubsup><mi>s</mi><mi>j</mi><mtext>model</mtext></msubsup>
+              <mo>(</mo><msup><mi>δ</mi><mrow><mo>(</mo><mi>r</mi><mo>)</mo></mrow></msup><mo>,</mo><msub><mi>θ</mi><mn>2</mn></msub><mo>)</mo>
+            </math>
+          </div>
+
+          <div class="grid-2">
+            <div class="card teal">
+              <div class="label">模型 share 太低</div>
+              <h4>提高 δ<sub>j</sub></h4>
+              <p><span class="mono">log s<sup>obs</sup><sub>j</sub> − log s<sup>model</sup><sub>j</sub> &gt; 0</span></p>
+            </div>
+            <div class="card red">
+              <div class="label">模型 share 太高</div>
+              <h4>降低 δ<sub>j</sub></h4>
+              <p><span class="mono">log s<sup>obs</sup><sub>j</sub> − log s<sup>model</sup><sub>j</sub> &lt; 0</span></p>
+            </div>
+          </div>
+
+          <details class="derivation" data-derivation open>
+            <summary>展開：為什麼 fixed point 等於 share matching？</summary>
+            <div class="derivation-body">
+              <p>定義：</p>
+              <div class="equation compact">
+                <span class="mono">T<sub>j</sub>(δ) = δ<sub>j</sub> + log s<sup>obs</sup><sub>j</sub> − log s<sup>model</sup><sub>j</sub>(δ)</span>
+              </div>
+              <p>若 δ* 是 fixed point，則 <span class="mono">T<sub>j</sub>(δ*) = δ*<sub>j</sub></span>。兩邊消去 δ*<sub>j</sub>：</p>
+              <div class="equation compact">
+                <span class="mono">log s<sup>obs</sup><sub>j</sub> − log s<sup>model</sup><sub>j</sub>(δ*) = 0</span>
+              </div>
+              <p>因此 <span class="mono">s<sup>obs</sup><sub>j</sub> = s<sup>model</sup><sub>j</sub>(δ*)</span>；反方向也成立。</p>
+            </div>
+          </details>
+
+          <details class="derivation" data-derivation>
+            <summary>進階：outside good 為什麼幫助 contraction 收斂？</summary>
+            <div class="derivation-body">
+              <p>個人 logit derivative 為：</p>
+              <div class="equation compact">
+                <span class="mono">∂P<sub>ij</sub>/∂δ<sub>k</sub> = P<sub>ij</sub>[1{j=k} − P<sub>ik</sub>]</span>
+              </div>
+              <p>因此 contraction mapping Jacobian 的元素為：</p>
+              <div class="equation compact">
+                <span class="mono">∂T<sub>j</sub>/∂δ<sub>j</sub> = ∫P<sup>2</sup><sub>ij</sub>dF / s<sub>j</sub></span>
+              </div>
+              <div class="equation compact">
+                <span class="mono">∂T<sub>j</sub>/∂δ<sub>k</sub> = ∫P<sub>ij</sub>P<sub>ik</sub>dF / s<sub>j</sub>, &nbsp; k ≠ j</span>
+              </div>
+              <p>一列元素總和是：</p>
+              <div class="equation compact">
+                <span class="mono">∑<sub>k=1</sub><sup>J</sup>∂T<sub>j</sub>/∂δ<sub>k</sub> = ∫P<sub>ij</sub>(1−P<sub>i0</sub>)dF / s<sub>j</sub> &lt; 1</span>
+              </div>
+              <p>
+                只要 outside-good probability 為正，在標準正則條件及適當有界區域內，
+                mapping 的變動幅度小於 δ 本身的變動幅度，重複更新便會收斂到唯一解。
+              </p>
+            </div>
+          </details>
+
+          <div class="callout">
+            <span class="callout-title">實作起點與停止條件</span>
+            <p>
+              常用 simple-logit inversion
+              <span class="mono">δ<sup>(0)</sup><sub>jt</sub> = log s<sup>obs</sup><sub>jt</sub> − log s<sup>obs</sup><sub>0t</sub></span>
+              初始化。逐市場更新，直到最大 share error 或最大 δ 更新量低於容忍值。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="outer-loop">
+          <div class="chapter-heading">
+            <div class="chapter-number">10</div>
+            <div>
+              <h2>Outer loop：GMM 如何選出 θ？</h2>
+              <p>inner loop 對每個 θ₂ 都能配適 shares；真正區分參數的是工具變數矩條件。</p>
+            </div>
+          </div>
+
+          <div class="callout caution">
+            <span class="callout-title">最容易漏掉的識別觀念</span>
+            <p>
+              「市占率配適得很好」不能證明 θ₂ 正確，因為每一組 θ₂ 都可以搭配另一組 δ 完全配適市占率。
+              θ₂ 是靠錯誤參數所反演出的 ξ 會與 Z 系統性相關而被排除。
+            </p>
+          </div>
+
+          <div class="equation compact" aria-label="BLP unobserved demand shock">
+            <math display="block">
+              <mi>ξ</mi><mo>(</mo><mi>θ</mi><mo>)</mo>
+              <mo>=</mo>
+              <mi>δ</mi><mo>(</mo><msub><mi>θ</mi><mn>2</mn></msub><mo>)</mo>
+              <mo>−</mo>
+              <mi>X</mi><msub><mi>θ</mi><mn>1</mn></msub>
+            </math>
+          </div>
+
+          <div class="equation" aria-label="BLP GMM moment and objective">
+            <math display="block">
+              <msub><mi>g</mi><mi>N</mi></msub><mo>(</mo><mi>θ</mi><mo>)</mo>
+              <mo>=</mo>
+              <mfrac><mn>1</mn><mi>N</mi></mfrac>
+              <msup><mi>Z</mi><mo>′</mo></msup><mi>ξ</mi><mo>(</mo><mi>θ</mi><mo>)</mo>
+              <mo>,</mo>
+              <mspace width="1.2em"/>
+              <mover><mi>θ</mi><mo>^</mo></mover>
+              <mo>=</mo>
+              <munder><mo>arg min</mo><mi>θ</mi></munder>
+              <msub><mi>g</mi><mi>N</mi></msub><mo>(</mo><mi>θ</mi><mo>)</mo>
+              <msup><mi>W</mi><mspace width="0.1em"/></msup>
+              <msub><mi>g</mi><mi>N</mi></msub><mo>(</mo><mi>θ</mi><mo>)</mo>
+            </math>
+            <p class="eq-caption">更精確地說，objective 是 g<sub>N</sub>(θ)′Wg<sub>N</sub>(θ)。</p>
+          </div>
+
+          <details class="derivation" data-derivation open>
+            <summary>展開：線性參數 θ₁ 如何 concentrated out？</summary>
+            <div class="derivation-body">
+              <p>固定 θ₂ 後，inner loop 已給定 δ(θ₂)。考慮：</p>
+              <div class="equation compact">
+                <span class="mono">Q = (δ − Xθ<sub>1</sub>)′ZWZ′(δ − Xθ<sub>1</sub>)</span>
+              </div>
+              <p>對 θ₁ 微分並設為零：</p>
+              <div class="equation compact">
+                <span class="mono">X′ZWZ′(δ − Xθ<sub>1</sub>) = 0</span>
+              </div>
+              <p>得到：</p>
+              <div class="equation compact">
+                <span class="mono">θ̂<sub>1</sub>(θ<sub>2</sub>) = (X′ZWZ′X)<sup>−1</sup>X′ZWZ′δ(θ<sub>2</sub>)</span>
+              </div>
+              <p>
+                因此 optimizer 只搜尋非線性 θ₂；每次自動用 IV/GMM 解平均係數 θ₁，
+                再計算 ξ = δ − Xθ̂₁。
+              </p>
+            </div>
+          </details>
+
+          <div class="grid-3">
+            <div class="card">
+              <div class="label">若 θ₂ 正確</div>
+              <h4>ξ 不應被 Z 預測</h4>
+              <p>有效工具只移動價格或競爭情況，不直接移動需求衝擊。</p>
+            </div>
+            <div class="card red">
+              <div class="label">若 θ₂ 錯誤</div>
+              <h4>反演 δ 會扭曲</h4>
+              <p>模型會把錯誤的替代模式塞進 ξ，使 Z′ξ 出現系統性關係。</p>
+            </div>
+            <div class="card teal">
+              <div class="label">GMM 做什麼</div>
+              <h4>讓 moments 最接近 0</h4>
+              <p>在工具可信的前提下，選出最符合排除限制的偏好參數。</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="chapter" id="algorithm">
+          <div class="chapter-heading">
+            <div class="chapter-number">11</div>
+            <div>
+              <h2>完整估計演算法：從資料到參數</h2>
+              <p>把前面所有數學整理成可以逐項檢查的操作順序。</p>
+            </div>
+          </div>
+
+          <div class="step-list">
+            <div class="step">
+              <div>
+                <h4>定義市場、choice set 與 outside good</h4>
+                <p>計算 <i>s</i><sub>jt</sub> = <i>q</i><sub>jt</sub>/<i>M</i><sub>t</sub> 及 <i>s</i><sub>0t</sub>。這一步決定需求的經濟母體。</p>
+              </div>
+            </div>
+            <div class="step">
+              <div>
+                <h4>準備 X、價格與 Z</h4>
+                <p>區分可視為外生的特徵、需要 instrument 的價格或內生特徵，並加入合理 fixed effects。</p>
+              </div>
+            </div>
+            <div class="step">
+              <div>
+                <h4>建立模擬消費者</h4>
+                <p>抽取人口特徵與 ν，固定 draws，讓不同參數下的 objective 可平滑比較。</p>
+              </div>
+            </div>
+            <div class="step">
+              <div>
+                <h4>猜一組 θ₂</h4>
+                <p>θ₂ 包含 demographic interactions、random-coefficient standard deviations 與 correlations。</p>
+              </div>
+            </div>
+            <div class="step">
+              <div>
+                <h4>逐市場執行 inner loop</h4>
+                <p>用 contraction mapping 找 δ(θ₂)，直到模型 shares 與 observed shares 一致。</p>
+              </div>
+            </div>
+            <div class="step">
+              <div>
+                <h4>concentrate out θ₁</h4>
+                <p>將 δ(θ₂) 視為 dependent variable，以 IV/GMM 求平均價格與特徵係數。</p>
+              </div>
+            </div>
+            <div class="step">
+              <div>
+                <h4>恢復 ξ 並計算 GMM objective</h4>
+                <p>計算 ξ = δ − Xθ̂₁、g = Z′ξ/N 與 Q = g′Wg。</p>
+              </div>
+            </div>
+            <div class="step">
+              <div>
+                <h4>optimizer 更新 θ₂</h4>
+                <p>回到 inner loop，直到 objective 與參數收斂；之後可進行 second-step GMM。</p>
+              </div>
+            </div>
+            <div class="step">
+              <div>
+                <h4>計算標準誤與診斷</h4>
+                <p>考慮 market clustering、simulation、weighting matrix、工具強度與 numerical tolerance。</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="callout why">
+            <span class="callout-title">Inner 與 outer loop 的分工</span>
+            <p>
+              <strong>Inner loop 是 accounting：</strong>找到足以解釋觀察 shares 的產品平均效用。
+              <strong>Outer loop 是 identification：</strong>判斷這些平均效用能否由合理偏好與外生需求衝擊構成。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="post-estimation">
+          <div class="chapter-heading">
+            <div class="chapter-number">12</div>
+            <div>
+              <h2>估計後：異質彈性、WTP、markup 與福利</h2>
+              <p>BLP 的價值不只在配適，而是建立可用於反事實的需求系統。</p>
+            </div>
+          </div>
+
+          <h3>BLP 價格 derivatives</h3>
+          <p>採常見寫法 <span class="mono">u<sub>ij</sub> = … − α<sub>i</sub>p<sub>j</sub> + ε<sub>ij</sub></span>，且 α<sub>i</sub> &gt; 0：</p>
+
+          <div class="grid-2">
+            <div class="card red">
+              <div class="label">Own derivative</div>
+              <p class="mono">∂s<sub>j</sub>/∂p<sub>j</sub> = −∫α<sub>i</sub>P<sub>ij</sub>(1−P<sub>ij</sub>)dF<sub>i</sub></p>
+            </div>
+            <div class="card teal">
+              <div class="label">Cross derivative, k ≠ j</div>
+              <p class="mono">∂s<sub>j</sub>/∂p<sub>k</sub> = ∫α<sub>i</sub>P<sub>ij</sub>P<sub>ik</sub>dF<sub>i</sub></p>
+            </div>
+          </div>
+
+          <p>
+            積分中的 <span class="mono">P<sub>ij</sub>P<sub>ik</sub></span> 衡量同一消費者是否同時把 <i>j</i> 與 <i>k</i> 視為有吸引力。
+            因此 cross elasticity 現在會依產品配對而不同。
+          </p>
+
+          <h3>Willingness to pay</h3>
+          <p>講義寫效用為 <span class="mono">u = αp + βx + …</span>、α &lt; 0。保持效用不變：</p>
+          <div class="equation compact">
+            <span class="mono">du = α dp + β dx = 0 &nbsp; ⇒ &nbsp; WTP = dp/dx = −β/α</span>
+          </div>
+
+          <h3>多產品廠商的 markup</h3>
+          <p>廠商 <i>f</i> 的利潤為：</p>
+          <div class="equation compact">
+            <span class="mono">π<sub>f</sub> = M∑<sub>k∈J<sub>f</sub></sub>(p<sub>k</sub>−c<sub>k</sub>)s<sub>k</sub>(p)</span>
+          </div>
+          <p>產品 <i>j</i> 的定價一階條件：</p>
+          <div class="equation compact">
+            <span class="mono">s<sub>j</sub> + ∑<sub>k∈J<sub>f</sub></sub>(p<sub>k</sub>−c<sub>k</sub>)∂s<sub>k</sub>/∂p<sub>j</sub> = 0</span>
+          </div>
+          <p>定義 ownership-adjusted derivative matrix：</p>
+          <div class="equation compact">
+            <span class="mono">Δ<sub>jk</sub> = −1{j,k 同公司} ∂s<sub>k</sub>/∂p<sub>j</sub></span>
+          </div>
+          <div class="equation compact">
+            <span class="mono">p − c = Δ<sup>−1</sup>s &nbsp; ⇒ &nbsp; c = p − Δ<sup>−1</sup>s</span>
+          </div>
+
+          <div class="callout warning">
+            <span class="callout-title">需求估計不等於完整合併模型</span>
+            <p>
+              要預測合併後的內生價格，還必須指定供給端競爭方式、ownership、邊際成本與成本是否因合併改變。
+              需求端只提供價格改變時消費者如何重新配置。
+            </p>
+          </div>
+
+          <h3>常見 counterfactual</h3>
+          <div class="grid-4">
+            <div class="card"><h4>Merger</h4><p>改 ownership matrix，重解價格 FOCs。</p></div>
+            <div class="card teal"><h4>Entry / Exit</h4><p>改 choice set，重新計算 shares 與 welfare。</p></div>
+            <div class="card amber"><h4>Product design</h4><p>改產品特徵，模擬需求與定價。</p></div>
+            <div class="card purple"><h4>Policy</h4><p>改稅、費用或監管成本，重算市場均衡。</p></div>
+          </div>
+        </section>
+
+        <section class="chapter" id="diagnostics">
+          <div class="chapter-heading">
+            <div class="chapter-number">13</div>
+            <div>
+              <h2>識別與實作檢查清單</h2>
+              <p>模型能跑完不代表估計可信；以下問題應在看結果前先回答。</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>問題</th>
+                  <th>為什麼重要？</th>
+                  <th>應檢查什麼？</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>零市占率</strong></td>
+                  <td>log share 不存在；標準 BLP 預測所有可選產品 share 為正。</td>
+                  <td>市場是否太細、產品是否應合併、是否需要 sampling model。</td>
+                </tr>
+                <tr>
+                  <td><strong>outside share 接近 0</strong></td>
+                  <td>δ 水準很大，contraction 可能變慢且結果對市場規模敏感。</td>
+                  <td>市場規模定義、數值容忍值、share floors。</td>
+                </tr>
+                <tr>
+                  <td><strong>價格工具弱</strong></td>
+                  <td>平均價格係數與 random coefficients 可能很不穩定。</td>
+                  <td>first stage、不同工具集合、敏感度與經濟 relevance。</td>
+                </tr>
+                <tr>
+                  <td><strong>產品特徵內生</strong></td>
+                  <td>廠商可能根據預期需求選品質、地點、規格與進入。</td>
+                  <td>哪些 x 可合理視為 predetermined；是否也需 instruments。</td>
+                </tr>
+                <tr>
+                  <td><strong>θ₂ 識別弱</strong></td>
+                  <td>shares 對每組 θ₂ 都可由 δ 配適，僅靠 aggregate moments 可能不足。</td>
+                  <td>市場產品組合變化、demographics、micro moments、profile objective。</td>
+                </tr>
+                <tr>
+                  <td><strong>simulation noise</strong></td>
+                  <td>objective 抖動會讓 optimizer 誤判 gradient 與 convergence。</td>
+                  <td>固定 draws、draw 數、低差異序列與重複估計。</td>
+                </tr>
+                <tr>
+                  <td><strong>數值收斂</strong></td>
+                  <td>optimizer convergence 不保證每個 inner loop 已精確收斂。</td>
+                  <td>最大 share error、δ update、不同初值與 gradient。</td>
+                </tr>
+                <tr>
+                  <td><strong>供給端假設</strong></td>
+                  <td>markup 與 merger price 取決於定價競爭方式。</td>
+                  <td>Bertrand 是否合理、ownership、成本與效率假設。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout purple">
+            <span class="callout-title">Micro moments 為什麼有用？</span>
+            <p>
+              例如「高所得投資人比較常選低費用 ETF」或「某年齡層偏好特定通路」，
+              直接把消費者特徵與選擇的關係帶進估計，往往比只靠 aggregate shares
+              更能識別 Π、Σ 與隨機價格係數。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="cheatsheet">
+          <div class="chapter-heading">
+            <div class="chapter-number">14</div>
+            <div>
+              <h2>一頁速查表</h2>
+              <p>讀完後，只要能從上往下重新說一次，就已經掌握 demand-side BLP 的骨架。</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>步驟</th>
+                  <th>核心式子</th>
+                  <th>為什麼成立？</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>1. 效用</strong></td>
+                  <td class="mono">u<sub>ij</sub> = δ<sub>j</sub> + μ<sub>ij</sub> + ε<sub>ij</sub></td>
+                  <td>把共同平均效用、系統性異質性與個人產品衝擊分開。</td>
+                </tr>
+                <tr>
+                  <td><strong>2. 個人機率</strong></td>
+                  <td class="mono">P<sub>ij</sub> = exp(δ<sub>j</sub>+μ<sub>ij</sub>)/D<sub>i</sub></td>
+                  <td>條件在個人偏好後，ε 仍是 i.i.d. T1EV。</td>
+                </tr>
+                <tr>
+                  <td><strong>3. 市場 share</strong></td>
+                  <td class="mono">s<sub>j</sub> = ∫P<sub>ij</sub>dF<sub>i</sub></td>
+                  <td>市場 share 是人口中各類型選擇機率的平均。</td>
+                </tr>
+                <tr>
+                  <td><strong>4. Inner loop</strong></td>
+                  <td class="mono">δ ← δ + log s<sup>obs</sup> − log s<sup>model</sup></td>
+                  <td>fixed point 等價於 model shares = observed shares。</td>
+                </tr>
+                <tr>
+                  <td><strong>5. Demand shock</strong></td>
+                  <td class="mono">ξ = δ(θ₂) − Xθ₁</td>
+                  <td>平均效用扣除可觀察的平均偏好後，剩下未觀察品質。</td>
+                </tr>
+                <tr>
+                  <td><strong>6. Moments</strong></td>
+                  <td class="mono">g(θ) = Z′ξ(θ)/N</td>
+                  <td>有效工具與需求衝擊正交。</td>
+                </tr>
+                <tr>
+                  <td><strong>7. Outer loop</strong></td>
+                  <td class="mono">min<sub>θ</sub> g(θ)′Wg(θ)</td>
+                  <td>錯誤偏好參數會使反演 ξ 與工具系統性相關。</td>
+                </tr>
+                <tr>
+                  <td><strong>8. Counterfactual</strong></td>
+                  <td class="mono">重新計算 P、s；必要時重解供給 FOCs</td>
+                  <td>結構參數被假定在政策或市場環境改變後仍保持穩定。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout">
+            <span class="callout-title">最後的記憶句</span>
+            <p>
+              <strong>Simple logit：</strong>用 log share difference 解析反演 δ，但替代模式受 IIA 限制。<br>
+              <strong>BLP：</strong>用 random coefficients 改善替代模式；inner loop 配適 shares，
+              outer loop 用 IV/GMM 識別偏好。
+            </p>
+          </div>
+
+          <a class="back-top" href="#top">回到頁首 ↑</a>
+        </section>
+      </main>
+    </div>
+
+    <footer>
+      整理自 Mark Egan, <em>Notes on Demand Estimation</em>（Summer 2026），並補充標準 demand-side BLP 推導與實作細節。
+    </footer>
+  </div>
+
+  <script>
+    (() => {
+      const derivations = [...document.querySelectorAll("[data-derivation]")];
+      document.getElementById("expand-all")?.addEventListener("click", () => {
+        derivations.forEach((item) => { item.open = true; });
+      });
+      document.getElementById("collapse-all")?.addEventListener("click", () => {
+        derivations.forEach((item) => { item.open = false; });
+      });
+
+      const progress = document.querySelector(".reading-progress");
+      const updateProgress = () => {
+        const available = document.documentElement.scrollHeight - window.innerHeight;
+        const ratio = available > 0 ? window.scrollY / available : 0;
+        progress.style.width = `${Math.min(100, Math.max(0, ratio * 100))}%`;
+      };
+      updateProgress();
+      window.addEventListener("scroll", updateProgress, { passive: true });
+      window.addEventListener("resize", updateProgress);
+
+      const links = [...document.querySelectorAll(".toc a[href^='#']")];
+      const linkById = new Map(
+        links.map((link) => [link.getAttribute("href").slice(1), link])
+      );
+      const sections = [...document.querySelectorAll("main > section[id]")];
+      if ("IntersectionObserver" in window) {
+        const observer = new IntersectionObserver((entries) => {
+          const visible = entries
+            .filter((entry) => entry.isIntersecting)
+            .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+          if (!visible) return;
+          links.forEach((link) => link.classList.remove("active"));
+          linkById.get(visible.target.id)?.classList.add("active");
+        }, {
+          rootMargin: "-15% 0px -72% 0px",
+          threshold: [0, 0.1, 0.4]
+        });
+        sections.forEach((section) => observer.observe(section));
+      }
+    })();
+  </script>
+</body>
+</html>
