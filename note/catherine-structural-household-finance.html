@@ -1330,6 +1330,172 @@
             </div>
           </div>
 
+          <details open id="estimation-story">
+            <summary>Slides 9–17 故事導覽：研究者如何偵查「低持股」的真正原因？</summary>
+            <div>
+              <div class="big-idea">
+                <strong>先估天氣，再推斷人有多怕淋雨</strong>
+                <p>
+                  研究者看到家庭財富、股票參與率與 equity share 的生命週期形狀，但低持股可能是因為
+                  家庭很怕風險、沒有耐心、進股市很貴，或因為 labor-income 左尾真的和股災同時發生。
+                  如果一次用 portfolio data 調整全部參數，模型很容易讓這些力量彼此補洞。
+                  所以 Catherine 先用獨立所得資料重建家庭面對的風險，再固定這個環境推斷偏好。
+                </p>
+              </div>
+
+              <div class="eq">
+                所得資料
+                → θ̂<sub>income</sub>
+                → 固定所得環境
+                → 猜 (γ,β,c<sub>π</sub>)
+                → 解 dynamic program
+                → 模擬家庭 histories
+                → 模型 moments
+                → SMM 更新參數。
+              </div>
+
+              <h3>第一幕：只用所得資料重建「風險天氣」</h3>
+              <p>
+                Step 1 使用 1978–2010 Social Security panel 的所得成長 mean、variance、skewness，
+                並同時看 1、3、5 年 horizons；155 個 empirical moments 用來估 11 個 macro
+                與 8 個 idiosyncratic-income parameters。這一步刻意不用 wealth 或 portfolio data。
+              </p>
+              <div class="grid-2">
+                <div class="card">
+                  <h4>為何看多個 horizons？</h4>
+                  <p>
+                    一年 moment 告訴我們當下 shock 多大；三年、五年後尾部是否仍存在，則辨認
+                    <span class="mono">ρ<sub>z</sub></span> 與 career loss 的 persistence。
+                    persistent tail shock 會降低整段未來所得，因此才真正影響 human capital 與 portfolio。
+                  </p>
+                </div>
+                <div class="card">
+                  <h4>為何不用 portfolio data？</h4>
+                  <p>
+                    否則模型可能為了配低股票比例，刻意把所得風險調高，再宣稱所得風險解釋了低持股。
+                    外部估計使第二階段不准再「改天氣」，形成 exclusion-like discipline。
+                  </p>
+                </div>
+              </div>
+
+              <h3>第二幕：固定天氣後，才推斷家庭偏好</h3>
+              <p>
+                Step 2 估 <span class="mono">θ=(γ,β,c<sub>π</sub>)</span>，並匹配 SCF 中
+                23–25 歲到 62–64 歲的 wealth、participation 與 conditional/unconditional equity share，
+                合計 56 個 moments。每次 objective evaluation 都包含：
+              </p>
+              <ol class="sequence">
+                <li><strong>猜參數：</strong>optimizer 提出一組 γ、β、c<sub>π</sub>，參數本身不是隨機抽出。</li>
+                <li><strong>解模型：</strong>用 backward dynamic programming 得到每個 state 的消費、住房、participation 與 π policies。</li>
+                <li><strong>模擬家庭：</strong>抽所得 mixture shocks、股票報酬／crashes，讓虛擬家庭沿 policy functions 從年輕走到退休。</li>
+                <li><strong>算 moments：</strong>按真實 SCF 的年齡組與定義，計算平均財富、持股率與參與者股票比例。</li>
+                <li><strong>比較並更新：</strong>縮小 <span class="mono">[m<sub>data</sub>−m<sub>sim</sub>(θ)]′W[m<sub>data</sub>−m<sub>sim</sub>(θ)]</span>。</li>
+              </ol>
+
+              <h3>解模型、simulation、SMM、surrogate 各自做什麼？</h3>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr><th>零件</th><th>回答的問題</th><th>輸入</th><th>輸出</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Dynamic programming</td>
+                      <td>家庭若在某個 state，最適行動是什麼？</td>
+                      <td>候選參數、轉移機率、constraints</td>
+                      <td>policy functions <span class="mono">a*(s;θ)</span></td>
+                    </tr>
+                    <tr>
+                      <td>Simulation</td>
+                      <td>多少家庭會走到各個 states，形成什麼分配？</td>
+                      <td>policy functions 與 random shocks</td>
+                      <td>synthetic life-cycle panel 與 <span class="mono">m<sub>sim</sub>(θ)</span></td>
+                    </tr>
+                    <tr>
+                      <td>SMM optimizer</td>
+                      <td>哪組參數讓模型 moments 最接近資料？</td>
+                      <td><span class="mono">m<sub>data</sub></span>、<span class="mono">m<sub>sim</sub>(θ)</span>、W</td>
+                      <td>估計值 <span class="mono">θ̂</span></td>
+                    </tr>
+                    <tr>
+                      <td>Surrogate</td>
+                      <td>能否便宜地重複估計、畫 identification curves？</td>
+                      <td>原模型算出的 parameter–moment cloud</td>
+                      <td>快速近似 <span class="mono">θ→m</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="callout intuition">
+                <span class="callout-title">為何 Step 2 特別需要 simulation？</span>
+                <p>
+                  Policy function 只說「到達 state s 時怎麼做」，資料 moment 卻要知道「有多少家庭會到達 s」。
+                  state distribution <span class="mono">μ<sub>θ</sub>(s)</span> 由過去 shocks 與選擇共同生成，
+                  並隨 γ、β、c<sub>π</sub> 改變。固定參與成本、住房、safety net 與 mixture shocks
+                  使這個分配沒有簡單閉式解，因此以 synthetic households 近似
+                  <span class="mono">∫h(s,a*(s;θ))dμ<sub>θ</sub>(s)</span>。
+                </p>
+              </div>
+
+              <h3>第三幕：為什麼「一個參數配一個 moment」只是開場白？</h3>
+              <div class="grid-3">
+                <div class="card">
+                  <h4>β ↔ wealth</h4>
+                  <p>更耐心通常增加財富，但財富也受 γ 的 precautionary saving 影響。</p>
+                </div>
+                <div class="card">
+                  <h4>γ ↔ equity share</h4>
+                  <p>更怕風險會少持股，卻也可能多儲蓄、提高付得起 fixed cost 的機率。</p>
+                </div>
+                <div class="card">
+                  <h4>c<sub>π</sub> ↔ participation</h4>
+                  <p>成本提高使參與下降，也會改變留下來的參與者 composition 與 conditional share。</p>
+                </div>
+              </div>
+              <p>
+                Slide 11 的 comparative statics 是正向地問
+                <span class="mono">θ 改變 ⇒ moments 怎麼動</span>；
+                slides 12–13 則反過來問
+                <span class="mono">target moment 改變 ⇒ 重新估出的全部 θ̂ 怎麼動</span>。
+                後者才會把參數互相補償與其他 moments 的約束一起算進去。
+              </p>
+
+              <h3>第四幕：計算太貴，才請 surrogate 當替身</h3>
+              <p>
+                真正的 SMM inverse 每移動一個 target moment 都要重新估計，而每次估計又要反覆解模型與模擬。
+                Surrogate 先在許多 θ 上跑一次原模型，蒐集
+                <span class="mono">{θ,m(θ)}</span>，再用 flexible approximation 學習 parameter-to-moment map。
+                之後 identification curves、sample splits、moment selection 與 misspecification checks
+                就只需快速評估近似函數；但最終仍要以原模型做 out-of-sample／local accuracy 驗證。
+              </p>
+
+              <h3>終幕：沒有 cyclical skewness 時，偏好參數如何被迫補洞？</h3>
+              <div class="derive">
+                <div class="derive-step">
+                  <span>Omitted risk</span>
+                  <p>human capital 被誤當 bond-like，模型預測年輕人應大量持股。</p>
+                </div>
+                <div class="derive-step">
+                  <span>Compensation</span>
+                  <p>SMM 提高 γ 壓低股票；高 γ 又提高儲蓄，因此再降低 β，並提高 participation cost。</p>
+                </div>
+                <div class="derive-step">
+                  <span>Diagnostic moment</span>
+                  <p>兩個模型都能配 wealth 與 participation；真正區分它們的是 conditional equity-share age profile。</p>
+                </div>
+              </div>
+
+              <div class="callout warning">
+                <span class="callout-title">一句最重要的區分</span>
+                <p>
+                  Bellman solver 負責找最適行為，simulation 負責積分異質 shocks 與 endogenous state distribution，
+                  SMM 負責搜尋參數，而 surrogate 只負責讓大量重估的診斷工作變快；四者不是同一件事。
+                </p>
+              </div>
+            </div>
+          </details>
+
           <h3>1. Targets 與參數</h3>
           <ul>
             <li>1978–2010 每年的 idiosyncratic earnings growth：cross-sectional mean、variance、skewness。</li>
