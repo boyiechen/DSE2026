@@ -706,7 +706,7 @@
           <a href="#airline-results">11　航空：結果與反事實</a>
           <a href="#spatial">12　從航線轉到空間網路</a>
           <a href="#holmes-strategy">13　Holmes 的識別故事</a>
-          <a href="#walmart-demand">14　Walmart：nested logit</a>
+          <a href="#walmart-demand">14　Walmart：store-choice demand</a>
           <a href="#revenue">15　從 share 到 revenue</a>
           <a href="#cannibalization">16　如何量化 cannibalization</a>
           <a href="#walmart-profit">17　Walmart：profit 與 density</a>
@@ -1997,10 +1997,46 @@
 
           <h3>反事實在做什麼？</h3>
           <p>
-            研究者不是把資料中的 hub 拆掉，而是在估計模型裡一次關掉一種
-            <span class="mono">HUB</span> coefficient，重新求 equilibrium network，再比較 CR2。
-            若關掉某機制後 CR2 大幅下降，表示 observed hubbing 很依賴該機制。
+            研究者不是把資料中的 hub 直接刪掉，而是把估計模型當成一台 network simulator：一次關掉一種
+            <span class="mono">HUB</span> mechanism，讓航空公司重新調整 entry/exit policies 與 network，
+            再比較新的 equilibrium CR2。若關掉某機制後 CR2 大幅下降，表示 observed hubbing 很依賴該機制。
           </p>
+
+          <h3>CR2 的單位與閱讀方向</h3>
+          <div class="eq">
+            CR2<sub>i</sub> =
+            100 × N<sub>i</sub>(connections touching hub 1 or 2)
+            / N<sub>i</sub>(all nonstop connections)
+          </div>
+          <p>
+            CR2 是 network concentration 的百分比，不是成本、choice probability 或模型 fit。
+            數值越高，connections 越集中在前兩個城市，越接近 hub-and-spoke；越低則越接近分散的
+            point-to-point network。讀 counterfactual table 時要<strong>沿同一列向右讀</strong>，比較同一家 airline
+            在關掉不同 mechanism 後的 CR2。
+          </p>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>實驗</th><th>真正設為零／改寫的 object</th><th>白話問題</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Zero hub effect：variable profits</td><td>Demand 的 hub-WTP coefficients 與 marginal-cost 的 hub coefficients</td><td>若旅客不因 hub 多付錢、hub 也不降低單位成本，還會集中航線嗎？</td></tr>
+                <tr><td>Zero hub effect：fixed costs</td><td><span class="mono">γ<sub>2</sub><sup>FC</sup>=0</span></td><td>若在 hub 維持一條 segment 不再比較便宜，還會 hubbing 嗎？</td></tr>
+                <tr><td>Zero hub effect：entry costs</td><td><span class="mono">η<sub>2</sub><sup>EC</sup>=0</span></td><td>若從 hub 新開一條 spoke 不再比較便宜，還會形成 hub 嗎？</td></tr>
+                <tr><td>No entry deterrence</td><td>地方經理只計 AB/BA nonstop profits，不計使用 AB 的 connecting-route profits</td><td>若 segment 不再具有保護整個 connecting network 的價值，還會保留它嗎？</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout warning">
+            <span class="callout-title">第一欄不是把 variable profit 設為零；最後一欄也不是禁止 entry</span>
+            <p>
+              Experiment 1 只消除 hub size 對 variable profit 的增益，航班仍有需求、價格與成本。
+              Experiment 4 仍保留競爭者與 entry/exit，只切斷跨 city-pair profits 的 complementarity；
+              「No entry deterrence」是這個特定 Hendricks-style channel 的簡稱。
+            </p>
+          </div>
 
           <div class="table-wrap">
             <table>
@@ -2019,6 +2055,25 @@
             </table>
           </div>
 
+          <h3>一格數字怎麼翻成經濟敘述？</h3>
+          <p>
+            American 的 observed CR2 是 42.0；拿掉 entry-cost hub advantage 後是 17.6。
+            所以這一 mechanism 對 concentration 的 counterfactual gap 是：
+          </p>
+          <div class="eq-stack">
+            <div class="eq">
+              42.0−17.6=24.4 percentage points
+            </div>
+            <div class="eq">
+              (42.0−17.6)/42.0=58.1% of baseline CR2
+            </div>
+          </div>
+          <p>
+            表內的 17.6 是新的 CR2 <strong>level</strong>，不是「下降 17.6%」。若要說降幅，必須自己算
+            24.4 percentage points 或相對 baseline 的 58.1%。四個 gaps 也不能相加：每欄都是分開進行的
+            equilibrium experiment，channels 之間會互相作用，不是線性的 accounting decomposition。
+          </p>
+
           <div class="big-idea">
             <strong>最重要的 quantitative conclusion</strong>
             <p>
@@ -2035,12 +2090,71 @@
             Hendricks-style deterrence channel 被切斷。
           </p>
 
+          <div class="grid-2">
+            <div class="card">
+              <h4>為何 entry-cost channel 最大？</h4>
+              <p>既有 hub 讓下一條 spoke 的 sunk cost 更低；新 spoke 又擴大 hub，使下一條更便宜。這是一個會累積、具有 path dependence 的動態 feedback。</p>
+            </div>
+            <div class="card">
+              <h4>為何 Southwest 不同？</h4>
+              <p>其 baseline CR2 僅 18.2，本來就接近 point-to-point，且基礎成本較低；移除 deterrence 只降至 16.0，表示它較不依賴 hub 保護 spokes。</p>
+            </div>
+            <div class="card">
+              <h4>為何 Delta／Northwest 特別敏感？</h4>
+              <p>移除 deterrence 後分別由 48.0 降至 25.0、49.2 降至 26.6；兩者也有很多 monopoly city-pairs，符合 dense connecting network 保護 spokes 的故事。</p>
+            </div>
+            <div class="card">
+              <h4>顯著不等於 quantitatively important</h4>
+              <p>Demand、marginal-cost hub effects 可以統計顯著，但關掉後 CR2 只小幅下降；counterfactual 才把 coefficient 轉成 equilibrium magnitude。</p>
+            </div>
+          </div>
+
+          <h3>原論文為何報兩種 counterfactual algorithms？</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Method</th><th>怎麼做</th><th>主要代價／假設</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>I：Taylor approximation</td><td>在 estimated equilibrium 附近，用 policy map 的 derivative 近似 parameters 改變後的 CCPs；實作採 player-by-player simplification</td><td>快速，但大型政策改變的一階近似可能不準，並省略 rivals 改變後再回饋自己的完整 strategic feedback</td></tr>
+                <tr><td>II：Policy iterations</td><td>以 Taylor solution 為起點，反覆計算 <span class="mono">P<sup>(k+1)</sup>=Ψ(θ<sup>*</sup>,P<sup>(k)</sup>)</span></td><td>納入 strategic feedback，但需 counterfactual equilibrium 局部穩定，且起點落在其 basin of attraction</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            兩種方法的數值不同，但 ranking 相同。例如 no-deterrence 下 Delta 的 CR2 是 25.0（Method I）與
+            22.1（Method II）；Northwest 是 26.6 與 23.2。這種 robustness 支持「entry costs 第一、部分 legacy
+            carriers 的 deterrence 第二」的定性結論，而不是保證每個小數點都精確。
+          </p>
+
+          <details>
+            <summary>Table 10 與 Table 11 為何要連著讀？</summary>
+            <div>
+              <p>
+                Table 10 是 model-fit checkpoint：比較 actual 與 predicted HHI、incumbent counts、entry 與 exit。
+                模型大致捕捉 turnover，但低估零-incumbent markets、高估一至兩家 incumbent markets，也未完全捕捉
+                Southwest 的 monopoly pattern。Table 11 才是 mechanism decomposition。前者問「模擬器能否重現已知市場」，
+                後者問「拆掉一個零件後會怎樣」；fit 不完美提醒我們不要把 counterfactual 小數點當成無誤差的政策預測。
+              </p>
+            </div>
+          </details>
+
           <div class="callout warning">
-            <span class="callout-title">Counterfactual 的可信度取決於哪些東西？</span>
+            <span class="callout-title">多重均衡：counterfactual 不是天然唯一</span>
             <p>
-              結果不只靠估計係數，也靠地方經理 objective、inclusive-state transition、
-              equilibrium selection 與「關掉一個 channel 時其他 primitives 不變」等假設。
-              因此反事實不是 reduced-form extrapolation，而是整套 structural assumptions 的聯合產物。
+              改成 <span class="mono">θ*</span> 後，<span class="mono">P=Ψ(θ*,P)</span> 可能有多個 solutions。
+              作者沿著 baseline 附近平滑的 equilibrium-selection branch，並在 Method II 假設目標 fixed point 局部穩定。
+              因而結果同時依靠地方經理 objective、inclusive-state transition、selection continuity，以及「關掉一個 channel
+              時其他 primitives 不變」。這是 structural counterfactual，不是無假設的 reduced-form extrapolation。
+            </p>
+          </div>
+
+          <div class="callout identification">
+            <span class="callout-title">CR2 下降不等於 welfare 上升</span>
+            <p>
+              這張表只衡量 network concentration。較分散的 network 可能增加競爭，也可能失去 connecting convenience
+              與 density savings；沒有另外計算 fares、coverage、consumer surplus、profits 與 total welfare，就不能把較低 CR2
+              直接解讀成政策改善。
             </p>
           </div>
 
@@ -2134,6 +2248,35 @@
             </div>
           </div>
 
+          <h3>Holmes 真正要回答的四個問題</h3>
+          <div class="grid-2">
+            <div class="card">
+              <h4>1. 為何由內向外、連續擴張？</h4>
+              <p>Walmart 為何不先跳到遠方的大市場，而長期維持 contiguous、high-density network？</p>
+            </div>
+            <div class="card">
+              <h4>2. Cannibalization 有多大？</h4>
+              <p>新店 sales 中，多少是真正從 outside retailers 搶來，多少只是從既有 Walmart 移轉？</p>
+            </div>
+            <div class="card">
+              <h4>3. Density benefit 值多少？</h4>
+              <p>stores 靠近 distribution centers 帶來的配送、快速補貨、庫存與區域管理價值有多大？</p>
+            </div>
+            <div class="card">
+              <h4>4. 限制 store density 的代價？</h4>
+              <p>zoning 或 antitrust divestiture 若拆散 network，Walmart 的 cost side 會付出多少代價？</p>
+            </div>
+          </div>
+
+          <div class="callout warning">
+            <span class="callout-title">這篇不是完整的 competition／welfare paper</span>
+            <p>
+              Holmes 不明確建模 Kmart locations、rival entry 或 preemption，也不把估出的 firm-cost effect
+              直接等同 consumer welfare。它專注 own-store cannibalization、density economies 與不可逆的 opening sequence；
+              competitor-driven clustering 若重要，可能被 <span class="mono">τ</span> 吸收。
+            </p>
+          </div>
+
           <div class="callout identification">
             <span class="callout-title">若只看 store openings，兩者無法分開</span>
             <p>
@@ -2143,7 +2286,7 @@
             </p>
           </div>
 
-          <h3>兩階段 empirical strategy</h3>
+          <h3>兩個識別 blocks</h3>
           <ol class="sequence">
             <li>
               <strong>先估 demand system：</strong>對每個 hypothetical new store，預測顧客來自 outside retailers
@@ -2163,6 +2306,22 @@
             </p>
           </div>
 
+          <h3>把兩個 blocks 展開成五個操作步驟</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>步驟</th><th>資料／模型做什麼</th><th>產生的 object</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>1. Store-choice demand</td><td>由距離、人口密度、demographics 與 2005 store sales 估消費者選店</td><td>給定任何 store network 的 choice probabilities 與 revenue</td></tr>
+                <tr><td>2. Remove-new-stores experiment</td><td>比較有／沒有當年新店時，既有店的反事實 sales</td><td>cannibalization 與真正 incremental chain revenue</td></tr>
+                <tr><td>3. Accounting bridge</td><td>用 gross margin、labor、wages、land rents 把 revenue 轉為 operating profit</td><td>任何 actual／deviation policy 的 profit sacrifice</td></tr>
+                <tr><td>4. Pairwise resequencing</td><td>交換兩家店的 opening dates，保持其餘 sequence 不變</td><td>actual policy 與可行 local alternative 的 value difference</td></tr>
+                <tr><td>5. Moment inequalities</td><td>要求 actual policy 至少不差於每組 deviations，並聚合 measurement error</td><td><span class="mono">τ</span> 與人口密度成本參數的 identified set</td></tr>
+              </tbody>
+            </table>
+          </div>
+
           <h3>資料各自負責什麼？</h3>
           <div class="table-wrap">
             <table>
@@ -2170,9 +2329,9 @@
                 <tr><th>資料</th><th>主要用途</th><th>為何不可少</th></tr>
               </thead>
               <tbody>
-                <tr><td>2005 store-level sales、employment、size</td><td>估 demand 與 store revenue</td><td>沒有 consumer counts，只能從 revenue 連回選店 shares</td></tr>
+                <tr><td>2005 年 3,176 家 stores 的 sales、employment、type</td><td>估 demand、store revenue 與 labor input</td><td>沒有 consumer counts，只能從 revenue 連回選店 shares</td></tr>
                 <tr><td>1962–2005 所有 stores / distribution centers 的位置與開設日</td><td>重建 observed dynamic policy</td><td>辨認 expansion sequence、distance to DC 與 local deviations</td></tr>
-                <tr><td>Census-block demographics、wages、rents</td><td>控制 demand 與 location-specific costs</td><td>避免把人口密度或租金差異誤認成 network effect</td></tr>
+                <tr><td>Census block-group demographics、county wages、property-value proxy</td><td>控制 demand、labor 與 land costs</td><td>避免把 urban heterogeneity 誤認成 network effect；原文 2000 年使用 206,960 個 block groups</td></tr>
                 <tr><td>Walmart 年報自陳約 1% cannibalization</td><td>external validation 與 constrained calibration</td><td>提供需求模型之外的 benchmark，並建立 density-economy lower bound</td></tr>
               </tbody>
             </table>
@@ -2193,7 +2352,7 @@
             <div class="chapter-no">14</div>
             <div>
               <span class="part-label">Part II · Retail</span>
-              <h2>Walmart demand：nested logit 在這裡扮演什麼角色？</h2>
+              <h2>Walmart demand：logit-style store choice 在這裡扮演什麼角色？</h2>
               <p>先在每個 census block 模擬消費者去哪裡買。 <span class="page-tag">slides 62–64</span></p>
             </div>
           </div>
@@ -2238,11 +2397,21 @@
           </div>
 
           <div class="callout intuition">
-            <span class="callout-title">Nested logit 的故事</span>
+            <span class="callout-title">講義 notation 與原論文 specification 的小差異</span>
             <p>
-              消費者先有「去 Walmart 還是其他 retailer」的共同偏好，再在附近 Walmart stores
-              之間依距離與特徵分配。較大的 within-Walmart correlation 意味著新增一家 Walmart
-              時，較多 sales 從其他 Walmart 移轉，而不是從 outside good 搶來。
+              講義用 Walmart-common shock 加 store-specific shock 的 nested-logit notation，直覺是先分 Walmart／outside，
+              再在附近 Walmart 間依距離分配；Holmes 原論文 Section 4 的主要估計式則寫成 standard logit。
+              兩者在本章的共同任務都是建立 distance-based substitution，將一間新店的 customers 分成
+              「從既有 Walmart 移轉」與「從 outside retailers 搶來」。這一步都有 closed-form shares，
+              不需要 random-coefficients BLP 的 consumer simulation。
+            </p>
+          </div>
+
+          <div class="callout assumption">
+            <span class="callout-title">為何沒有另估 price coefficient？</span>
+            <p>
+              原文利用 Walmart 的 everyday-low-price policy，把跨店、跨期價格近似為固定，專注 distance 與 store network。
+              這使 demand 可用 sales cross section 估計，但代價是 expansion 若同時改變 local prices，該 margin 不會被模型捕捉。
             </p>
           </div>
 
@@ -2532,6 +2701,12 @@
               observed policy 必須勝過特定 deviations 的必要條件。
             </p>
           </div>
+
+          <p class="mini">
+            口徑提醒：講義用約 1,100 萬個 census blocks 描繪概念上的 location universe；原論文需求估計使用
+            Census block groups，實證的 pairwise deviations 則在 3,176 個實際 store locations 間建立。
+            無論採哪個口徑，完整枚舉 store-opening sequences 都不可行。
+          </p>
         </section>
 
         <section class="chapter" id="inequalities">
@@ -2595,6 +2770,15 @@
             得到不同權重，產生更多辨認方向。
           </p>
 
+          <div class="callout intuition">
+            <span class="callout-title">為何不要求 522,967 條 individual inequalities 每條都成立？</span>
+            <p>
+              Store sales、wages、rents 與 first-stage demand 都有 measurement error；若逐條硬套 restriction，
+              一個極端負誤差就可能主宰整個 identified set。Holmes 以 12 個經濟意義清楚的 deviation groups
+              建立非負 indicators／weights，先在組內平均，使 errors 有機會消去，再形成 moment inequalities。
+            </p>
+          </div>
+
           <h3>Step 4：樣本中只懲罰 violated inequalities</h3>
           <div class="eq">
             Θ̂<sub>I</sub> =
@@ -2656,11 +2840,25 @@
             </div>
           </div>
 
+          <h3>三類 swaps 各自瞄準哪個 parameter？</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Deviation class</th><th>如何改變 network</th><th>主要 identification</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Store-density decreasing</td><td>遠店提前、近 cluster 的店延後；counterfactual 早期 network 較分散</td><td>Actual policy 願犧牲 operating profit 以省 DC miles，主要給 <span class="mono">τ</span> 下界</td></tr>
+                <tr><td>Store-density increasing</td><td>近店提前、遠店延後；counterfactual 比 actual 更密集</td><td>若再加密真那麼有利就應被選，主要限制 <span class="mono">τ</span> 不能過大</td></tr>
+                <tr><td>Population-density changing</td><td>交換同州、opening dates 相近但 urban density 不同的地點</td><td>固定 store-density margin，辨認 <span class="mono">ω<sub>1</sub>,ω<sub>2</sub></span>，避免污染 <span class="mono">τ</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+
           <h3>Pairwise swap 有四個優點</h3>
           <div class="grid-2">
             <div class="card">
               <h4>1. 保持 expansion scale</h4>
-              <p>每年總開店數大致不變，不需建模為何某年公司整體擴張快或慢。</p>
+              <p>在兩個被交換年份之間，兩條 policies 都恰有其中一家店營業；每年總開店數不變，不需建模 aggregate expansion speed。</p>
             </div>
             <div class="card">
               <h4>2. 接近 observed policy</h4>
@@ -2672,7 +2870,7 @@
             </div>
             <div class="card">
               <h4>4. 大量 common terms 抵消</h4>
-              <p>相同兩家店最後都會開，差別只是 timing；很多長期 profit 與 aggregate shocks 在 value difference 中消掉。</p>
+              <p>較晚日期之後 store set 完全相同，長期 profits 抵消；每期店數相同也讓 constant fixed-cost term <span class="mono">ω<sub>0</sub></span> 抵消。</p>
             </div>
           </div>
 
@@ -2714,14 +2912,44 @@
             </p>
           </div>
 
+          <h3>Table XI：為何 restrictions 越多，identified set 越窄？</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Specification</th><th>Moment inequalities</th><th>Sample identified interval for τ</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Basic moments</td><td>12</td><td>$3.33–$4.92 thousand</td></tr>
+                <tr><td>Basic + level-1 interactions</td><td>84</td><td>$3.41–$4.35 thousand</td></tr>
+                <tr><td>Basic + level-1/2 interactions</td><td>336</td><td>$3.50–$3.67 thousand</td></tr>
+              </tbody>
+            </table>
+          </div>
           <p>
-            這個估計約是單純 trucking-cost saving 的四倍。Holmes 因此把超出的部分解讀為：
+            每一組新 moments 都從不同 covariate regions 檢查相同 revealed-preference restriction，排除更多
+            <span class="mono">θ</span>。最後的 $3.50–$3.67k 是 sample analog identified set，不是普通迴歸的
+            point estimate ± standard error。納入 first-stage demand error 後，Specification 3 的 95% PPHI
+            inner／outer thresholds 約為 $3.01–$4.72k／$2.97–$5.04k，反映 sampling uncertainty 比 sample set 本身更寬。
           </p>
-          <ul>
-            <li><strong>Just-in-time inventory flexibility：</strong>離 DC 近，可更快補貨並回應 local demand shocks，減少缺貨與過度庫存。</li>
-            <li><strong>Managerial economies of density：</strong>區域管理、人員支援與 labor relocation 更容易。</li>
-            <li><strong>其他未單獨建模的 logistics complementarities：</strong>τ 是 reduced-form cost index，不是只有每 mile 的卡車帳單。</li>
-          </ul>
+
+          <div class="callout intuition">
+            <span class="callout-title">為何不是純卡車成本？</span>
+            <p>這個估計約是單純 trucking-cost saving 的四倍。Holmes 因此把超出的部分解讀為：</p>
+            <ul>
+              <li><strong>Just-in-time inventory flexibility：</strong>離 DC 近，可更快補貨並回應 local demand shocks，減少缺貨與過度庫存。</li>
+              <li><strong>Managerial economies of density：</strong>區域管理、人員支援與 labor relocation 更容易。</li>
+              <li><strong>其他未單獨建模的 logistics complementarities：</strong>τ 是 reduced-form cost index，不是只有每 mile 的卡車帳單。</li>
+            </ul>
+          </div>
+
+          <div class="callout identification">
+            <span class="callout-title">另一個角度的 validation：distribution-center timing</span>
+            <p>
+              Baseline 固定 DC opening dates、交換 store dates。作者另外反過來固定 stores，問 DC 為何在實際年份開，
+              以「開早一年不值得、實際年份值得」的 inequalities 粗略倒推 <span class="mono">τ≈$3,100</span>。
+              它與主方法的約 $3,500 接近；兩種 comparisons 依賴不同 margin，因而是有用的 external consistency check。
+            </p>
+          </div>
 
           <h3>政策含義</h3>
           <p>
