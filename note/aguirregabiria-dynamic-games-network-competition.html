@@ -629,6 +629,8 @@
         padding: 20px;
         break-inside: auto;
       }
+      h2, h3, h4 { break-after: avoid-page; }
+      .callout, .big-idea, .eq, .derive-step { break-inside: avoid-page; }
       details > div { display: block !important; }
       summary { list-style: none; }
       a { color: inherit; text-decoration: none; }
@@ -1437,16 +1439,16 @@
 
           <ol class="sequence">
             <li>
-              <strong>Demand：</strong>用 BLP-style IV demand system 估旅客對 fare、nonstop、hub size
-              等特徵的反應，得到每個 product 的 demand 與 markup 關係。
+              <strong>Demand：</strong>把 observed shares invert 成 mean utility，再用 BLP-style IV
+              估旅客對 fare、nonstop、hub size 等特徵的反應。
             </li>
             <li>
               <strong>Marginal cost：</strong>把 demand elasticities 放進 static Bertrand pricing FOCs，
-              由 observed prices 倒推出 <span class="mono">c<sub>irt</sub></span>，再估 hub size 如何改變成本。
+              由 observed prices 倒推出 <span class="mono">c<sub>jt</sub></span>，再估 hub size 如何改變成本。
             </li>
             <li>
-              <strong>Dynamic entry/exit：</strong>前兩步已給出 local revenue
-              <span class="mono">R<sub>imt</sub></span>；再用 NPL 從 observed network transitions
+              <strong>Dynamic entry/exit：</strong>前兩步已給出 local variable profit
+              <span class="mono">R<sub>imt</sub><sup>*</sup></span>；再用 NPL 從 observed network transitions
               估 fixed costs、sunk entry costs 與 payoff shocks。
             </li>
           </ol>
@@ -1460,27 +1462,182 @@
             </p>
           </div>
 
-          <h3>Stage 1：為何 fare 需要 IV？</h3>
+          <h3>Stage 1 不是完整 random-coefficients BLP</h3>
           <p>
-            observed fare 與 unobserved product quality 通常正相關：更好的班次、服務或商務旅客需求，
-            同時提高價格與市場份額。OLS 會把高價伴隨高需求誤讀成消費者不怕漲價，故 price coefficient
-            往零偏。投影片的 fare coefficient 從 OLS 的 −0.329 變成 IV 的 −1.366，正符合這個故事。
+            投影片的「à la BLP」指 Berry-style share inversion、price endogeneity 與
+            <span class="mono">E[Zξ]=0</span> 的 IV/GMM logic。原文為了在 dynamic counterfactuals 中反覆、快速求
+            route-level Nash prices，實際採用有 closed form 的兩層 nested logit，而不是需要 simulation 的
+            random-coefficients BLP。
+          </p>
+
+          <div class="grid-2">
+            <div class="card">
+              <h4>這篇保留的 BLP 精神</h4>
+              <p>用 shares 找 latent mean utility；把 fare 與 within-nest share 視為 endogenous；以 rival characteristics 提供 excluded variation。</p>
+            </div>
+            <div class="card">
+              <h4>這篇省略的 full-BLP 計算</h4>
+              <p>沒有 demographics draws、random coefficients、模擬 consumer integrals，也沒有對每組 nonlinear tastes 跑 Berry contraction。</p>
+            </div>
+          </div>
+
+          <h3>Market、product 與三種 shares</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Object</th><th>定義</th><th>用途</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><span class="mono">(r,t)</span></td><td>directional route × quarter</td><td>一個 demand market，例如 Boston → Chicago、2004 Q1</td></tr>
+                <tr><td><span class="mono">j</span></td><td>airline × stop/nonstop product</td><td>旅客實際選擇的 differentiated product</td></tr>
+                <tr><td><span class="mono">s<sub>jt</sub>=q<sub>jt</sub>/H<sub>rt</sub></span></td><td>product 占所有潛在旅客的 share</td><td><span class="mono">H<sub>rt</sub></span> 以起訖城市總人口衡量 market size</td></tr>
+                <tr><td><span class="mono">s<sub>0t</sub>=1−Σ<sub>j</sub>s<sub>jt</sub></span></td><td>outside share</td><td>不搭飛機的選擇</td></tr>
+                <tr><td><span class="mono">s<sub>jt</sub><sup>*</sup>=s<sub>jt</sub>/Σ<sub>j′∈J<sub>irt</sub></sub>s<sub>j′t</sub></span></td><td>airline nest 內的 conditional share</td><td>已選 airline i 後，stop 與 nonstop 間如何分配</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Closed-form Berry inversion</h3>
+          <p>
+            product quality 寫成 <span class="mono">b<sub>jt</sub>=X<sub>jt</sub>α+ξ<sub>jt</sub></span>，
+            效用是 <span class="mono">U<sub>ijt</sub>=b<sub>jt</sub>−p<sub>jt</sub>+v<sub>ijt</sub></span>。
+            nested-logit shares 直接給出：
           </p>
           <div class="eq">
-            Demand shock ξ ↑ ⇒ fare ↑ 且 share ↑
-            ⇒ Cov(fare,ξ)&gt;0 ⇒ OLS price sensitivity toward 0
+            ln(s<sub>jt</sub>)−ln(s<sub>0t</sub>) =
+            (b<sub>jt</sub>−p<sub>jt</sub>)/σ<sub>1</sub>
+            +(1−σ<sub>2</sub>/σ<sub>1</sub>)ln(s<sub>jt</sub><sup>*</sup>)
+          </div>
+          <p>代入 product quality 並把 coefficients 重新正規化：</p>
+          <div class="eq">
+            ln(s<sub>jt</sub>)−ln(s<sub>0t</sub>) =
+            X<sub>jt</sub>α̃ − p<sub>jt</sub>/σ<sub>1</sub>
+            +ρln(s<sub>jt</sub><sup>*</sup>)+ξ̃<sub>jt</sub>,
+            &nbsp;ρ≡1−σ<sub>2</sub>/σ<sub>1</sub>
+          </div>
+          <p>
+            因此給定 parameters，unobserved product quality 可直接由 observed shares 倒出：
+          </p>
+          <div class="eq">
+            ξ̃<sub>jt</sub> =
+            ln(s<sub>jt</sub>)−ln(s<sub>0t</sub>)−X<sub>jt</sub>α̃
+            +p<sub>jt</sub>/σ<sub>1</sub>−ρln(s<sub>jt</sub><sup>*</sup>)
+          </div>
+
+          <details>
+            <summary>若改用完整 random-coefficients BLP，Berry inversion 會怎麼做？</summary>
+            <div>
+              <p>
+                一般 BLP 的 shares 是對 heterogeneous tastes 的積分
+                <span class="mono">s<sub>j</sub>(δ,θ<sub>2</sub>)</span>，沒有 closed-form inverse。
+                對每組 nonlinear parameters <span class="mono">θ<sub>2</sub></span>，要反覆更新：
+              </p>
+              <div class="eq">
+                δ<sub>j</sub><sup>(h+1)</sup> = δ<sub>j</sub><sup>(h)</sup>
+                +ln(s<sub>j</sub><sup>obs</sup>)−ln(s<sub>j</sub>(δ<sup>(h)</sup>,θ<sub>2</sub>))
+              </div>
+              <p>
+                直到 simulated shares 配合 observed shares，再用
+                <span class="mono">ξ=δ−Xβ+αp</span> 形成 GMM moments。這篇的 Type-I extreme-value tastes
+                已解析積分，所以需求端不需要這個 simulation contraction。
+              </p>
+            </div>
+          </details>
+
+          <h3>為何 fare 與 ln(s<sup>*</sup>) 都要 IV？</h3>
+          <div class="grid-2">
+            <div class="card">
+              <h4>Fare endogeneity</h4>
+              <p><span class="mono">ξ↑</span> 同時提高 willingness to pay、fare 與 share；OLS 會把高價伴隨高需求誤讀成消費者不怕漲價，使 price coefficient 往零偏。</p>
+            </div>
+            <div class="card">
+              <h4>Within-share endogeneity</h4>
+              <p>較高的 unobserved quality 也會提高 product 在同一 airline nest 內的 <span class="mono">s*</span>，所以 <span class="mono">ln(s*)</span> 與 <span class="mono">ξ</span> 相關。</p>
+            </div>
+          </div>
+          <div class="eq">
+            Demand shock ξ ↑ ⇒ fare ↑、s ↑、s<sup>*</sup> ↑
+            ⇒ Cov(p,ξ)&gt;0 且 Cov(ln s<sup>*</sup>,ξ)≠0
+          </div>
+          <p>
+            這也解釋 p.35 為何 fare coefficient 從 OLS 的 −0.329 變成 IV 的 −1.366：IV 指出需求其實遠比 OLS 所暗示的更有價格彈性。
+          </p>
+
+          <h3>原文實際使用的 excluded IVs</h3>
+          <p>
+            included exogenous characteristics 會作為自己的 instruments；額外 excluded instruments
+            來自同一路線上其他 carriers 的產品與網路特徵：
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Instrument</th><th>Relevance：為何會動到 p 或 ln(s*)？</th><th>Exclusion：為何不直接進 own ξ？</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>其他 active carriers 的平均 hub size</td><td>改變 rival quality、competitive pressure 與 equilibrium fare</td><td>控制 own characteristics 與 FE 後，只應透過 rivals 與價格影響 own choice</td></tr>
+                <tr><td>其他 legacy carriers 的平均 hub size</td><td>讓傳統網路型 carriers 的 competitive strength 有額外 variation</td><td>不直接成為 product j 的未觀察品質</td></tr>
+                <tr><td>其他 carriers 的平均 nonstop dummy</td><td>改變 competing products 的 itinerary quality 與 substitution</td><td>rival 是否直飛不直接改變 own product quality shock</td></tr>
+                <tr><td>Southwest presence dummy</td><td>Southwest 的 low-cost competitive presence 強烈改變價格與 shares</td><td>條件於 controls 後，不應直接進入 own mean utility shock</td></tr>
+              </tbody>
+            </table>
           </div>
 
           <div class="callout identification">
-            <span class="callout-title">競爭者 hub size 作為 IV 需要什麼 exclusion？</span>
+            <span class="callout-title">這些是 rival-characteristic IVs，不是傳統燃油成本 IV</span>
             <p>
-              它必須透過競爭環境、成本或 equilibrium price 改變本公司票價，卻不能在控制模型中的產品特徵後，
-              直接和本公司未觀察 demand quality 相關。若大家同時因共同的城市需求 shock 擴張 hub，
-              exclusion 便值得懷疑；城市、時間與市場控制及 robustness 很重要。
+              典型外部 cost-shifter IV 可能是 fuel price × distance、airport fees、local wages、congestion
+              或 aircraft fuel exposure；這篇 reported demand IV 並未使用這些。它依靠的是對手特徵在競爭均衡中
+              改變 fare，但不直接進入 own product utility 的 BLP exclusion logic。
             </p>
           </div>
 
-          <h3>Stage 2：pricing FOC 如何倒推 marginal cost？</h3>
+          <h3>IV validity 為何需要 time-to-build？</h3>
+          <p>
+            own 與 rival hub sizes 都是 network choices，也可能受到 unobserved demand 吸引而 endogenous。
+            作者假設本期 network 在上一期已決定，且 product-specific demand shock 沒有 serial correlation；
+            再加上 airline FE 與 city × time FE，當期 hub structure 對當期 idiosyncratic
+            <span class="mono">ξ<sub>jt</sub></span> 是 predetermined。
+          </p>
+          <div class="derive">
+            <div class="derive-step">
+              <span>t−1</span>
+              <p>航空公司決定 network，形成 t 期 hub sizes 與 rival presence。</p>
+            </div>
+            <div class="derive-step">
+              <span>t</span>
+              <p>新的 product-specific demand shock 實現，再進行 price competition。</p>
+            </div>
+            <div class="derive-step">
+              <span>Moment</span>
+              <p>若 shock 不持續，predetermined network characteristics 與當期 ξ 獨立。</p>
+            </div>
+          </div>
+          <div class="callout warning">
+            <span class="callout-title">無 serial correlation 只支持 exclusion 的一個 implication</span>
+            <p>
+              若未觀察 route demand 持續存在，rivals 會因過去高需求建 hub，而今天仍有高 demand，IV 便失效。
+              原文 residual test 無法拒絕無 serial correlation，但這不等於完全證明所有 competitive instruments 外生。
+            </p>
+          </div>
+
+          <h3>IV coefficients 如何轉成 structural demand objects？</h3>
+          <div class="eq-stack">
+            <div class="eq">
+              β̂<sub>p</sub>=−1.366=−1/σ̂<sub>1</sub>
+              ⇒ σ̂<sub>1</sub>=0.732（票價以 $100 計）
+            </div>
+            <div class="eq">
+              ρ̂=0.634=1−σ̂<sub>2</sub>/σ̂<sub>1</sub>
+              ⇒ σ̂<sub>2</sub>=0.732(1−0.634)=0.268
+            </div>
+          </div>
+          <p>
+            characteristic coefficient 除以 fare coefficient 可轉成 dollars：nonstop 的 WTP 約
+            <span class="mono">(2.080/1.366)×$100=$152</span>；origin、destination hub size 增加一單位的 WTP
+            分別約 $1.97 與 $2.63。這些 parameters 共同決定 demand elasticities 與 pricing derivatives。
+          </p>
+
+          <h3>Stage 2：Bertrand pricing FOC 如何倒推 marginal cost？</h3>
           <p>
             多產品 Bertrand 的一般 FOC 可寫成：
           </p>
@@ -1492,8 +1649,57 @@
           </div>
           <p>
             Stage 1 提供 demand derivatives，價格與數量在資料中可見，因此能解出 markups
-            <span class="mono">p−c</span>，進而回推出 <span class="mono">c</span>。
-            hub-size cost coefficients為負，和 airport economies of scope 一致。
+            <span class="mono">p−c</span>。一般 BLP supply side 是利用 ownership-adjusted demand Jacobian
+            解一組 markup equations；本篇的 nested-logit pricing equation進一步簡化為：
+          </p>
+          <div class="eq-stack">
+            <div class="eq">
+              p<sub>jt</sub>−c<sub>jt</sub> =
+              σ<sub>1</sub>/(1−s̄<sub>irt</sub>)
+            </div>
+            <div class="eq">
+              ĉ<sub>jt</sub> = p<sub>jt</sub>−σ̂<sub>1</sub>/(1−s̄<sub>irt</sub>),
+              &nbsp;s̄<sub>irt</sub>≡Σ<sub>j′∈J<sub>irt</sub></sub>s<sub>j′t</sub>
+            </div>
+          </div>
+          <p>
+            <span class="mono">s̄<sub>irt</sub></span> 是 airline i 在 route r 的總 share。需求越不敏感、airline
+            route share 越高，implied markup 越大；因此 Stage 1 的 price sensitivity 一旦估錯，所有
+            marginal costs 與 profits 都會一起偏掉。
+          </p>
+
+          <h3>Recovered marginal cost 再對哪些 cost shifters 回歸？</h3>
+          <div class="eq">
+            ĉ<sub>jt</sub> = W<sub>jt</sub><sup>cost</sup>δ+ω<sub>jt</sub>
+          </div>
+          <p>
+            <span class="mono">W<sup>cost</sup></span> 包括 nonstop dummy、own hub size at origin/destination、
+            route distance、airline FE 與 city × time FE。這裡沒有額外 excluded cost IV：原文以 time-to-build
+            加上 product-specific cost shock 無 serial correlation，把 hub size 視為 predetermined，因而用 OLS。
+          </p>
+          <div class="callout warning">
+            <span class="callout-title">p.36 的 hub-size 單位容易誤讀</span>
+            <p>
+              demand-side hub size 以 nonstop 連到各城市的人口加權，反映旅客對 network reach 的評價；
+              原論文 cost regression 的 hub size 則是 number of nonstop connections。投影片 p.36 仍標成
+              million people，但原文 Table 8 明確使用 # connections。
+            </p>
+          </div>
+
+          <h3>把 demand 與 cost estimates 拼成 local-manager profit</h3>
+          <div class="eq-stack">
+            <div class="eq">
+              R̂<sub>irt</sub> = Σ<sub>j∈J<sub>irt</sub></sub>
+              (p<sub>jt</sub>−ĉ<sub>jt</sub>)q<sub>jt</sub>
+            </div>
+            <div class="eq">
+              R̂<sub>imt</sub><sup>*</sup> = Σ<sub>r</sub>1{m∈M<sub>r</sub>}R̂<sub>irt</sub>
+            </div>
+          </div>
+          <p>
+            第二式把所有使用 segment m 的 nonstop 與 one-stop routes profits 加總。原文 C=55 時，一位 local manager
+            的 <span class="mono">R*</span> 最多涉及 214 條 routes。估出的 demand/cost system 也可對 counterfactual
+            market structures 重新解 prices、quantities 與 profits，這就是 closed-form specification 的計算價值。
           </p>
 
           <h3>Stage 3：什麼 variation 分開 FC 與 EC？</h3>
@@ -1506,6 +1712,29 @@
               <h4>EC：從 inactive 轉 active 的額外成本</h4>
               <p>主要由 entry rarity、entry thresholds 與進入後的 persistence 辨認；若 entry 很少但一進就久留，通常指向較大 sunk EC。</p>
             </div>
+          </div>
+
+          <div class="eq">
+            EC ≈ outsider 的 entry threshold − incumbent 的 continuation threshold
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>先估／先建構的 object</th><th>性質</th><th>後面建構的 structural object</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><span class="mono">s、s<sub>0</sub>、s*</span></td><td>資料 transformation</td><td>Berry-inverted mean utility</td></tr>
+                <tr><td>Fare 與 <span class="mono">ln(s*)</span> 的 IV variation</td><td>需求 first stage</td><td>price sensitivity、nest substitution、WTP</td></tr>
+                <tr><td>Demand IV coefficients</td><td>在 demand model 下已是 structural</td><td>elasticities 與 markup derivatives</td></tr>
+                <tr><td>Bertrand-implied markup</td><td>generated equilibrium object</td><td>product marginal cost <span class="mono">ĉ</span></td></tr>
+                <tr><td><span class="mono">ĉ</span> 的 cost regression</td><td>sequential structural estimate</td><td>marginal-cost parameters <span class="mono">δ̂</span></td></tr>
+                <tr><td><span class="mono">(p−ĉ)q</span></td><td>generated profit</td><td>route profit與 local-manager <span class="mono">R̂*</span></td></tr>
+                <tr><td>Reduced-form entry logit CCP</td><td>NPL nuisance／initial value</td><td>初始 beliefs <span class="mono">P̂<sup>0</sup></span>，不是最終 policy</td></tr>
+                <tr><td>Monte Carlo state transition</td><td>給定 CCPs 的 approximation</td><td>continuation values</td></tr>
+                <tr><td>NPL fixed point</td><td>structural equilibrium restriction</td><td>FC、EC、hub/distance effects、<span class="mono">σ<sub>ε</sub></span></td></tr>
+              </tbody>
+            </table>
           </div>
         </section>
 
@@ -1525,32 +1754,176 @@
             的主意是：先暫時把競爭者的 CCPs 當成已知，再估 best response；接著才更新 CCPs。
           </p>
 
+          <div class="big-idea">
+            <strong>故事版：先問「大家看起來怎麼飛」，再問「什麼成本會讓理性航空公司這樣飛」</strong>
+            <p>
+              reduced-form choice model 先忠實描述 observed entry/continuation patterns，給我們一張暫時的
+              competitor playbook。結構模型再把這張 playbook 放進未來 payoff，反推出能合理化這些選擇的
+              fixed cost、entry cost 與 payoff-shock scale。最後更新 playbook，直到「預期別人怎麼做」與
+              「模型說大家最適時會怎麼做」相符。
+            </p>
+          </div>
+
+          <h3>先看 local manager 做決策時究竟看見什麼</h3>
+          <p>
+            投影片為了凸顯降維，常把 state 濃縮成 own status、local profit 與 own hub size 三項；原論文實際估計的
+            local state 還包含該 segment 的競爭者數量與平均 rival hub size：
+          </p>
+          <div class="eq">
+            w<sub>imt</sub> =
+            (x<sub>imt</sub>, R<sub>imt</sub><sup>*</sup>, HUB<sub>imt</sub>,
+            n<sub>mt</sub>, HUB̄<sub>mt</sub>)
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>State</th><th>白話意義</th><th>為何影響 action</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><span class="mono">x<sub>imt</sub></span></td><td>airline i 目前是否在 segment m 飛</td><td>決定下一期 active 是否要另付 sunk entry cost</td></tr>
+                <tr><td><span class="mono">R<sub>imt</sub><sup>*</sup></span></td><td>這條 segment 帶來的 current variable profit</td><td>由 demand 與 cost stages 生成；今天對兩個 actions 相同，但會預測未來 profit</td></tr>
+                <tr><td><span class="mono">HUB<sub>imt</sub></span></td><td>segment 兩端對 airline i 的 hub value</td><td>捕捉 network economies 與未來連接價值</td></tr>
+                <tr><td><span class="mono">n<sub>mt</sub></span></td><td>目前在 m 的 carriers 數</td><td>競爭越多，未來 profits 與留在市場的誘因通常越低</td></tr>
+                <tr><td><span class="mono">HUB̄<sub>mt</sub></span></td><td>m 上 rivals 的平均 hub strength</td><td>區分「很多弱對手」與「少數強 hub 對手」</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>一個 action 的價值：今天付建置成本，換取明天的 option value</h3>
+          <p>
+            local manager 選 <span class="mono">a<sub>imt</sub>∈{0,1}</span>，其中 1 表示下一期維持／建立此 segment。
+            因為有一季 time-to-build，今天無論選哪個 action，current network 與
+            <span class="mono">R<sup>*</sup></span> 都已經給定；今天的 revenue 因而在兩個 actions 的差分中抵消。
+            選 active 相對 inactive 的 deterministic value difference 是：
+          </p>
+          <div class="eq">
+            Δv<sub>im</sub>(w;θ,P) =
+            −FC<sub>im</sub>−(1−x<sub>im</sub>)EC<sub>im</sub>
+            +βΔEV<sub>im</sub><sup>P</sup>(w)
+          </div>
+          <p>
+            incumbent 已經 active，選擇下期繼續飛只付 fixed cost；outsider 若選擇下期進入，還要多付一次 sunk entry cost。
+            最後一項是 option value：今日建好 segment 會改變明日 network、profits 與之後的選擇機會。
+            <span class="mono">R*</span> 並沒有消失：它是 state，透過對未來 revenue 的預測進入
+            <span class="mono">ΔEV</span>，而不是被錯當成今天 action 立刻創造的收入。
+            給定 private payoff shock 為 logistic，其 conditional choice probability 是：
+          </p>
+          <div class="eq">
+            P<sub>im</sub>(w)=Λ(Δv<sub>im</sub>(w;θ,P)/σ<sub>ε</sub>)
+          </div>
+          <p>
+            <span class="mono">P</span> 同時出現在右側，是因為 continuation value 要預測 rivals 未來的 actions；
+            rivals 怎麼做又由它們的 CCPs 決定。這正是 dynamic game 的 equilibrium feedback。
+          </p>
+
+          <h3>哪些才是 reduced-form estimates？</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Object</th><th>角色</th><th>能否直接叫 structural parameter？</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Observed transition matrix／entry-exit rates</td><td>描述 network persistence 與 mobility</td><td>不能；沒有控制 states，也沒有套 payoff restriction</td></tr>
+                <tr><td>Initial flexible logit CCP</td><td>用 airline FE、city FE 與 state 的三次多項式預測 choice，形成 <span class="mono">P̂<sup>(0)</sup></span></td><td>不能；它只是 competitor playbook 的起點</td></tr>
+                <tr><td>Demand IV coefficients</td><td>在 nested-logit demand assumptions 下識別 tastes</td><td>可以；這一步已利用 utility、shares 與 exclusion restrictions</td></tr>
+                <tr><td>Recovered cost/profit</td><td>利用 Bertrand FOC 生成 <span class="mono">ĉ</span> 與 <span class="mono">R̂*</span></td><td>屬 sequential structural objects，會把第一、二階段估計誤差帶入動態階段</td></tr>
+                <tr><td>NPL estimates</td><td>讓 observed choices、dynamic best responses 與 equilibrium CCPs 一致</td><td>是；在 timing、state sufficiency、shock distribution 與 equilibrium assumptions 下識別 FC／EC</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout identification">
+            <span class="callout-title">為何不能只用 raw entry frequency 當最終 CCP？</span>
+            <p>
+              每位 local manager 在資料裡只有三個 quarters，對高維 state 做完全 nonparametric frequency 幾乎必然稀疏且不精確。
+              所以作者用 flexible logit 初始化，再讓 structural best-response map 反覆修正它。NPL 的特色正是初始 CCP
+              不必本身就是一致的非參數估計；最終辨認來自收斂時同時滿足 choice likelihood 與 equilibrium consistency。
+            </p>
+          </div>
+
+          <h3>Simulation 在哪裡？不在需求積分，而在明天的 network</h3>
+          <p>
+            給定今天 local state、自己的 action 與一組 CCPs，明天的
+            <span class="mono">R*</span>、own hub、競爭者數和 rival hub strength 取決於許多其他 local managers 同時怎麼選。
+            對所有 joint action profiles 精確加總，組合數仍會爆炸。因此作者從 rivals 的 CCPs 抽取 actions，模擬明日 network，
+            重複多次後平均，近似 conditional transition 與 continuation value：
+          </p>
+          <div class="eq-stack">
+            <div class="eq">
+              a<sub>−im,t</sub><sup>(s)</sup> ∼ P<sup>(k)</sup>(·|w<sub>t</sub>),
+              &nbsp;s=1,…,S
+            </div>
+            <div class="eq">
+              ΔEV<sub>im</sub><sup>P<sup>(k)</sup></sup>(w)
+              ≈ S<sup>−1</sup>Σ<sub>s=1</sub><sup>S</sup>
+              [V(active,w′<sup>(s)</sup>)−V(inactive,w′<sup>(s)</sup>)]
+            </div>
+          </div>
+          <p>
+            所以這裡的 random draws 是對手 actions／future local states 的 numerical integration；不是模擬旅客 demographics
+            或 random coefficients。simulation draws 最好在各次 objective evaluations 固定，避免 simulated noise 讓 optimizer
+            把抽樣變動誤認成 parameter 改善。代價是 finite-S approximation error，S 越大越準、也越慢。
+          </p>
+
           <ol class="sequence">
             <li>
-              <strong>初始化 CCP：</strong>由資料中的 entry/continuation frequencies 或 first-stage
-              flexible choice model 得到 <span class="mono">P<sup>(0)</sup></span>。
+              <strong>初始化 CCP：</strong>估 reduced-form logit；原文用 airline dummies、city dummies 與
+              <span class="mono">w</span> 的 third-order polynomial，得到 <span class="mono">P̂<sup>(0)</sup></span>。
             </li>
             <li>
-              <strong>把 P 暫時固定：</strong>用 <span class="mono">P<sup>(k)</sup></span> 預測其他 managers
-              的未來行動與 local-state transition，計算每個 action 的 continuation value。
+              <strong>把 P 暫時固定並模擬：</strong>用 <span class="mono">P<sup>(k−1)</sup></span> 抽取其他 managers
+              的 actions，推演 local-state transition，計算 active 與 inactive 的 continuation-value difference。
             </li>
             <li>
               <strong>估 structural parameters：</strong>選
-              <span class="mono">θ<sup>(k+1)</sup></span> 最大化 observed actions 的 pseudo-likelihood。
-              這一步是在「競爭者照既定 CCP 行動」條件下估自己的 best-response payoff。
+              <span class="mono">θ<sup>(k)</sup></span> 最大化 observed actions 的 pseudo-likelihood。
+              給定 constructed continuation values，這一步計算上很像一個有結構 restrictions 的 logit。
             </li>
             <li>
               <strong>更新 CCP：</strong>把新參數放回 choice-specific values，生成模型隱含的
-              <span class="mono">P<sup>(k+1)</sup>=Ψ(θ<sup>(k+1)</sup>,P<sup>(k)</sup>)</span>。
+              <span class="mono">P<sup>(k)</sup>=Ψ(θ<sup>(k)</sup>,P<sup>(k−1)</sup>)</span>。
             </li>
             <li>
               <strong>重複：</strong>直到參數與 CCP 不再明顯改變，亦即策略 beliefs 與模型 best responses 彼此一致。
             </li>
           </ol>
 
-          <div class="eq">
-            Equilibrium consistency:
-            P = Ψ(θ,P)
+          <div class="eq-stack">
+            <div class="eq">
+              θ̂<sup>(k)</sup>=arg max<sub>θ</sub> Q(θ,P̂<sup>(k−1)</sup>)
+            </div>
+            <div class="eq">
+              P̂<sup>(k)</sup>=Ψ(θ̂<sup>(k)</sup>,P̂<sup>(k−1)</sup>)
+            </div>
+            <div class="eq">
+              收斂時：P̂=Ψ(θ̂,P̂)
+            </div>
+          </div>
+
+          <h3>從 estimated choices 到 dollars：尺度怎麼定？</h3>
+          <p>
+            binary choice 只能從 probabilities 識別 utility differences 相對 shock dispersion 的比例。因此必須選一個尺度 normalization。
+            本文把第一、二階段算出的 <span class="mono">R̂*</span> 係數固定為 1；因為
+            <span class="mono">R̂*</span> 已用金額衡量，估出的 FC、EC 與 <span class="mono">σ<sub>ε</sub></span>
+            也能以相同金額單位解讀。discount factor 則固定為 <span class="mono">β=0.99</span>，不是靠短 panel 另行估計。
+          </p>
+          <div class="derive">
+            <div class="derive-step">
+              <span>Reduced form</span>
+              <p><span class="mono">P̂<sup>(0)</sup></span> 描述「什麼 state 下通常會 active」。</p>
+            </div>
+            <div class="derive-step">
+              <span>Simulation</span>
+              <p>將這些 CCPs 轉成 future network distributions 與 continuation values。</p>
+            </div>
+            <div class="derive-step">
+              <span>Structure</span>
+              <p>用 dynamic payoff equation 與 logit likelihood 找出能合理化 choices 的 FC、EC、hub/distance effects。</p>
+            </div>
+            <div class="derive-step">
+              <span>Equilibrium</span>
+              <p>更新 CCPs，直到 beliefs 等於 model-implied best responses。</p>
+            </div>
           </div>
 
           <div class="grid-2">
@@ -1567,9 +1940,18 @@
               <ul>
                 <li><span class="mono">Ψ</span> 不保證是 global contraction。</li>
                 <li>多重 equilibria 時，不同起點可能收斂到不同 fixed points。</li>
-                <li>若 first-stage CCP 或 state transition 很差，誤差會傳進 continuation values。</li>
+                <li>generated profits、初始 CCP 或 simulated transition 的誤差會傳進 continuation values。</li>
               </ul>
             </div>
+          </div>
+
+          <div class="callout intuition">
+            <span class="callout-title">實務上怎麼判斷結果不是初始化碰巧造成？</span>
+            <p>
+              用多組初始 CCPs 重跑、記錄收斂／循環情況，並比較最後的 pseudo-likelihood。原文以多個起點搜尋，
+              保留 likelihood 較高的 converged solution。這能揭露 local fixed points，但不能把 equilibrium selection
+              變成已知；counterfactual 仍需說明沿用哪個 equilibrium branch。
+            </p>
           </div>
 
           <div class="callout warning">
