@@ -1681,37 +1681,204 @@
             </div>
           </div>
 
-          <h3>計算瓶頸</h3>
+          <h3>先講故事：三個旋鈕與三個儀表</h3>
           <p>
-            一次 structural estimation 已需反覆解模型數千次。若要畫「每個 targeted moment 改變時，
-            θ̂ 如何反應」的曲線，需要數百次完整 re-estimation。
+            把 household model 想成一台很慢的機器。三個旋鈕是
+            <span class="mono">θ=(γ,β,Φ)</span>：風險趨避、耐心與股票參與成本；
+            三個儀表是平均財富、股票參與率與參與者的平均股票比重：
+          </p>
+          <div class="eq">
+            f(θ)=
+            [ E(W/L<sub>1</sub>), Pr(π&gt;0), E(π∣π&gt;0) ]′.
+          </div>
+          <p>
+            每轉一次旋鈕，都要重新解家庭的 dynamic program、得到 policy functions、模擬許多人的一生，
+            最後才能讀到三個儀表。因此標準 SMM
+          </p>
+          <div class="eq">
+            θ̂ = arg min<sub>θ∈Θ</sub>
+            [m̂−f(θ)]′W[m̂−f(θ)]
+            <span class="label">exact SMM</span>
+          </div>
+          <p>
+            不是把一條公式做代數 inverse，而是不斷試 θ、啟動整台機器，再找出最接近資料
+            <span class="mono">m̂</span> 的旋鈕位置。slide 13 藍線上的每個點又是另一組 target moments，
+            所以每一點都代表一次新的完整估計；三張曲線很快就變成數百次 re-estimation。
           </p>
 
-          <h3>Lightspeed surrogate 的三步</h3>
+          <div class="big-idea">
+            <strong>p.14 trick 的精神：把昂貴計算攤提掉</strong>
+            <p>
+              先付一次固定成本，畫好「旋鈕位置 → 儀表讀數」的地圖；以後換資料 moments、sample、
+              weighting matrix 或 moment subset，都在地圖上快速搜尋。它像把 structural model
+              先編譯成一個可重複查詢的函數，省下的是重複計算，不是經濟推理。
+            </p>
+          </div>
+
+          <h3>為何學 θ→m，而不直接學 m→θ？</h3>
+          <p>
+            模型天然定義的是單一的 forward map <span class="mono">θ→f(θ)</span>；反方向卻未必是一個函數：
+            不同 θ 可能產生近乎相同 moments，非單調關係也可能讓同一組 moments 對應多組參數。
+            如果直接訓練 <span class="mono">m→θ</span>，就會暗中替多重解選定一個 branch，
+            並把特定的 W 與 moment set 鎖進演算法。保留 forward map，再用 SMM objective 反推 θ，
+            才能保留原本的 weighting、over-identification 與多重解資訊。
+          </p>
+
+          <h3>實際操作：offline 建圖，online 反推</h3>
           <ol class="sequence">
-            <li><strong>設計 parameter cloud：</strong>從有經濟意義的範圍抽許多 θ。</li>
-            <li><strong>昂貴步驟只做一次：</strong>每個 θ 解原模型並算 moments，得到成對資料 <span class="mono">{θ,m(θ)}</span>。</li>
-            <li><strong>擬合便宜的 emulator：</strong>用 flexible approximation（例如 neural net）學 <span class="mono">θ→m</span>，之後 re-estimation 只需快速評估函數。</li>
+            <li>
+              <strong>先畫定地圖邊界：</strong>選擇有經濟意義的 compact parameter space。
+              household application 使用
+              <span class="mono">γ∈[1,20]、β∈[.5,1]、Φ∈[0,.25]</span>。
+            </li>
+            <li>
+              <strong>均勻鋪設設計點：</strong>以 Halton low-discrepancy sequence 產生
+              <span class="mono">N=2,000</span> 組 θ。這些不是估計值或 posterior draws，
+              而是為了覆蓋參數空間的實驗設計點。
+            </li>
+            <li>
+              <strong>建立昂貴的 training cloud：</strong>對每個 θ<sup>(r)</sup> 真正解模型並模擬，
+              儲存 <span class="mono">{θ<sup>(r)</sup>,f(θ<sup>(r)</sup>)}</span>。
+              simulation 沒有消失；它被集中到這個只做一次的 offline 階段。
+            </li>
+            <li>
+              <strong>擬合 forward surrogate：</strong>用 polynomial、kernel 或 neural net 建立
+              <span class="mono">g(θ;b̂)≈f(θ)</span>。原 application 的三參數版本以
+              third-order polynomial 表現很好；slide 用 neural net 說明更一般的 flexible approximation。
+            </li>
+            <li>
+              <strong>在 surrogate 上做 SMM：</strong>對任何 target moment m<sup>★</sup>，快速求
+              <span class="mono">θ̃(m<sup>★</sup>)</span>，不再於 optimizer 的每一步解 Bellman equation。
+            </li>
           </ol>
+          <div class="eq">
+            θ̃(m<sup>★</sup>) =
+            arg min<sub>θ</sub>
+            [m<sup>★</sup>−g(θ;b̂)]′W[m<sup>★</sup>−g(θ;b̂)].
+            <span class="label">surrogate SMM</span>
+          </div>
 
           <div class="bridge">
             <div class="bridge-side">
-              <h4>原始 structural model</h4>
-              <p>慢但忠於 Bellman solution；提供訓練資料與最終 benchmark。</p>
+              <h4>Offline：仍然昂貴</h4>
+              <p>θ<sup>(r)</sup> → 解原模型 → simulation → f(θ<sup>(r)</sup>) → training cloud。</p>
             </div>
             <div class="bridge-arrow">→</div>
             <div class="bridge-side">
-              <h4>Surrogate</h4>
-              <p>快到足以做 identification curves、sample splits、moment selection 與 misspecification checks。</p>
+              <h4>Online：幾乎免費</h4>
+              <p>新 target m<sup>★</sup> → 評估 g(θ) → optimization → θ̃(m<sup>★</sup>)。</p>
             </div>
           </div>
 
+          <details>
+            <summary>原論文的 local weighting trick：把精度放在 target 附近</summary>
+            <div>
+              <p>
+                若目前只關心某一組 target <span class="mono">m<sup>★</sup></span>，
+                不必要求 surrogate 在整個 Θ 都一樣精準。先計算第 r 個 training point 距離 target 多遠：
+              </p>
+              <div class="eq">
+                Δ<sub>r</sub> =
+                [f(θ<sup>(r)</sup>)−m<sup>★</sup>]′Ω
+                [f(θ<sup>(r)</sup>)−m<sup>★</sup>].
+              </div>
+              <p>
+                再給 moment distance 小的點較大權重，例如
+                <span class="mono">w<sub>r</sub>=1/(Δ<sub>r</sub>+ε)<sup>k</sup></span>：
+              </p>
+              <div class="eq">
+                b̂(m<sup>★</sup>) =
+                arg min<sub>b</sub>
+                Σ<sub>r</sub> w<sub>r</sub>
+                ‖g(θ<sup>(r)</sup>;b)−f(θ<sup>(r)</sup>)‖².
+              </div>
+              <p>
+                精神是把有限的 approximation capacity 集中到可能包含 SMM optimum 的區域。
+                原 application 使用 quadratic distance weighting（k=2）。換 target 時可能要重新 fit
+                這個便宜的 approximation，但完全不必重解 structural model；global neural net
+                版本則可一次訓練後直接重複使用。
+              </p>
+            </div>
+          </details>
+
+          <h3>為什麼在數學上管用？</h3>
+          <p>
+            令 approximation error 為 <span class="mono">e(θ)=g(θ)−f(θ)</span>，
+            並令 <span class="mono">r(θ)=m̂−f(θ)</span>。surrogate objective 與真正 objective 的差是：
+          </p>
+          <div class="eq">
+            Q̃(θ)
+            = [r(θ)−e(θ)]′W[r(θ)−e(θ)]
+            = Q(θ)−2r(θ)′We(θ)+e(θ)′We(θ).
+          </div>
+          <p>
+            因此，只要 g 在 optimizer 會造訪的區域一致地接近 f，Q̃ 的整片地形就會接近 Q；
+            若 Q 又有唯一、分離且有足夠曲率的最低點，兩張地圖的最低點就會靠近。compact domain
+            與 moments 對 parameters 的 continuity 讓 polynomial、kernel 或 neural net 有機會把這張地圖學準；
+            individual policy 有少數跳點未必致命，因為 aggregation 後的 moments 仍可能平滑。
+          </p>
+          <p>
+            局部近似更直接顯示風險。令
+            <span class="mono">J=∂f(θ)/∂θ′</span>，則 surrogate error 對參數估計的影響大約是：
+          </p>
+          <div class="eq">
+            θ̃−θ̂ ≈ −(J′WJ)<sup>−1</sup>J′We.
+          </div>
+          <p>
+            如果 <span class="mono">J′WJ</span> well-conditioned，小 moment error 只造成小 parameter error；
+            若 objective 很平、參數 weakly identified，inverse 會放大微小 approximation error。
+            所以 surrogate 能加速識別診斷，卻不能創造識別。
+          </p>
+
+          <h3>得到什麼，又犧牲什麼？</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>得到的好處</th><th>相對應的代價／風險</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>後續 re-estimation 只需便宜的 function evaluations</td>
+                  <td>前面仍要精確解模型 N 次；若只估一次，固定成本可能不划算。</td>
+                </tr>
+                <tr>
+                  <td>可畫 global nonlinear identification curves</td>
+                  <td>訓練 support 外是 extrapolation；神經網路可能很平滑、但很錯。</td>
+                </tr>
+                <tr>
+                  <td>sample splits、moment selection 與不同 W 可重複利用同一 cloud</td>
+                  <td>若更改 structural model 或需要未儲存的新 moments，通常要重新建 cloud。</td>
+                </tr>
+                <tr>
+                  <td>flexible approximation 能描述複雜 parameter–moment 關係</td>
+                  <td>高維仍有 curse of dimensionality；dense jumps 或尖銳 kinks 更難學。</td>
+                </tr>
+                <tr>
+                  <td>原模型 simulation 集中在一次性的 offline 階段</td>
+                  <td>有限 simulation 的 Monte Carlo noise 會變成 training-label noise。</td>
+                </tr>
+                <tr>
+                  <td>更容易揭露 weak identification 與 misspecification</td>
+                  <td>不能修復兩者；平坦 objective 甚至會放大很小的 surrogate error。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>可信的實作需要一道「最後一哩」</h3>
+          <ol class="sequence">
+            <li><strong>切開 training 與 validation：</strong>用未參與 fitting 的 θ 檢查 moment prediction 與 recovered parameters。</li>
+            <li><strong>檢查 coverage：</strong>候選 θ̃ 不可位於 parameter cloud 邊界外；必要時在可疑區域加點重訓。</li>
+            <li><strong>控制 simulation noise：</strong>增加模擬樣本，並盡可能使用 common random numbers。</li>
+            <li><strong>回到原模型驗收：</strong>以 θ̃ 真正解一次模型，比較 f(θ̃)、g(θ̃) 與資料 moments；必要時再做 exact local refinement。</li>
+          </ol>
+
           <div class="callout warning">
-            <span class="callout-title">Surrogate 不是新的經濟模型</span>
+            <span class="callout-title">它不是 AI 取代 economics</span>
             <p>
-              它只近似原模型的 parameter-to-moment map。可信度需要 parameter cloud 覆蓋估計會造訪的區域、
-              out-of-sample 驗證與 approximation error 控制。若 optimizer 跑到訓練 support 外，
-              神經網路可能平滑地給出錯誤答案；速度不能替代原模型驗證。
+              原 structural model 仍定義 household behavior、equilibrium 與所有 training labels；
+              surrogate 只做 numerical interpolation。它「編譯」的是重複計算，不會替錯誤模型增加資訊，
+              也不會把 weakly identified parameter 變成 identified。
             </p>
           </div>
         </section>
@@ -2219,6 +2386,7 @@
                 <tr><td><span class="mono">μ<sup>−</sup><sub>t</sub>=μ<sup>−</sup>+λΔl<sub>t</sub></span></td><td>countercyclical left tail</td><td>最壞 career shocks 是否和股災同時？</td></tr>
                 <tr><td><span class="mono">Step 1 income → Step 2 portfolio</span></td><td>外部估計紀律</td><td>核心持股 moment 能否反向塑造 risk process？</td></tr>
                 <tr><td><span class="mono">dθ=(G′WG)<sup>−1</sup>G′Wdm</span></td><td>joint SMM identification</td><td>參數互相補償後，moment 真正在辨認誰？</td></tr>
+                <tr><td><span class="mono">g(θ)≈f(θ)</span></td><td>surrogate SMM</td><td>training support、approximation error 與 exact-model validation 是否充分？</td></tr>
                 <tr><td><span class="mono">−β<sub>H</sub>H/(W+H)</span></td><td>theory scaling</td><td>效果是否在低 H group 與退休時歸零？</td></tr>
                 <tr><td><span class="mono">Δ twin-year portfolios</span></td><td>shared-background differencing</td><td>共同 genes/upbringing 能否解釋相關？</td></tr>
                 <tr><td><span class="mono">87% wealth in top 3 deciles</span></td><td>micro effect ≠ aggregate price effect</td><td>受影響者是否也是 marginal investors？</td></tr>
@@ -2236,7 +2404,7 @@
           </div>
 
           <details>
-            <summary>討論課可直接使用的 10 個問題</summary>
+            <summary>討論課可直接使用的 11 個問題</summary>
             <div>
               <ol>
                 <li>為何沒有 labor income 時，Merton share 不隨年齡變？</li>
@@ -2247,6 +2415,7 @@
                 <li>1/3/5-year income moments 如何區分 transitory 與 persistent risk？</li>
                 <li>為何高 γ 會迫使 SMM 同時降低 β？</li>
                 <li>comparative static 的 inverse 為何不同於 re-estimated SMM response？</li>
+                <li>surrogate SMM 為何學 θ→m，而不直接學 m→θ？它在什麼情況會失真？</li>
                 <li>H/(W+H) placebo 如何提高 reduced-form 的可信度？</li>
                 <li>微觀 hedging 成立，為何 aggregate equity premium 仍只受小幅影響？</li>
               </ol>
