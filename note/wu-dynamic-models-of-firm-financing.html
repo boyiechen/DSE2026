@@ -1064,17 +1064,57 @@
 
           <h3>3. 結果該怎麼讀？</h3>
           <p>
-            標準 Euler equation 對有、無債信評等的公司都遭拒絕，但無評等公司的偏離更嚴重；
-            加入 DAR/COV 後，這些指標對財務不健康組較重要。直覺上，無評等通常更難進入公開債市，
-            因此內部資金稀缺度與財務狀況更緊密。
+            「standard Euler 被拒絕」不是說逐家公司檢查後，每一家都違反 Euler equality；
+            它是 GMM 的 overidentifying-restrictions test 在問：是否存在任何一組 technology／adjustment-cost
+            參數，能讓 Euler residual 對所有期初 instruments 同時不可預測？答案是否定的。
           </p>
 
-          <div class="callout warning">
-            <span class="callout-title">Euler test 的限制</span>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>standard Euler：Λ=0</th><th>J statistic</th><th>df</th><th>p-value</th><th>如何讀</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>無 bond rating</td>
+                  <td>38.124</td>
+                  <td>9</td>
+                  <td>1.66×10<sup>−5</sup></td>
+                  <td>非常強烈地拒絕無融資 wedge 的模型。</td>
+                </tr>
+                <tr>
+                  <td>有 bond rating</td>
+                  <td>21.004</td>
+                  <td>9</td>
+                  <td>0.013</td>
+                  <td>5% 水準仍拒絕，但反對證據較弱。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            因此 “rejected for both groups, but more for firms without bond ratings” 的精確意思是：
+            兩組的 p-value 都小，但無評等組的 J statistic 更大、p-value 更小。bond rating 是進入公開債市與
+            外部融資能力的 proxy；若標準模型漏掉的真是 financing constraint，理論上就應在無評等公司失敗得更嚴重。
+          </p>
+
+          <div class="big-idea">
+            <strong>core research question 得到的是一個有方向的 cross-sectional pattern</strong>
             <p>
-              拒絕無摩擦模型能告訴我們「某個邊際條件不對」，卻不一定能分辨是發股成本、違約風險、錯價、
-              measurement error 或預期形成造成。它也不直接生成完整槓桿與現金分配。
-              這就是為何講義接著轉向 full dynamic structural model。
+              投資不只由 marginal product of capital 決定，也受到 balance-sheet condition 影響。
+              加入 DAR/COV 後，完整 augmented specification 對無評等組的 overidentification p-value
+              可上升到約 0.110；slide 8 又顯示 DAR/COV 對 financially unhealthy firms 重要、對 healthy firms
+              不重要。證據鏈是「融資愈難 → standard Euler 失敗愈嚴重 → financial wedge 能吸收部分失敗」。
+            </p>
+          </div>
+
+          <div class="callout warning">
+            <span class="callout-title">拒絕是 diagnostic，不是 financing constraint 的單獨因果證明</span>
+            <p>
+              有評等組也遭拒絕，表示 rating 不是完美 control，或模型還漏掉 measurement error、風險、
+              預期形成、調整成本形狀等機制。Euler test 能指出「哪個邊際條件不對」，
+              卻不會生成公司遇到 shock 後的完整 investment、debt、cash 與 equity path；
+              這就是講義接著轉向 full dynamic structural model 的原因。
             </p>
           </div>
         </section>
@@ -1154,6 +1194,16 @@
               <p><span class="mono">f(e)=1{e&lt;0}(λ<sub>1</sub>e−½λ<sub>2</sub>e²)</span>。e&lt;0 是發股；線性項給 marginal issuance wedge，二次項讓大額發股更貴。</p>
             </div>
           </div>
+
+          <div class="big-idea">
+            <strong>Episode 1 到 Episode 2：從「偵測 wedge」改成「生成 wedge」</strong>
+            <p>
+              Whited 的 Euler test 把不可觀察的 wedge 寫成 DAR/COV 的 reduced-form 函數；
+              DDW 則讓公司在每個 state 共同選 <span class="mono">(k′,p′)</span>，
+              使 financing wedge 由 debt capacity、未來 shocks 與最適行為內生出現。
+              新問題不再只是「資料是否拒絕無摩擦模型」，而是「哪套完整動態行為能同時生成投資、現金、發股與槓桿資料」。
+            </p>
+          </div>
         </section>
 
         <section class="chapter" id="bellman">
@@ -1190,6 +1240,25 @@
             <li><strong>加上 continuation value：</strong>今天的 <span class="mono">(k′,p′)</span> 成為明天 state，對所有可能 <span class="mono">z′</span> 積分並折現。</li>
           </ol>
 
+          <h3>同一個 p′，今天是資金、明天是包袱</h3>
+          <div class="bridge">
+            <div class="bridge-side">
+              <h4>今天：flow</h4>
+              <p><span class="mono">+p′</span> 進入 budget constraint，可支應投資或避免昂貴發股。</p>
+            </div>
+            <div class="bridge-arrow">→</div>
+            <div class="bridge-side">
+              <h4>明天：state</h4>
+              <p>p′ 變成 inherited debt p，須付利息並占用 <span class="mono">p≤p̄</span> 的 borrowing room。</p>
+            </div>
+          </div>
+          <p>
+            若只最大化本期 <span class="mono">e+f(e)</span>，模型只看到新借款帶來的現金，容易把容量用滿。
+            <span class="mono">E[V(k′,p′,z′)]</span> 才替「明天少一美元融資彈性」標價。
+            所以公司不是先決定 investment、再被動補 financing；它同時比較「今天抓住 project」
+            與「保留未來遇到更好 project 時的借款選擇權」。
+          </p>
+
           <h3>value function 和 policy function 不要混在一起</h3>
           <div class="grid-2">
             <div class="card">
@@ -1202,9 +1271,53 @@
             </div>
           </div>
 
+          <h3>為何不能只靠 Euler FOC？</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>模型特徵</th><th>為何局部微分不夠？</th><th>Bellman maximization 在比較什麼？</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>固定投資成本 <span class="mono">γk·1{I≠0}</span></td>
+                  <td>I=0 處不平滑，可能有完整 inaction region。</td>
+                  <td>不投資 vs. 跨過固定成本後一次投資。</td>
+                </tr>
+                <tr>
+                  <td>發股 kink：e=0</td>
+                  <td>payout 與 equity issuance 是不同 regime。</td>
+                  <td>少投資、借款或支付 issuance cost。</td>
+                </tr>
+                <tr>
+                  <td>debt ceiling <span class="mono">p′≤p̄</span></td>
+                  <td>optimum 可能在 corner，普通 interior FOC 不適用。</td>
+                  <td>現在用掉容量 vs. 留給未來 shocks。</td>
+                </tr>
+                <tr>
+                  <td>現金／負債跨過 p=0</td>
+                  <td>cash carrying cost 開始或停止，policy 可有 kink。</td>
+                  <td>持有 buffer 的保險利益 vs. carrying cost。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            Euler equation 描述 smooth interior region 的局部最適；value function 則對所有可行
+            <span class="mono">(k′,p′)</span> 做 global comparison，才能處理離散 regime、corner 與 option value。
+          </p>
+
           <details>
-            <summary>為何 value function iteration 會收斂？</summary>
+            <summary>value function iteration 如何操作，又為何會收斂？</summary>
             <div>
+              <ol>
+                <li>先猜 <span class="mono">V<sub>0</sub>(k,p,z)=0</span>，如同暫時假裝明天世界結束。</li>
+                <li>在每個 state 枚舉可行的 k′、p′，計算 I、A、e、發股成本與期望 continuation value。</li>
+                <li>取最大值形成 <span class="mono">V<sub>n+1</sub>=TV<sub>n</sub></span>，並儲存 argmax policy K、P。</li>
+                <li>反覆更新，直到 <span class="mono">||V<sub>n+1</sub>−V<sub>n</sub>||</span> 足夠小。</li>
+              </ol>
+              <p>
+                故事上，每次 iteration 都讓 CFO 的視野多延伸一期；收斂時，再多看一期已不會改變今天的 value 與 policy。
+              </p>
               <p>
                 在 bounded payoff、可行集合良好、固定轉移法則且折現因子
                 <span class="mono">β=1/(1+r)&lt;1</span> 下，Bellman operator
@@ -1274,11 +1387,28 @@
           </div>
           <p>把 p′ 的 FOC 代入 p 的 envelope，就得到上式。重點是右側含未來的 <span class="mono">V<sub>p′</sub></span>。</p>
 
+          <h3>信用額度故事：為何不把 p̄ 全用完？</h3>
+          <p>
+            想像公司今天有一個好 project。多借款能立即投資、避免昂貴發股；但今天把信用額度用到 90%，
+            明天若又來一個更好的 project，就只剩 10% borrowing room。當
+            <span class="mono">ln z′=ρln z+ν′</span> 且 ρ&gt;0，今天的高 productivity 還預告明天的
+            marginal return 可能很高，因此好消息同時提高「今天投資」與「保留明天 capacity」兩種誘因。
+          </p>
+
           <div class="big-idea">
             <strong>spare debt capacity 是跨期資產</strong>
             <p>
               高 z 公司現在現金流雖好，卻也預期未來資本邊際報酬高、投資需求大。它可能刻意少借，
               避免明天真正需要資金時已碰到 p̄。constraint 透過「未來可能 binding」影響今天。
+            </p>
+          </div>
+
+          <div class="callout intuition">
+            <span class="callout-title">transitory debt 的生命史</span>
+            <p>
+              investment shock 製造 funding gap → 公司暫時提高 p′ → 後續 cash flow 恢復後償債、
+              重建 capacity。若新 shocks 在還完前接連到來，debt 會維持多期甚至再上升；
+              這不必代表公司永久提高 target leverage。
             </p>
           </div>
 
@@ -1303,49 +1433,145 @@
             <div class="chapter-no">08</div>
             <div>
               <h2>目標槓桿與「看起來很慢」的調整</h2>
-              <p>投資和融資共同決定，使傳統 SOA 回歸容易誤讀。 <span class="page-tag">slides 15–19</span></p>
+              <p>投資和融資共同決定，使傳統 SOA 回歸容易誤讀。 <span class="page-tag">slides 15–20</span></p>
             </div>
           </div>
 
-          <h3>1. 為何模型沒有傳統 interior target？</h3>
+          <h3>1. p.15 的白話問題：公司為何遲遲不「回家」？</h3>
           <p>
-            DDW 有線性 debt tax benefit，卻沒有 bankruptcy cost。在完全靜態問題裡，
-            邊際稅盾不會隨槓桿下降，最適選擇通常落在 corner，而不是 smooth interior optimum。
-            因此作者用一個<strong>操作性目標</strong>：在 arbitrarily long 的 neutral investment-shock sequence
-            下，槓桿最後收斂到哪裡。
+            標準 tradeoff theory 把 target leverage 想成「家」：debt 太少會浪費 tax shield，
+            debt 太多會增加 distress／agency cost，所以公司偏離後應往家裡走。實證常估 partial-adjustment equation：
+          </p>
+          <div class="eq">
+            Lev<sub>i,t+1</sub>−Lev<sub>it</sub>
+            = φ(Lev<sub>it</sub><sup>★</sup>−Lev<sub>it</sub>)+u<sub>i,t+1</sub>.
+          </div>
+          <p>
+            <span class="mono">φ=1</span> 表示一年消除全部 gap，φ 很小則看似不急著回家。
+            文獻估出的 SOA 常只有約每年 1/3 到 1/12；這引出問題：
+            公司其實不在乎 target，還是 issuance／transaction cost 大到讓它不願調整？
+          </p>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>既有視角</th><th>白話故事</th><th>如何解讀慢 SOA？</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>standard tradeoff</td>
+                  <td>tax shield 與 distress cost 決定一個理想槓桿。</td>
+                  <td>若回得慢，target forces 可能不強。</td>
+                </tr>
+                <tr>
+                  <td>adjustment／issuance costs</td>
+                  <td>發債、贖債、發股都要付費，公司等 gap 夠大再調。</td>
+                  <td>慢是有成本的 partial adjustment；但成本可能需大得不合理。</td>
+                </tr>
+                <tr>
+                  <td>pecking order／cash-flow history</td>
+                  <td>先用內部資金、再借債、最後發股；leverage 是歷年 funding deficits 的累積。</td>
+                  <td>mean reversion 可能來自 autocorrelated cash flows 或 soft target。</td>
+                </tr>
+                <tr>
+                  <td>econometrics／persistent heterogeneity</td>
+                  <td>target 未觀察且公司長期異質；高槓桿公司可二十年仍相對高。</td>
+                  <td>錯估 target 或遺漏 firm effects 會扭曲 φ。</td>
+                </tr>
+                <tr>
+                  <td>DDW transitory debt</td>
+                  <td>公司很想回家，但途中不斷收到值得借錢完成的新投資任務。</td>
+                  <td>observed slow SOA 不等於 true rebalancing incentive 弱。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>2. p.16：DDW 的 target 不是 primitive，而是 policy 的長期結果</h3>
+          <p>
+            DDW 有線性 debt tax benefit，卻沒有標準的 convex bankruptcy cost。若把它當完全靜態問題，
+            每多一美元 debt 的淨利益不會在中間由正轉負，解會落在 <span class="mono">p=0</span> 或
+            <span class="mono">p=p̄</span> 的 corner，不會自然出現 smooth interior target。
           </p>
           <p>
-            一個很有用的 benchmark 是把債務稅盾關掉：此時債務不再有長期收益，卻仍會耗用未來融資容量，
-            所以模型的長期 target leverage 是 0。觀察到的正槓桿可以只是為當期投資暫時借款；
-            這也再次說明「目前槓桿」和「長期目標」不是同一件事。
+            模型真正內生的是 policy functions
+            <span class="mono">k′=K(k,p,z)</span> 與 <span class="mono">p′=P(k,p,z)</span>，
+            而不是事先指定的 <span class="mono">Lev★</span>。為和傳統 SOA 文獻對話，作者做一個 thought experiment：
+          </p>
+          <ol class="sequence">
+            <li><strong>照常解 stochastic model：</strong>公司知道未來 investment shocks 仍可能到來，policy 已內含 precautionary capacity。</li>
+            <li><strong>只改 realized shock path：</strong>假設接下來很長一段恰好都抽到 neutral innovation，例如 ν′=0。</li>
+            <li><strong>反覆套用同一 policy：</strong>沒有新 funding need 時，公司完成舊投資、償還 transitory debt、重建 capacity。</li>
+            <li><strong>把收斂點命名為 target：</strong>若 state 收斂到 <span class="mono">(k★,p★)</span>，則 <span class="mono">Lev★=p★/k★</span>。</li>
+          </ol>
+          <p>
+            所以 target 是「長期沒有新任務時，最適 policy 把公司帶回的 home base」，不是每一期都必須停留的數字。
+            固定調整成本存在時，home base 甚至可能是一段 target band，而非唯一點。
           </p>
 
           <div class="callout warning">
-            <span class="callout-title">「target」不是每期都固定的一條直線</span>
+            <span class="callout-title">neutral shocks ≠ 把 uncertainty 關掉</span>
             <p>
-              動態模型中的 desired leverage 會隨 z、k、現金與未來風險改變。用
-              <span class="mono">ΔLev = η(Lev*−Lev)</span> 估出的小 η，把 target movement、
-              投資融資與純調整成本混在一起。
+              DDW 保留 <span class="mono">σ<sub>ν</sub>&gt;0</span> 並先解完整 Bellman；公司每期仍相信明天可能有 shock，
+              只是事後 realized path 恰好平靜。若改成令 <span class="mono">σ<sub>ν</sub>=0</span> 後重新解模型，
+              公司知道未來永遠平靜，保留 borrowing option 的誘因也會改變；那是另一個 experiment。
             </p>
           </div>
 
-          <h3>2. 為何強 tradeoff 仍可生成慢 SOA？</h3>
-          <ol class="sequence">
-            <li>正面生產力衝擊提高 desired investment。</li>
-            <li>投資支出先吃掉內部現金；若現金不夠，公司暫時提高 debt。</li>
-            <li>因此 observed leverage 可能先<strong>離 target 更遠</strong>，而不是立刻靠近。</li>
-            <li>之後獲利與資本逐步調整，公司才慢慢償債或重建 buffer。</li>
-          </ol>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>容易混淆的詞</th><th>在 DDW 中的角色</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>investment shock ν′</td><td>外生改變 z 與 investment opportunity。</td></tr>
+                <tr><td>state (k,p,z)</td><td>shock 後公司目前所在的位置。</td></tr>
+                <tr><td>policy K、P</td><td>公司看到 state 後，最適選擇 k′、p′ 的回應規則；policy 本身不是 shock。</td></tr>
+                <tr><td>government policy shock</td><td>若改 τ<sub>c</sub>、p̄ 或 bankruptcy law，環境改變，需重新解 V、K、P；p.16 談的不是這個。</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>3. DDW 如何改寫 slow SOA？</h3>
+          <p>傳統 regression 把所有 leverage movement 都塞進單一回歸力量；DDW 把它拆成：</p>
+          <div class="eq">
+            ΔLev
+            =
+            <span class="mono">往 target 的 rebalancing force</span>
+            +
+            <span class="mono">為新 investment shock 借的 transitory debt</span>
+            +
+            other shocks.
+          </div>
           <p>
-            模型可產生約每年 <span class="mono">1/3</span> 到 <span class="mono">1/12</span> 的傳統 SOA。
-            這個慢速不是證明稅盾／融資摩擦很弱，而是 debt 同時是投資的短期 funding vehicle。
+            公司若已高於 target，本來想還債；但同一期若來一個高 NPV project，又會借款投資。
+            外部只看到 leverage 沒降甚至上升，便把 φ 估得很小；其實「回家」與「出新任務」兩股強力方向互相抵銷。
           </p>
 
-          <div class="callout intuition">
-            <span class="callout-title">辨識語句</span>
+          <h3>4. p.18 的 zero-target 實驗</h3>
+          <p>
+            關掉 debt tax advantage 後，永久 target 明確是 0。但 investment shock 到來時，
+            debt 仍可能是比昂貴 equity 更有效的臨時 funding vehicle：
+          </p>
+          <ol class="sequence">
+            <li>shock 使投資支出跳升，公司暫時借債，realized leverage 變正。</li>
+            <li>後續 cash flow 恢復後開始還債，leverage 帶著 lag 回到 0。</li>
+            <li>若下一個 shock 在還完前到來，公司可再借，甚至先離 target 更遠。</li>
+          </ol>
+          <p>
+            因此「正 leverage 維持數期」不等於正的 permanent target，也不等於公司沒有 deleveraging incentive。
+            用其他 real／financial moments 做 SMM、刻意不 target SOA 後，模型仍自然產生約每年
+            <span class="mono">1/3</span> 到 <span class="mono">1/12</span> 的 empirical SOA；
+            這才使 transitory-debt mechanism 成為有內容的 untargeted validation。
+          </p>
+
+          <div class="big-idea">
+            <strong>一句話讀完 p.15–20</strong>
             <p>
-              靜態 tradeoff 問：「槓桿離目標多遠？」動態融資模型問：「公司為了哪些未來狀態，
-              願意今天偏離目標？」後者多了一個 option-value margin。
+              target 是 calm-state home base；investment shocks 是反覆把公司派出去的任務；
+              policy functions 決定每次要借多少、何時還。shock volatility 愈大，公司平時的 target
+              愈保守、cash 愈多，但真正遇到大任務時 transitory debt spike 也愈大。
+              所以 <span class="mono">slow observed SOA ≠ weak tradeoff motives</span>。
             </p>
           </div>
         </section>
@@ -1944,8 +2170,11 @@
               </thead>
               <tbody>
                 <tr><td><span class="mono">(1+λ<sub>t+1</sub>)/(1+λ<sub>t</sub>)</span></td><td>跨期 internal-funds shadow price</td><td>融資限制如何改變投資 timing？</td></tr>
+                <tr><td><span class="mono">E[Z<sub>t</sub>ε<sub>t+1</sub>]=0</span></td><td>Euler GMM restrictions</td><td>standard model 的 residual 是否仍可被期初資訊預測？</td></tr>
                 <tr><td><span class="mono">V=max{current+βEV′}</span></td><td>Bellman recursion</td><td>今天政策如何改變未來 state？</td></tr>
                 <tr><td><span class="mono">−V<sub>p</sub></span></td><td>spare debt capacity 的邊際價值</td><td>為何 constraint slack 仍影響今天？</td></tr>
+                <tr><td><span class="mono">Lev★=lim p<sub>t</sub>/k<sub>t</sub> under neutral shocks</span></td><td>DDW operational target</td><td>target 是 primitive，還是 policy 誘導的 calm-state resting point？</td></tr>
+                <tr><td><span class="mono">ΔLev=rebalancing+transitory debt</span></td><td>slow SOA decomposition</td><td>公司沒靠近 target，是不想回去，還是又在融資新投資？</td></tr>
                 <tr><td><span class="mono">m<sub>data</sub>−m<sub>sim</sub>(θ)</span></td><td>SMM</td><td>哪些動態矩在辨認哪個 primitive？</td></tr>
                 <tr><td><span class="mono">qb′=βE[repayment]</span></td><td>endogenous debt price</td><td>槓桿如何內生提高 spread？</td></tr>
                 <tr><td><span class="mono">E/ψ</span></td><td>發股的 fundamental dilution</td><td>錯價如何造成 market timing 與 real investment？</td></tr>
@@ -1967,16 +2196,19 @@
           </div>
 
           <details>
-            <summary>討論課可直接使用的 8 個檢查問題</summary>
+            <summary>討論課可直接使用的 11 個檢查問題</summary>
             <div>
               <ol>
                 <li>模型裡誰最大化什麼 objective？</li>
                 <li>進入本期時哪些變數已給定，哪些能選？</li>
                 <li>哪條會計式把 real side 和 financial side 接起來？</li>
                 <li>哪個 constraint 產生 shadow price？</li>
+                <li>standard Euler 被 GMM 拒絕，究竟拒絕的是哪組 moment restrictions？</li>
                 <li>今天 slack 的 constraint 為何仍可能重要？</li>
+                <li>為何同一個 p′ 今天是資金、明天卻是包袱？</li>
                 <li>哪些 moments 分別辨認 shock、technology 與 financing cost？</li>
                 <li>模型的 target 是固定參數，還是 state-dependent policy？</li>
+                <li>neutral shock path 和把 uncertainty 永久關掉有何不同？</li>
                 <li>若拿掉最關鍵假設，主要 empirical prediction 是否還存在？</li>
               </ol>
             </div>
