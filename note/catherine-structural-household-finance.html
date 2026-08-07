@@ -1,0 +1,1991 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Sylvain Catherine：Structural Models in Household Finance 中文導讀，逐步推導生命週期投資組合、人力資本風險、兩階段 SMM 與瑞典雙胞胎實證。">
+  <title>Structural Models in Household Finance｜逐式導讀</title>
+  <style>
+    :root {
+      --canvas: #edf1f0;
+      --paper: #ffffff;
+      --paper-2: #f7f9f8;
+      --ink: #1f2927;
+      --muted: #68746f;
+      --line: #d5ddda;
+      --teal: #176f73;
+      --teal-dark: #0f5054;
+      --teal-soft: #e3f1f1;
+      --blue: #315d83;
+      --blue-soft: #e8eff5;
+      --wine: #944157;
+      --wine-dark: #6c2d3e;
+      --wine-soft: #f5e8ec;
+      --gold: #9a6a16;
+      --gold-soft: #f8efdc;
+      --green: #2e7259;
+      --green-soft: #e6f2ed;
+      --purple: #71567d;
+      --purple-soft: #f0eaf3;
+      --red: #a33f3b;
+      --red-soft: #f8e9e7;
+      --shadow: 0 15px 40px rgba(27, 43, 38, 0.075);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--canvas);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      line-height: 1.76;
+    }
+    a {
+      color: var(--wine-dark);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+    h1, h2, h3, h4 { letter-spacing: 0; }
+    h1 {
+      max-width: 1120px;
+      margin: 0 0 14px;
+      font-size: clamp(2.05rem, 4.7vw, 3.5rem);
+      line-height: 1.06;
+    }
+    h2 {
+      margin: 0;
+      font-size: clamp(1.38rem, 3vw, 1.75rem);
+      line-height: 1.28;
+    }
+    h3 {
+      margin: 27px 0 9px;
+      font-size: 1.15rem;
+      line-height: 1.42;
+    }
+    h4 {
+      margin: 0 0 7px;
+      font-size: 1rem;
+    }
+    p { margin: 0 0 13px; }
+    ul, ol { margin: 8px 0 15px; padding-left: 1.35rem; }
+    li { margin: 5px 0; }
+    strong { font-weight: 820; }
+    code, .mono, .eq {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    code {
+      padding: 1px 5px;
+      border-radius: 4px;
+      color: var(--wine-dark);
+      background: var(--wine-soft);
+      font-size: 0.9em;
+    }
+    button { font: inherit; }
+    .reading-progress {
+      position: fixed;
+      z-index: 30;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--teal), var(--wine), var(--gold));
+    }
+    .shell {
+      width: min(1480px, 100%);
+      min-width: 0;
+      margin: 0 auto;
+      padding: 25px;
+    }
+    .masthead {
+      overflow: hidden;
+      margin-bottom: 22px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+    .masthead-copy {
+      padding: 43px 44px 35px;
+      border-top: 7px solid var(--teal);
+      border-bottom: 1px solid var(--line);
+      background:
+        radial-gradient(circle at 94% 4%, rgba(23, 111, 115, 0.15), transparent 28%),
+        radial-gradient(circle at 70% 100%, rgba(148, 65, 87, 0.10), transparent 34%),
+        var(--paper);
+    }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--wine);
+      font-size: 0.79rem;
+      font-weight: 850;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .lead {
+      max-width: 1090px;
+      margin: 0;
+      color: #384945;
+      font-size: 1.08rem;
+    }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 20px;
+      margin-top: 21px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+    .meta span { min-width: 0; overflow-wrap: anywhere; }
+    .thesis-strip {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      background: var(--paper-2);
+    }
+    .thesis-step {
+      position: relative;
+      min-width: 0;
+      min-height: 156px;
+      padding: 19px 20px;
+      border-right: 1px solid var(--line);
+    }
+    .thesis-step:last-child { border-right: 0; }
+    .thesis-step::after {
+      position: absolute;
+      z-index: 2;
+      top: 50%;
+      right: -10px;
+      display: grid;
+      width: 20px;
+      height: 20px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      color: var(--wine);
+      background: var(--paper);
+      content: "→";
+      font-size: 0.72rem;
+      font-weight: 900;
+      transform: translateY(-50%);
+    }
+    .thesis-step:last-child::after { display: none; }
+    .thesis-step span {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 850;
+      letter-spacing: 0.045em;
+      text-transform: uppercase;
+    }
+    .thesis-step strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--teal-dark);
+    }
+    .thesis-step:nth-child(2) strong { color: var(--blue); }
+    .thesis-step:nth-child(3) strong { color: var(--wine-dark); }
+    .thesis-step:nth-child(4) strong { color: var(--purple); }
+    .thesis-step:nth-child(5) strong { color: var(--green); }
+    .thesis-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.5;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 294px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+    .toc {
+      position: sticky;
+      top: 17px;
+      max-height: calc(100vh - 34px);
+      overflow-y: auto;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--paper);
+      box-shadow: 0 9px 28px rgba(29, 37, 35, 0.06);
+    }
+    .toc-title {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 0.77rem;
+      font-weight: 850;
+      letter-spacing: 0.045em;
+      text-transform: uppercase;
+    }
+    .toc a {
+      display: block;
+      margin: 2px 0;
+      padding: 7px 9px;
+      border-left: 3px solid transparent;
+      border-radius: 4px;
+      color: #3e4b47;
+      text-decoration: none;
+      font-size: 0.84rem;
+      line-height: 1.35;
+    }
+    .toc a:hover { background: var(--paper-2); }
+    .toc a.active {
+      border-left-color: var(--wine);
+      color: var(--wine-dark);
+      background: var(--wine-soft);
+      font-weight: 760;
+    }
+    .toc-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+    .toc button {
+      padding: 6px 7px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      color: var(--muted);
+      background: var(--paper-2);
+      cursor: pointer;
+      font-size: 0.75rem;
+    }
+    .content { min-width: 0; }
+    .chapter {
+      margin-bottom: 22px;
+      padding: 31px 34px 34px;
+      scroll-margin-top: 18px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: var(--paper);
+      box-shadow: 0 10px 34px rgba(29, 37, 35, 0.055);
+    }
+    .chapter-head {
+      display: flex;
+      gap: 17px;
+      align-items: flex-start;
+      margin-bottom: 19px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--line);
+    }
+    .chapter-no {
+      flex: 0 0 auto;
+      display: grid;
+      width: 43px;
+      height: 43px;
+      place-items: center;
+      border-radius: 50%;
+      color: white;
+      background: var(--teal);
+      font-weight: 850;
+    }
+    .chapter-head p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.89rem;
+    }
+    .page-tag {
+      display: inline-block;
+      margin-left: 6px;
+      padding: 2px 7px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: var(--paper-2);
+      font-size: 0.69rem;
+      font-weight: 760;
+      vertical-align: 0.15em;
+    }
+    .big-idea {
+      margin: 16px 0 18px;
+      padding: 17px 19px;
+      border-left: 5px solid var(--teal);
+      border-radius: 5px;
+      background: var(--teal-soft);
+    }
+    .big-idea strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--teal-dark);
+    }
+    .big-idea p:last-child, .callout p:last-child { margin-bottom: 0; }
+    .callout {
+      margin: 16px 0;
+      padding: 15px 17px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--paper-2);
+    }
+    .callout.assumption {
+      border-left: 5px solid var(--gold);
+      background: var(--gold-soft);
+    }
+    .callout.intuition {
+      border-left: 5px solid var(--green);
+      background: var(--green-soft);
+    }
+    .callout.warning {
+      border-left: 5px solid var(--red);
+      background: var(--red-soft);
+    }
+    .callout.identification {
+      border-left: 5px solid var(--purple);
+      background: var(--purple-soft);
+    }
+    .callout-title {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--ink);
+      font-size: 0.84rem;
+      font-weight: 850;
+      letter-spacing: 0.02em;
+    }
+    .eq {
+      overflow-x: auto;
+      margin: 15px 0;
+      padding: 16px 18px;
+      border: 1px solid #c8d9da;
+      border-radius: 7px;
+      color: #123f43;
+      background: #f2f8f8;
+      font-size: 0.92rem;
+      line-height: 1.72;
+      white-space: nowrap;
+    }
+    .eq .label {
+      float: right;
+      margin-left: 20px;
+      color: var(--muted);
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      font-size: 0.76rem;
+    }
+    .eq-stack {
+      display: grid;
+      gap: 8px;
+      margin: 15px 0;
+    }
+    .eq-stack .eq { margin: 0; }
+    .derive {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin: 16px 0;
+    }
+    .derive-step {
+      position: relative;
+      min-width: 0;
+      padding: 14px 15px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--paper-2);
+    }
+    .derive-step::after {
+      position: absolute;
+      top: 50%;
+      right: -10px;
+      z-index: 2;
+      content: "→";
+      color: var(--wine);
+      font-weight: 900;
+      transform: translateY(-50%);
+    }
+    .derive-step:last-child::after { content: ""; }
+    .derive-step span {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--wine);
+      font-size: 0.72rem;
+      font-weight: 850;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .derive-step p {
+      margin: 0;
+      color: #47534f;
+      font-size: 0.87rem;
+      line-height: 1.55;
+    }
+    .grid-2, .grid-3 {
+      display: grid;
+      gap: 12px;
+      margin: 15px 0;
+    }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .card {
+      min-width: 0;
+      padding: 15px 16px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--paper-2);
+    }
+    .card h4 { color: var(--teal-dark); }
+    .card p, .card li {
+      color: #4d5955;
+      font-size: 0.88rem;
+      line-height: 1.57;
+    }
+    .card p:last-child, .card ul:last-child { margin-bottom: 0; }
+    .bridge {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 12px;
+      align-items: stretch;
+      margin: 17px 0;
+    }
+    .bridge-side {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--paper-2);
+    }
+    .bridge-side:first-child { border-top: 4px solid var(--teal); }
+    .bridge-side:last-child { border-top: 4px solid var(--wine); }
+    .bridge-arrow {
+      align-self: center;
+      color: var(--gold);
+      font-size: 1.35rem;
+      font-weight: 900;
+    }
+    .table-wrap {
+      overflow-x: auto;
+      margin: 16px 0;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+    }
+    table {
+      width: 100%;
+      min-width: 680px;
+      border-collapse: collapse;
+      background: var(--paper);
+      font-size: 0.87rem;
+    }
+    th, td {
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    th:last-child, td:last-child { border-right: 0; }
+    tr:last-child td { border-bottom: 0; }
+    th {
+      color: var(--teal-dark);
+      background: var(--teal-soft);
+      font-size: 0.79rem;
+    }
+    td { color: #43504c; }
+    .sequence {
+      counter-reset: sequence;
+      margin: 16px 0;
+      padding: 0;
+      list-style: none;
+    }
+    .sequence li {
+      position: relative;
+      margin: 0;
+      padding: 0 0 18px 46px;
+    }
+    .sequence li::before {
+      position: absolute;
+      top: 1px;
+      left: 0;
+      display: grid;
+      width: 31px;
+      height: 31px;
+      place-items: center;
+      border: 2px solid var(--teal);
+      border-radius: 50%;
+      color: var(--teal-dark);
+      background: white;
+      content: counter(sequence);
+      counter-increment: sequence;
+      font-size: 0.78rem;
+      font-weight: 850;
+    }
+    .sequence li::after {
+      position: absolute;
+      top: 32px;
+      bottom: 0;
+      left: 15px;
+      width: 2px;
+      background: var(--line);
+      content: "";
+    }
+    .sequence li:last-child { padding-bottom: 0; }
+    .sequence li:last-child::after { display: none; }
+    details {
+      margin: 12px 0;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--paper);
+    }
+    summary {
+      padding: 12px 15px;
+      color: var(--teal-dark);
+      background: var(--paper-2);
+      cursor: pointer;
+      font-weight: 780;
+    }
+    details > div { padding: 14px 16px 4px; }
+    .mini {
+      color: var(--muted);
+      font-size: 0.83rem;
+    }
+    .checklist {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px 15px;
+      margin: 14px 0;
+    }
+    .check {
+      position: relative;
+      padding: 11px 13px 11px 37px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--paper-2);
+      font-size: 0.87rem;
+    }
+    .check::before {
+      position: absolute;
+      top: 11px;
+      left: 13px;
+      color: var(--green);
+      content: "✓";
+      font-weight: 900;
+    }
+    footer {
+      padding: 14px 3px 25px;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 1050px) {
+      .thesis-strip { grid-template-columns: 1fr; }
+      .thesis-step {
+        min-height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .thesis-step:last-child { border-bottom: 0; }
+      .thesis-step::after {
+        top: auto;
+        right: 22px;
+        bottom: -10px;
+        transform: rotate(90deg);
+      }
+      .layout { grid-template-columns: 1fr; }
+      .toc {
+        position: relative;
+        top: auto;
+        max-height: none;
+      }
+      .toc nav {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 760px) {
+      .shell { padding: 10px; }
+      .masthead-copy { padding: 31px 23px 27px; }
+      .chapter { padding: 24px 19px 26px; }
+      .chapter-head { gap: 12px; }
+      .chapter-no { width: 37px; height: 37px; }
+      .derive, .grid-2, .grid-3, .checklist { grid-template-columns: 1fr; }
+      .derive-step::after {
+        top: auto;
+        right: 13px;
+        bottom: -14px;
+        transform: rotate(90deg);
+      }
+      .bridge { grid-template-columns: 1fr; }
+      .bridge-arrow { justify-self: center; transform: rotate(90deg); }
+      .toc nav { grid-template-columns: 1fr; }
+      .eq { font-size: 0.82rem; }
+    }
+    @media print {
+      body { background: white; font-size: 10.5pt; }
+      .reading-progress, .toc, .toc-actions { display: none !important; }
+      .shell { width: 100%; padding: 0; }
+      .layout { display: block; }
+      .masthead, .chapter {
+        margin: 0 0 12px;
+        break-inside: avoid-page;
+        box-shadow: none;
+      }
+      .chapter { padding: 20px; }
+      details > div { display: block !important; }
+      summary { list-style: none; }
+      a { color: inherit; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="reading-progress" id="reading-progress" aria-hidden="true"></div>
+
+  <div class="shell">
+    <header class="masthead">
+      <div class="masthead-copy">
+        <p class="eyebrow">Household Finance · Structural Methods · Guided Note</p>
+        <h1>Structural Models in Household Finance</h1>
+        <p class="lead">
+          這份筆記以一個問題貫穿全文：<strong>勞動所得風險如何改變家庭的股票配置？</strong>
+          我們先從 Merton 投資比例推導人力資本的避險需求，再進入生命週期結構模型與兩階段 SMM；
+          最後看理論如何指定 reduced-form 應測量的風險、係數尺度與 placebo group。
+        </p>
+        <div class="meta">
+          <span>原講義：Sylvain Catherine，38 個 PDF 頁面</span>
+          <span>重點：推導 · income tail risk · SMM identification · twin design</span>
+          <span><a href="../06.Catherine/Structural%20Household%20Finance.pdf">開啟原始 PDF</a></span>
+          <span>更新：2026-08-07</span>
+        </div>
+      </div>
+      <div class="thesis-strip" aria-label="全篇推理主線">
+        <div class="thesis-step">
+          <span>Step 1</span>
+          <strong>金融財富不是全部</strong>
+          <p>年輕人的未來薪資現值很大；human capital 也是一項隱含資產。</p>
+        </div>
+        <div class="thesis-step">
+          <span>Step 2</span>
+          <strong>風險藏在分配左尾</strong>
+          <p>平均所得與市場低相關，不代表最壞 career shocks 不會和股災同時發生。</p>
+        </div>
+        <div class="thesis-step">
+          <span>Step 3</span>
+          <strong>結構模型補不可觀察量</strong>
+          <p>以所得過程推回 human-capital exposure，再解生命週期資產配置。</p>
+        </div>
+        <div class="thesis-step">
+          <span>Step 4</span>
+          <strong>兩階段 SMM 加強紀律</strong>
+          <p>所得參數不靠 portfolio data 調整；偏好才用 wealth 與持股生命週期辨認。</p>
+        </div>
+        <div class="thesis-step">
+          <span>Step 5</span>
+          <strong>理論設計實證檢驗</strong>
+          <p>不只預測負號，也預測效果隨 H/(W+H) 與年齡呈特定形狀。</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="toc" aria-label="目錄">
+        <span class="toc-title">閱讀路徑</span>
+        <nav>
+          <a href="#roadmap">00　一張圖看懂全篇</a>
+          <a href="#field">01　Household finance 的位置</a>
+          <a href="#merton">02　Merton 股票比例推導</a>
+          <a href="#human-capital">03　Human capital 加入後</a>
+          <a href="#measurement">04　為何 βH 無法直接量</a>
+          <a href="#tail-risk">05　左尾風險與 mixture</a>
+          <a href="#lifecycle">06　完整生命週期模型</a>
+          <a href="#income-step">07　第一階段：估所得過程</a>
+          <a href="#smm-step">08　第二階段：SMM 估偏好</a>
+          <a href="#identification">09　比較靜態不等於識別</a>
+          <a href="#surrogate">10　Surrogate SMM</a>
+          <a href="#structural-results">11　結構估計結果</a>
+          <a href="#mechanisms">12　生命週期機制分解</a>
+          <a href="#measure-risk">13　結構告訴我們量什麼</a>
+          <a href="#predictions">14　符號、尺度與 placebo</a>
+          <a href="#sweden">15　瑞典資料與 twin design</a>
+          <a href="#evidence">16　實證結果逐項解讀</a>
+          <a href="#asset-pricing">17　對 asset pricing 的含義</a>
+          <a href="#assumptions">18　假設總表與限制</a>
+          <a href="#cheatsheet">19　最後速查表</a>
+        </nav>
+        <div class="toc-actions">
+          <button type="button" id="expand-all">展開細節</button>
+          <button type="button" id="collapse-all">收合細節</button>
+        </div>
+      </aside>
+
+      <main class="content">
+        <section class="chapter" id="roadmap">
+          <div class="chapter-head">
+            <div class="chapter-no">00</div>
+            <div>
+              <h2>一張圖看懂全篇</h2>
+              <p>同一個問題，先用 structural model 回答，再讓 structure 指導 reduced form。 <span class="page-tag">slides 3–4</span></p>
+            </div>
+          </div>
+
+          <div class="big-idea">
+            <strong>全篇的反直覺</strong>
+            <p>
+              傳統資料顯示「平均所得衝擊」和股票報酬的 covariance 接近 0，於是模型把 human capital
+              當成債券，建議年輕人持有大量股票。但如果經濟衰退時<strong>所得分配的左尾</strong>特別拉長，
+              最壞的薪資／失業結果仍會與股災重疊；這種 background risk 會讓年輕家庭合理地少持股。
+            </p>
+          </div>
+
+          <div class="bridge">
+            <div class="bridge-side">
+              <h4>Part 1：Catherine (2022)</h4>
+              <p>指定偏好、所得、住房、退休制度與市場摩擦，估計模型並量化 cyclical skewness 如何修正生命週期股票配置。</p>
+            </div>
+            <div class="bridge-arrow">→</div>
+            <div class="bridge-side">
+              <h4>Part 2：Catherine–Sodini–Zhang (2024)</h4>
+              <p>模型指出該量第三動差如何與股市共變，以及效果應隨 human-capital share、年齡與財富如何縮放。</p>
+            </div>
+          </div>
+
+          <div class="derive">
+            <div class="derive-step">
+              <span>Theory</span>
+              <p>總 risky exposure = 金融股票 + human capital 內含的股票 exposure。</p>
+            </div>
+            <div class="derive-step">
+              <span>Structure</span>
+              <p>用可觀察所得動態推回不可觀察的 H 與 tail exposure。</p>
+            </div>
+            <div class="derive-step">
+              <span>Evidence</span>
+              <p>檢驗負號、H/(W+H) 尺度、年齡 U 型與富人 placebo。</p>
+            </div>
+          </div>
+
+          <div class="callout warning">
+            <span class="callout-title">投影片頁碼提醒</span>
+            <p>
+              PDF 有 38 頁，但 Beamer 顯示 31 張主投影片；差異來自同一張投影片逐步疊加內容。
+              本筆記的 slide 標記以主投影片右下角編號為準。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="field">
+          <div class="chapter-head">
+            <div class="chapter-no">01</div>
+            <div>
+              <h2>Household finance 的位置</h2>
+              <p>家庭同時是消費者、勞工、投資人、借款人與政策對象。 <span class="page-tag">slides 1–2</span></p>
+            </div>
+          </div>
+
+          <p>
+            Household finance 研究家庭的資產、負債與服務這些決策的市場。題目包含儲蓄、股票參與、
+            退休資產 decumulation、房貸、再融資、違約、信用卡、同儕與文化、金融素養與建議。
+          </p>
+
+          <div class="grid-2">
+            <div class="card">
+              <h4>為何和 macro 有關？</h4>
+              <p>MPC 異質性決定財政／貨幣政策如何傳導；借款人、存款人與 wealthy hand-to-mouth 對利率變化反應不同。</p>
+            </div>
+            <div class="card">
+              <h4>為何和 asset pricing 有關？</h4>
+              <p>家庭最終承擔 aggregate risk；但真正定價的 marginal investor 未必是平均家庭，勞動、住房與私人企業風險限制其承擔股票風險的能力。</p>
+            </div>
+            <div class="card">
+              <h4>為何和 public finance 有關？</h4>
+              <p>失業、健康、失能保險與稅制改變家庭 balance sheet；消費反應可幫助辨認 marginal utility，進而做福利分析。</p>
+            </div>
+            <div class="card">
+              <h4>為何需要結構模型？</h4>
+              <p>生命週期、不可保所得、住房、勞動供給與退休共同造成高維 state space；許多 welfare/counterfactual 也不能只靠一條回歸得到。</p>
+            </div>
+          </div>
+
+          <div class="callout intuition">
+            <span class="callout-title">這份講義的研究問題</span>
+            <p>
+              它不試圖涵蓋整個領域，而是集中問：<strong>勞動所得的 countercyclical tail risk，
+              能否解釋股票參與率與 conditional equity share 隨年齡上升？</strong>
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="merton">
+          <div class="chapter-head">
+            <div class="chapter-no">02</div>
+            <div>
+              <h2>沒有勞動所得時：Merton 股票比例</h2>
+              <p>先建立之後所有 hedging term 的 benchmark。 <span class="page-tag">slide 5</span></p>
+            </div>
+          </div>
+
+          <h3>1. 把股票投資寫成 mean–variance tradeoff</h3>
+          <p>
+            令股票預期報酬為 <span class="mono">μ</span>、無風險利率為
+            <span class="mono">r</span>、股票波動為 <span class="mono">σ</span>，
+            金融財富中股票比例為 <span class="mono">π</span>。在 CRRA、連續時間／小風險近似與固定投資機會下，
+            portfolio 的 certainty-equivalent excess return 可寫成：
+          </p>
+          <div class="eq">
+            CE(π) = π(μ−r) − (γ/2)π²σ².
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <h4>π(μ−r)</h4>
+              <p>持有更多股票帶來線性 expected excess return。</p>
+            </div>
+            <div class="card">
+              <h4>(γ/2)π²σ²</h4>
+              <p>風險成本隨 exposure 平方上升；γ 是 relative risk aversion。</p>
+            </div>
+          </div>
+
+          <h3>2. 一階條件</h3>
+          <div class="eq-stack">
+            <div class="eq">∂CE/∂π = (μ−r) − γπσ² = 0.</div>
+            <div class="eq">
+              π* = (μ−r)/(γσ²).
+              <span class="label">Merton share</span>
+            </div>
+          </div>
+
+          <p>
+            expected excess return 越高，最適股票比例越高；risk aversion 或 variance 越高，比例越低。
+            公式沒有年齡，因此在沒有 human capital、摩擦與生命週期狀態時，模型本身不會產生 equity glide path。
+          </p>
+
+          <div class="callout assumption">
+            <span class="callout-title">這條閉式解需要哪些簡化？</span>
+            <p>
+              投資機會集合固定、資產可連續交易、沒有 participation cost、稅、借款／放空限制，
+              且 CRRA 使風險承擔按財富同比例縮放。加入不完全市場與非交易性所得後，公式仍提供方向，
+              但精確政策必須解 dynamic program。
+            </p>
+          </div>
+
+          <details>
+            <summary>為何 variance 在分母不是 standard deviation？</summary>
+            <div>
+              <p>
+                多一單位 π 增加的 risk penalty 是
+                <span class="mono">∂[(γ/2)π²σ²]/∂π=γπσ²</span>；
+                與 marginal expected excess return <span class="mono">μ−r</span> 相等後，
+                自然得到 <span class="mono">σ²</span>。這是 quadratic risk cost 的結果。
+              </p>
+            </div>
+          </details>
+        </section>
+
+        <section class="chapter" id="human-capital">
+          <div class="chapter-head">
+            <div class="chapter-no">03</div>
+            <div>
+              <h2>加入 human capital：金融帳戶不是全部曝險</h2>
+              <p>未來勞動所得現值 H 也是 household balance sheet 的一部分。 <span class="page-tag">slide 5</span></p>
+            </div>
+          </div>
+
+          <p>
+            令 <span class="mono">W</span> 是金融淨值，<span class="mono">H</span> 是未來勞動所得的現值。
+            household 的 total wealth 是 <span class="mono">W+H</span>。
+            若 human capital 對股票市場的 beta 是 <span class="mono">β<sub>H</sub></span>，
+            total risky-dollar exposure 是：
+          </p>
+          <div class="eq">
+            金融股票曝險 + 人力資本曝險 = πW + β<sub>H</sub>H.
+          </div>
+
+          <h3>1. 令總曝險比例等於 Merton benchmark</h3>
+          <div class="eq">
+            [πW + β<sub>H</sub>H]/(W+H) = (μ−r)/(γσ²).
+          </div>
+          <p>令 <span class="mono">a*≡(μ−r)/(γσ²)</span>，移項：</p>
+          <div class="eq-stack">
+            <div class="eq">πW + β<sub>H</sub>H = a*(W+H).</div>
+            <div class="eq">πW = a*W + (a*−β<sub>H</sub>)H.</div>
+            <div class="eq">
+              π = a* + (a*−β<sub>H</sub>)H/W.
+              <span class="label">portfolio rule</span>
+            </div>
+          </div>
+
+          <h3>2. 三種情況</h3>
+          <div class="grid-3">
+            <div class="card">
+              <h4>沒有 H</h4>
+              <p><span class="mono">H=0</span>，回到 <span class="mono">π=a*</span>，年齡不重要。</p>
+            </div>
+            <div class="card">
+              <h4>H 像無風險債券</h4>
+              <p><span class="mono">β<sub>H</sub>=0</span>，年輕人的 H/W 高，理論要求用金融帳戶買更多股票；隨年齡 H/W 下降，π 下降。</p>
+            </div>
+            <div class="card">
+              <h4>H 自帶 market exposure</h4>
+              <p><span class="mono">β<sub>H</sub>&gt;0</span>，金融帳戶要扣掉 <span class="mono">β<sub>H</sub>H</span> 的隱含股票部位；hedging demand 降低 π。</p>
+            </div>
+          </div>
+
+          <div class="big-idea">
+            <strong>年齡效果其實是 balance-sheet composition effect</strong>
+            <p>
+              年齡本身沒有直接進 Merton 公式；它透過 H/W、退休距離、參與成本與其他 constraints 改變政策。
+              所謂 equity glide path，本質上是在調整「human capital 占總財富比重隨生命週期下降」。
+            </p>
+          </div>
+
+          <div class="callout warning">
+            <span class="callout-title">π 可能大於 1，現實卻未必允許</span>
+            <p>
+              當 H/W 很高且 β<sub>H</sub>≈0，閉式解可能要求 young household 槓桿買股。
+              借款限制、最低消費、股票參與成本與住房 down payment 會截斷這個結果；
+              這正是完整 computational model 必要的原因。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="measurement">
+          <div class="chapter-head">
+            <div class="chapter-no">04</div>
+            <div>
+              <h2>為何 β<sub>H</sub> 幾乎無法直接量？</h2>
+              <p>理論需要 human-capital return，但資料只看到當期所得。 <span class="page-tag">slide 6</span></p>
+            </div>
+          </div>
+
+          <div class="eq-stack">
+            <div class="eq">
+              β<sub>H</sub> = Cov(r<sub>H</sub>,r<sub>s</sub>)/σ²<sub>r<sub>s</sub></sub>.
+            </div>
+            <div class="eq">
+              r<sub>H,it</sub> =
+              [H<sub>i,t+1</sub>−H<sub>it</sub>+Y<sub>it</sub>]/H<sub>it</sub>.
+            </div>
+          </div>
+
+          <p>
+            這和股票 total return 完全平行：期末價值減期初價值，再加本期 payout。
+            對 human capital 而言，<span class="mono">Y<sub>it</sub></span> 是「股利」，
+            <span class="mono">H<sub>it</sub></span> 是未來薪資 claim 的價格。
+            問題是行政資料只觀察 Y，沒有可交易的 H 價格。
+          </p>
+
+          <div class="derive">
+            <div class="derive-step">
+              <span>Observed</span>
+              <p>每年 earnings、就業與人口特徵。</p>
+            </div>
+            <div class="derive-step">
+              <span>Model</span>
+              <p>指定 Y 的 stochastic process 與 persistence。</p>
+            </div>
+            <div class="derive-step">
+              <span>Implied</span>
+              <p>預測未來所得分配，形成 H 及其市場曝險。</p>
+            </div>
+          </div>
+
+          <div class="callout assumption">
+            <span class="callout-title">為何「go structural」需要 parametric income process？</span>
+            <p>
+              沒有 H 的市場價格，就必須對未來 Y 如何由目前狀態演化做外推。
+              參數化不是免費午餐：它用可估、可模擬的限制換取未觀察量。
+              因此所得過程是否捕捉 persistence、tail shape 與 business-cycle dependence，
+              直接決定 portfolio recommendation 是否可信。
+            </p>
+          </div>
+
+          <h3>傳統做法為何得到「human capital 像債券」？</h3>
+          <p>
+            Viceira、Cocco–Gomes–Maenhout 等模型校準「所得創新和 market return 的線性相關」，
+            資料中接近 0，因此設 <span class="mono">β<sub>H</sub>≈0</span>。
+            結果即使 γ=10，多數工作年齡家庭仍應把大部分金融財富放股票；
+            但資料中的參與率與參與者股票比例反而在退休前上升。
+          </p>
+        </section>
+
+        <section class="chapter" id="tail-risk">
+          <div class="chapter-head">
+            <div class="chapter-no">05</div>
+            <div>
+              <h2>Correlation isn’t everything：風險藏在左尾</h2>
+              <p>均值 covariance 接近零，不排除分配形狀與市場高度共循環。 <span class="page-tag">slides 7–8</span></p>
+            </div>
+          </div>
+
+          <h3>1. 資料事實</h3>
+          <p>
+            Guvenen–Ozkan–Song 的 Social Security panel 顯示，所得 shock 的 Kelley skewness
+            與股票報酬相關約 0.59：股市大跌的年份，skewness 也更負，也就是左尾張開。
+            平均 shock 幾乎不動，最差分位的 career outcomes 卻明顯惡化。
+          </p>
+          <div class="eq">
+            Kelley skewness =
+            [(d<sub>9</sub>−d<sub>5</sub>) − (d<sub>5</sub>−d<sub>1</sub>)]/(d<sub>9</sub>−d<sub>1</sub>).
+          </div>
+          <p>
+            若下半段距離 <span class="mono">d<sub>5</sub>−d<sub>1</sub></span> 特別大，
+            numerator 變負，代表分配有更長的左尾。分位數版本比傳統三次方動差不容易被少數極端值完全主導。
+          </p>
+
+          <h3>2. 為何一個 normal 不夠？</h3>
+          <div class="eq">
+            z<sub>it</sub> = ρ<sub>z</sub>z<sub>i,t−1</sub> + ζ<sub>it</sub>.
+          </div>
+          <div class="eq">
+            ζ<sub>it</sub> ~
+            N(μ<sup>−</sup><sub>z,t</sub>,(σ<sup>−</sup><sub>z</sub>)²) &nbsp;w.p.&nbsp; p<sub>z</sub>,
+            &nbsp;&nbsp;
+            N(μ<sup>+</sup><sub>z,t</sub>,(σ<sup>+</sup><sub>z</sub>)²) &nbsp;w.p.&nbsp; 1−p<sub>z</sub>.
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <h4>單一常態</h4>
+              <p>對稱、skewness 固定為 0；只能用 mean 和 variance 改變風險。</p>
+            </div>
+            <div class="card">
+              <h4>兩成分 normal mixture</h4>
+              <p>一個 bad component 加一個 good component；機率、均值與 variance 的不對稱可生成 fat tail 與 skewness。</p>
+            </div>
+          </div>
+
+          <h3>3. 唯一的新機制：bad component 隨景氣移動</h3>
+          <div class="eq">
+            μ<sup>−</sup><sub>z,t</sub>
+            = μ<sup>−</sup><sub>z</sub>
+            + λ<sub>zl</sub>(l<sub>1,t</sub>−l<sub>1,t−1</sub>),
+            &nbsp;&nbsp; λ<sub>zl</sub>&gt;0.
+          </div>
+          <p>
+            衰退時 aggregate wage index growth
+            <span class="mono">Δl<sub>1,t</sub>&lt;0</span>，所以 bad-component mean 變得更負。
+            不是每個人的所得都一起下降，而是抽到 bad component 的人遭遇更深的永久 career loss。
+          </p>
+
+          <div class="big-idea">
+            <strong>為何這比單期失業更能影響股票？</strong>
+            <p>
+              <span class="mono">ρ<sub>z</sub></span> 讓 tail shock 持續，損失會壓低往後多年的 Y，
+              因而大幅降低 H。當股市也在跌，家庭同時失去金融財富與未來薪資現值；
+              human capital 因此不是「低 covariance 的債券」。
+            </p>
+          </div>
+
+          <div class="callout assumption">
+            <span class="callout-title">為何把 bad mean 綁在 aggregate wage index？</span>
+            <p>
+              它用一個可觀察的 macro state 把 idiosyncratic tail distribution 和景氣連接，讓模型可估且保持 state space 可控。
+              代價是其他 recession channels（失業率、產業重組、金融危機）被濃縮到這個線性 loading；
+              若關係有 threshold 或 regime switch，線性 λ 可能低估極端衰退。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="lifecycle">
+          <div class="chapter-head">
+            <div class="chapter-no">06</div>
+            <div>
+              <h2>完整生命週期模型：偏好、選擇與摩擦</h2>
+              <p>閉式 portfolio rule 提供直覺，computational model 處理現實限制。 <span class="page-tag">slide 8</span></p>
+            </div>
+          </div>
+
+          <h3>1. 生存加權的 lifetime utility</h3>
+          <div class="eq">
+            V<sub>t₀</sub> =
+            E Σ<sub>t=t₀</sub><sup>T</sup>
+            β<sup>t−1</sup>
+            [Π<sub>k=0</sub><sup>t−1</sup>(1−m<sub>k</sub>)]
+            [(C<sub>it</sub><sup>1−ν</sup>H<sub>it</sub><sup>ν</sup>)<sup>1−γ</sup>/(1−γ)].
+          </div>
+          <p class="mini">
+            符號提醒：這條效用式中的 <span class="mono">H<sub>it</sub></span> 是 housing services；
+            前面 portfolio rule 中沒有個人／時間下標的 <span class="mono">H</span> 則是 human capital。
+          </p>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>部分</th><th>用途</th><th>經濟直覺</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>β<sup>t−1</sup></td><td>純時間折現</td><td>β 越高，越願意犧牲現在消費累積財富。</td></tr>
+                <tr><td>Π(1−m<sub>k</sub>)</td><td>活到 t 的機率</td><td>若沒有 bequest motive，死亡降低遠期消費的權重。</td></tr>
+                <tr><td>C<sup>1−ν</sup>H<sup>ν</sup></td><td>消費品與住房服務的 Cobb–Douglas bundle</td><td>ν 固定 expenditure share／兩者相對偏好，住房不是單純金融資產。</td></tr>
+                <tr><td>γ</td><td>bundle 上的 CRRA curvature</td><td>同時控制 consumption smoothing、precautionary saving 與 risky portfolio demand。</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p>每期選擇 consumption、租屋或購屋，以及金融淨值的股票比例 π。遞迴形式可概念化為：</p>
+          <div class="eq">
+            V<sub>t</sub>(s<sub>t</sub>) =
+            max<sub>a<sub>t</sub>∈Γ(s<sub>t</sub>)</sub>
+            { u(C<sub>t</sub>,H<sub>t</sub>)
+            + β(1−m<sub>t</sub>)E[V<sub>t+1</sub>(s<sub>t+1</sub>)] }.
+            <span class="label">schematic Bellman</span>
+          </div>
+          <p class="mini">
+            這是講義 lifetime objective 的遞迴等價寫法；精確 state 還包含年齡、金融財富、所得成分、
+            住房狀態、歷史所得／社安權益與參與狀態。
+          </p>
+
+          <h3>2. 「Realism elsewhere」各自處理哪個 margin？</h3>
+          <div class="grid-3">
+            <div class="card">
+              <h4>Social Security</h4>
+              <p>退休所得依 lifetime earnings，讓所得 shocks 對 H 的影響取決於年齡與過去紀錄。</p>
+            </div>
+            <div class="card">
+              <h4>Means-tested safety net</h4>
+              <p>截斷最低消費的 downside，降低窮人的有效 tail loss；沒有它會高估 precautionary saving。</p>
+            </div>
+            <div class="card">
+              <h4>Stock-market crashes</h4>
+              <p>允許金融報酬本身有負 skew，而非用單一 lognormal 低估最壞 joint state。</p>
+            </div>
+            <div class="card">
+              <h4>Housing</h4>
+              <p>down payment、交易成本與 own/rent 選擇會鎖住流動財富，改變股票 participation capacity。</p>
+            </div>
+            <div class="card">
+              <h4>Fixed participation cost c<sub>π</sub></h4>
+              <p>把「是否進入股市」與「進入後持多少」分開；對低財富年輕人尤其重要。</p>
+            </div>
+            <div class="card">
+              <h4>有限 T 與退休</h4>
+              <p>H 逐步消失，使 tail-risk hedging demand 在退休時理論上歸零。</p>
+            </div>
+          </div>
+
+          <div class="callout assumption">
+            <span class="callout-title">為何 fixed cost 不等於 proportional transaction cost？</span>
+            <p>
+              fixed cost 對小帳戶占比最大，會直接生成不參與的 extensive margin；
+              proportional cost 則主要抑制 turnover，未必能解釋低財富家庭完全不持股。
+              但 fixed annual cost 也可能代替了金融知識、注意力、信任或帳戶取得等多種摩擦。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="income-step">
+          <div class="chapter-head">
+            <div class="chapter-no">07</div>
+            <div>
+              <h2>第一階段：在 portfolio problem 外估所得過程</h2>
+              <p>先固定 background risk，避免用持股資料「反向塑造」所得風險。 <span class="page-tag">slide 9</span></p>
+            </div>
+          </div>
+
+          <h3>1. Targets 與參數</h3>
+          <ul>
+            <li>1978–2010 每年的 idiosyncratic earnings growth：cross-sectional mean、variance、skewness。</li>
+            <li>同一組 moments 在 1、3、5 年 horizon 的版本。</li>
+            <li>共 155 個 empirical moments；估 11 個 macro 與 8 個 idiosyncratic parameters。</li>
+            <li>資料來自 Social Security administrative panel；此階段不用 portfolio 或 wealth data。</li>
+          </ul>
+
+          <h3>2. 為何多個 horizon 能辨認 persistence？</h3>
+          <p>
+            若 persistent state 遵循 <span class="mono">z<sub>t</sub>=ρz<sub>t−1</sub>+ζ<sub>t</sub></span>，
+            一個 ζ shock 對 h 年後所得的 loading 約為 <span class="mono">ρ<sup>h</sup></span>。
+            因此多期所得成長的 variance／tail thickness 會隨 horizon 以不同速度累積：
+          </p>
+          <div class="eq">
+            z<sub>t+h</sub>−ρ<sup>h</sup>z<sub>t</sub>
+            = Σ<sub>j=1</sub><sup>h</sup>ρ<sup>h−j</sup>ζ<sub>t+j</sub>.
+          </div>
+          <p>
+            transitory shock 很快消失，persistent shock 則在 3、5 年 moments 中仍清楚可見。
+            講義的估計發現 tail shocks 是 persistent 的，所以會改變整段未來 earnings claim，而非只影響當年消費。
+          </p>
+
+          <div class="big-idea">
+            <strong>設計原則：能用外部資料估的 primitive，就不要留給核心 outcome 來配</strong>
+            <p>
+              第一階段一旦固定所得過程，第二階段不能再調整 tail risk 來硬配 equity share。
+              這提供 exclusion-like discipline：portfolio fit 必須來自模型機制與偏好，而非重新定義 background risk。
+            </p>
+          </div>
+
+          <div class="callout identification">
+            <span class="callout-title">但兩階段並不自動保證 causal identification</span>
+            <p>
+              它降低 overfitting 與參數互相補償，卻仍依賴所得模型正確指定、行政資料 moments 與目標族群可比，
+              也應將第一階段參數估計誤差傳到第二階段標準誤。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="smm-step">
+          <div class="chapter-head">
+            <div class="chapter-no">08</div>
+            <div>
+              <h2>第二階段：SMM 估計偏好與參與成本</h2>
+              <p>讓解出的家庭政策生成 SCF 生命週期 profiles。 <span class="page-tag">slides 10–11</span></p>
+            </div>
+          </div>
+
+          <div class="eq">
+            θ̂ = arg min<sub>θ=(γ,β,c<sub>π</sub>)</sub>
+            [m<sub>SCF</sub>−m<sub>sim</sub>(θ)]′W
+            [m<sub>SCF</sub>−m<sub>sim</sub>(θ)].
+          </div>
+
+          <p>
+            使用 age 23–25 到 62–64 的 SCF profiles：wealth、stock participation、
+            conditional equity share（或 unconditional share），合計 56 個 moments。
+          </p>
+
+          <ol class="sequence">
+            <li><strong>猜 θ：</strong>γ、β、每年 fixed participation cost c<sub>π</sub>。</li>
+            <li><strong>解生命週期 dynamic program：</strong>每個 state 得到 consumption、housing、participation、π policies。</li>
+            <li><strong>模擬 households：</strong>抽所得與股票 shocks，沿政策推進到退休。</li>
+            <li><strong>依年齡分組：</strong>計算與 SCF 定義相同的 wealth、participation 與 equity-share moments。</li>
+            <li><strong>更新 θ：</strong>縮小 weighted moment distance，直到 objective 最小。</li>
+          </ol>
+
+          <h3>一行式 identification intuition</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>參數</th><th>主要 target</th><th>核心方向</th><th>為何不是一對一</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>β</td>
+                  <td>wealth level 與生命週期 slope</td>
+                  <td>β↑ → 更耐心 → 累積更多 wealth</td>
+                  <td>財富也受 γ 的 precautionary saving 影響；β 還改變 participation capacity。</td>
+                </tr>
+                <tr>
+                  <td>γ</td>
+                  <td>participants 的 equity share level</td>
+                  <td>γ↑ → risky share↓</td>
+                  <td>γ↑ 同時增加儲蓄，可能讓更多人付得起 fixed cost；participation 可非單調。</td>
+                </tr>
+                <tr>
+                  <td>c<sub>π</sub></td>
+                  <td>participation，尤其年輕低財富戶</td>
+                  <td>cost↑ → participation↓</td>
+                  <td>退出者是選擇性的，conditional share 與 wealth composition 也會改變。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout assumption">
+            <span class="callout-title">為何用 SCF 生命週期 profiles，而非單一平均數？</span>
+            <p>
+              level 可能被多組參數配到；age slope 與非線性 shape 提供更多 restriction。
+              但 SCF 主要是 repeated cross-sections，age profile 也可能混入 cohort effects；
+              模型若把 cohort 差異全當生命週期變化，參數會吸收世代經驗與制度變遷。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="identification">
+          <div class="chapter-head">
+            <div class="chapter-no">09</div>
+            <div>
+              <h2>比較靜態不等於真正的識別</h2>
+              <p>「θ 改變時 moment 怎麼動」和「moment 改變時 θ̂ 怎麼動」不是同一件事。 <span class="page-tag">slides 11–13</span></p>
+            </div>
+          </div>
+
+          <h3>1. Comparative static：正向 mapping</h3>
+          <div class="eq">
+            m = f(θ), &nbsp;&nbsp; G ≡ ∂m(θ)/∂θ′.
+          </div>
+          <p>
+            投影片一次只移動 γ、β 或 participation cost，觀察 mean wealth、participation、conditional share。
+            這建立經濟直覺，但每個參數同時移動多個 moments，而且曲線常非單調。
+          </p>
+
+          <h3>2. SMM identification：整個系統的反向 mapping</h3>
+          <p>
+            當某個 empirical moment 稍微改變，SMM 會<strong>同時</strong>重調所有參數以配全部 moments。
+            線性化 first-order condition 可得到：
+          </p>
+          <div class="eq">
+            dθ̂ ≈ (G′WG)<sup>−1</sup>G′W · dm.
+            <span class="label">local SMM inverse</span>
+          </div>
+
+          <div class="derive">
+            <div class="derive-step">
+              <span>G</span>
+              <p>每個參數如何共同推動所有 moments。</p>
+            </div>
+            <div class="derive-step">
+              <span>W</span>
+              <p>估計器把哪些 moment discrepancy 看得更重。</p>
+            </div>
+            <div class="derive-step">
+              <span>Inverse</span>
+              <p>參數彼此補償後，哪一組調整最能吸收 dm。</p>
+            </div>
+          </div>
+
+          <p>
+            如果只把單一 comparative-static curve 倒過來，相當於忽略 G 的其他列／欄及 joint reoptimization。
+            投影片的藍線（真正 re-estimated θ̂ response）常與紅線（直接倒轉 f(θ)）不同。
+          </p>
+
+          <div class="callout identification">
+            <span class="callout-title">local identification 的 rank condition</span>
+            <p>
+              若 <span class="mono">G′WG</span> 可逆，附近的參數方向能被 moments 區分；
+              若接近 singular，不同參數組合會產生近乎相同 moments，標準誤大且估計對 moment selection 敏感。
+              「參數數量少於 moments」本身不保證識別，關鍵是 moments 對參數的導數是否線性獨立。
+            </p>
+          </div>
+
+          <details>
+            <summary>從 SMM FOC 推出 dθ̂ 公式</summary>
+            <div>
+              <p>令 discrepancy <span class="mono">g(θ)=m<sub>data</sub>−m(θ)</span>，objective 是 <span class="mono">Q=g′Wg</span>。FOC：</p>
+              <div class="eq">∂Q/∂θ = −2G′Wg = 0.</div>
+              <p>在 fit 良好、忽略二階導數項的局部近似下，對 data moments 微分：</p>
+              <div class="eq">G′W(dm−Gdθ)=0.</div>
+              <p>移項即得 <span class="mono">(G′WG)dθ=G′Wdm</span>，再乘 inverse。</p>
+            </div>
+          </details>
+        </section>
+
+        <section class="chapter" id="surrogate">
+          <div class="chapter-head">
+            <div class="chapter-no">10</div>
+            <div>
+              <h2>Surrogate SMM：讓 identification audit 可計算</h2>
+              <p>每移動一個 moment 都重估原模型，成本可能高到做不了。 <span class="page-tag">slide 14</span></p>
+            </div>
+          </div>
+
+          <h3>計算瓶頸</h3>
+          <p>
+            一次 structural estimation 已需反覆解模型數千次。若要畫「每個 targeted moment 改變時，
+            θ̂ 如何反應」的曲線，需要數百次完整 re-estimation。
+          </p>
+
+          <h3>Lightspeed surrogate 的三步</h3>
+          <ol class="sequence">
+            <li><strong>設計 parameter cloud：</strong>從有經濟意義的範圍抽許多 θ。</li>
+            <li><strong>昂貴步驟只做一次：</strong>每個 θ 解原模型並算 moments，得到成對資料 <span class="mono">{θ,m(θ)}</span>。</li>
+            <li><strong>擬合便宜的 emulator：</strong>用 flexible approximation（例如 neural net）學 <span class="mono">θ→m</span>，之後 re-estimation 只需快速評估函數。</li>
+          </ol>
+
+          <div class="bridge">
+            <div class="bridge-side">
+              <h4>原始 structural model</h4>
+              <p>慢但忠於 Bellman solution；提供訓練資料與最終 benchmark。</p>
+            </div>
+            <div class="bridge-arrow">→</div>
+            <div class="bridge-side">
+              <h4>Surrogate</h4>
+              <p>快到足以做 identification curves、sample splits、moment selection 與 misspecification checks。</p>
+            </div>
+          </div>
+
+          <div class="callout warning">
+            <span class="callout-title">Surrogate 不是新的經濟模型</span>
+            <p>
+              它只近似原模型的 parameter-to-moment map。可信度需要 parameter cloud 覆蓋估計會造訪的區域、
+              out-of-sample 驗證與 approximation error 控制。若 optimizer 跑到訓練 support 外，
+              神經網路可能平滑地給出錯誤答案；速度不能替代原模型驗證。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="structural-results">
+          <div class="chapter-head">
+            <div class="chapter-no">11</div>
+            <div>
+              <h2>結構估計結果：cyclical skewness 買到什麼？</h2>
+              <p>一個所得過程特徵，解除偏好參數的補償扭曲。 <span class="page-tag">slides 15–16</span></p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th rowspan="2">參數</th>
+                  <th colspan="2">有 cyclical skewness</th>
+                  <th colspan="2">沒有 cyclical skewness</th>
+                </tr>
+                <tr><th>無 cost</th><th>有 cost</th><th>無 cost</th><th>有 cost</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Relative risk aversion γ</td><td>7.14</td><td><strong>6.07</strong></td><td>11.95</td><td>8.01</td></tr>
+                <tr><td>Discount factor β</td><td>0.911</td><td><strong>0.956</strong></td><td>0.666</td><td>0.882</td></tr>
+                <tr><td>Participation cost</td><td>—</td><td><strong>$250</strong></td><td>—</td><td>$400</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="mini">括號內標準誤詳見原投影片；cost 先估為平均工資比例，再換算美元。</p>
+
+          <h3>沒有 cyclical skewness 時的「參數補洞」</h3>
+          <ol class="sequence">
+            <li>human capital 看似 bond-like，模型要年輕人持大量股票。</li>
+            <li>為了把 equity share 壓回資料，SMM 把 γ 推得很高。</li>
+            <li>高 γ 又帶來大量 precautionary saving，使 wealth 過高。</li>
+            <li>為了壓回 wealth，SMM 再把 β 推得很低，讓家庭變得不耐心。</li>
+            <li>為了配低參與率，fixed cost 也被推高。</li>
+          </ol>
+
+          <div class="big-idea">
+            <strong>misspecified risk process 會偽裝成「奇怪偏好」</strong>
+            <p>
+              有 cyclical skewness 與 participation cost 時，估計為 γ≈6.07、β≈0.956、cost≈$250；
+              關掉 skewness 後，需要 γ≈8.01、β≈0.882、cost≈$400。
+              這不是單純 fit 變差，而是 omitted background risk 被偏好參數吸收。
+            </p>
+          </div>
+
+          <h3>哪個 moment 真正區分兩個模型？</h3>
+          <p>
+            有、無 skewness 的 specifications 都能大致配 wealth 與 participation。
+            分水嶺是<strong>參與者的 conditional equity share</strong>：
+            無 skewness 仍預測隨年齡下降；資料與完整模型都上升。
+          </p>
+
+          <div class="callout identification">
+            <span class="callout-title">為何這是有用的 overidentification intuition？</span>
+            <p>
+              若只看 wealth 和 extensive margin，錯誤所得模型可藉 γ、β、cost 補償。
+              conditional share 的 age shape 提供另一個方向的 restriction，
+              迫使模型同時解釋「進不進場」與「進場後持多少」。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="mechanisms">
+          <div class="chapter-head">
+            <div class="chapter-no">12</div>
+            <div>
+              <h2>生命週期機制：為何 equity share 可以上升？</h2>
+              <p>crashes、cyclical skewness、participation cost 與 H/W 共同塑形。 <span class="page-tag">slide 17</span></p>
+            </div>
+          </div>
+
+          <h3>沒有 participation cost</h3>
+          <ul>
+            <li>傳統無背景風險模型：H/W 隨年齡下降，equity share 下降。</li>
+            <li>加入 stock-market crashes：整體股票 demand 下降，但未必翻轉 age slope。</li>
+            <li>加入 cyclical skewness：年輕人 H/W 高、joint downside 最大，因此 hedging demand 最強；隨 H/W 下降，股票比例可以逐步回升。</li>
+          </ul>
+
+          <h3>加入 fixed participation cost</h3>
+          <ol class="sequence">
+            <li>20 多歲 wealth 小，固定成本相對帳戶太大，許多人直接不參與。</li>
+            <li>因此年輕人的 observed equity share 接近 0，不論 skewness risk 高低。</li>
+            <li>進入 30–40 歲，更多家庭付得起 cost，tail-risk hedging 差異開始顯現。</li>
+            <li>接近退休時 H/W 降低，labor-tail exposure 本身消失，risk coefficient回到 0。</li>
+          </ol>
+
+          <div class="big-idea">
+            <strong>結構模型預測的不只一條單調 age slope</strong>
+            <p>
+              水準上的 equity share 可隨年齡上升；而「cyclical skewness 對 equity share 的邊際效果」
+              則是 U-shaped：年輕近 0、中年最負、退休再回 0。
+              這個非單調形狀後來成為 reduced-form 的 hard test。
+            </p>
+          </div>
+
+          <div class="callout warning">
+            <span class="callout-title">Participation 與 conditional share 的選擇問題</span>
+            <p>
+              固定成本改變誰進入樣本。參與者平均 equity share 上升，可能一部分來自 composition，
+              不全是每個人都在 intensive margin 加股票。因此估計同時匹配 participation 與 conditional share，
+              比只看其中一個可靠。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="measure-risk">
+          <div class="chapter-head">
+            <div class="chapter-no">13</div>
+            <div>
+              <h2>Structure 告訴 reduced form 應量什麼</h2>
+              <p>不要只回歸所得 variance 或平均 shock covariance。 <span class="page-tag">slide 20</span></p>
+            </div>
+          </div>
+
+          <div class="eq">
+            πW =
+            [(μ−r)/(γσ<sub>s</sub>²)]W
+            + [(μ−r)/(γσ<sub>s</sub>²)]H
+            − β<sub>H</sub>H,
+            &nbsp;&nbsp;
+            β<sub>H</sub> = Cov(r<sub>H</sub>,r<sub>s</sub>)/σ<sub>s</sub>².
+          </div>
+          <p>
+            最後一項 <span class="mono">−β<sub>H</sub>H</span> 是 financial portfolio
+            為 human capital 內嵌市場曝險做的 hedge：H 中已經有多少「股票美元」，金融帳戶就少持多少。
+          </p>
+
+          <h3>β<sub>H</sub> 對應三種 comoments</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>風險</th><th>應測量的共動</th><th>為何 plain moment 不夠</th><th>資料結果</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Covariance risk</td>
+                  <td>Cov(mean income shock, r<sub>s</sub>)</td>
+                  <td>只看平均位置，忽略誰落入左尾。</td>
+                  <td>接近 0。</td>
+                </tr>
+                <tr>
+                  <td>Countercyclical variance</td>
+                  <td>Cov(variance of shocks, r<sub>s</sub>)</td>
+                  <td>unconditional variance 高，不代表恰在市場差時高。</td>
+                  <td>美國行政資料支持有限。</td>
+                </tr>
+                <tr>
+                  <td>Cyclical skewness</td>
+                  <td>Cov(third moment of shocks, r<sub>s</sub>)</td>
+                  <td>直接捕捉左尾是否在股市差時加深。</td>
+                  <td>最顯著的特徵。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout intuition">
+            <span class="callout-title">為何「所得 variance 對股票比例」的符號可能模糊？</span>
+            <p>
+              更高 idiosyncratic variance 一方面提高背景風險、使家庭少承擔股票；
+              另一方面提高 precautionary saving、增加 W 並降低 H/W，可能改變可投資財富與 participation。
+              理論真正要求的是與 market bad states 的 joint distribution，而不只是 unconditional variance。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="predictions">
+          <div class="chapter-head">
+            <div class="chapter-no">14</div>
+            <div>
+              <h2>Structure 預測符號、尺度與 placebo</h2>
+              <p>比「risk 高的人少持股」更難被 omitted variable 偶然模仿。 <span class="page-tag">slide 21</span></p>
+            </div>
+          </div>
+
+          <h3>Prediction 1：負號</h3>
+          <div class="eq">
+            covariance risk ↑、countercyclical variance ↑、cyclical skewness risk ↑
+            &nbsp;⇒&nbsp; equity share ↓.
+          </div>
+          <p>
+            但 risk tolerance、金融素養、家庭背景或預期遺產都可能同時影響工作選擇與持股，
+            所以一個負 coefficient 並不足以證明 hedging。
+          </p>
+
+          <h3>Prediction 2：效果按 human-capital share 縮放</h3>
+          <div class="eq">
+            hedging exposure / total wealth
+            = −β<sub>H</sub> · H/(W+H).
+          </div>
+          <p>
+            依 dependent-variable 的分母，financial-share 公式可呈現 H/W；
+            用 total-wealth normalization 時則是 H/(W+H)。兩者共同的 sharp implication 是：
+            <span class="mono">H→0</span> 時，labor-risk effect 必須消失。
+          </p>
+
+          <div class="grid-3">
+            <div class="card">
+              <h4>接近退休</h4>
+              <p>未來 labor income claim 變小，係數應縮向 0。</p>
+            </div>
+            <div class="card">
+              <h4>H/W 很低</h4>
+              <p>human capital 幾乎不是 balance sheet 的一部分，是理論指定的 placebo group。</p>
+            </div>
+            <div class="card">
+              <h4>H/(W+H) 接近 0</h4>
+              <p>risk-effect relationship 應通過 origin，而不是留一個固定負截距。</p>
+            </div>
+          </div>
+
+          <div class="big-idea">
+            <strong>為何 scaling prediction 比負號更有力？</strong>
+            <p>
+              omitted risk preference 也能產生「riskier job 與較低／較高持股」的相關。
+              但要同時解釋係數恰好隨 H/(W+H) 單調增強、在 H≈0 歸零，
+              confounder 還必須碰巧被同一個 human-capital share 以理論指定方式調節。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="sweden">
+          <div class="chapter-head">
+            <div class="chapter-no">15</div>
+            <div>
+              <h2>瑞典行政資料：risk measure 與 twin design</h2>
+              <p>Catherine–Sodini–Zhang (2024)，1983–2014。 <span class="page-tag">slide 22</span></p>
+            </div>
+          </div>
+
+          <h3>Step 1：建立 group-level risk</h3>
+          <ol class="sequence">
+            <li>以 employment industry × education level 建立 321 個 groups。</li>
+            <li>每個 group-year 計算 log disposable-income change 的 cross-sectional mean、variance、third moment。</li>
+            <li>把每組的 time series 對 stock returns 做回歸，取得三種 cyclical risk loadings。</li>
+          </ol>
+          <div class="eq">
+            Cyclical skewness risk<sub>g</sub>
+            = Cov(μ<sub>3,g</sub>(ε),r<sub>s</sub>)/Var(r<sub>s</sub>).
+          </div>
+          <p>
+            recession 中 <span class="mono">r<sub>s</sub></span> 低且第三動差更負，
+            兩者相對均值的乘積為正；因此較大的正 loading 代表左尾更隨市場下跌而惡化。
+          </p>
+
+          <h3>Step 2：assign risk 並估 portfolio equation</h3>
+          <p>
+            依個人的 education × current industry 指派 group risk，再以 portfolio equity share
+            對三種 risk measures 與 controls 做 Tobit。Tobit 處理大量 share=0 的 corner observations，
+            但其 latent-index functional form 也是額外假設。
+          </p>
+
+          <h3>為何用 identical twins？</h3>
+          <div class="eq">
+            Δπ<sub>pair,t</sub> =
+            b · ΔRisk<sub>pair,t</sub>
+            + ΔX′<sub>pair,t</sub>δ
+            + Δu<sub>pair,t</sub>.
+          </div>
+          <p>
+            同卵雙胞胎同年比較會差分掉共同 genes、upbringing、許多 family-wealth factors 與 year shock。
+            若兩人因 education/industry 不同而面對不同 tail risk，可用 pair 內差異檢驗 hedging。
+          </p>
+
+          <div class="callout warning">
+            <span class="callout-title">Twin design 不是隨機分派工作</span>
+            <p>
+              它大幅降低共同家庭背景 confounding，但雙胞胎後天不同的 risk tolerance、職涯偏好、
+              spouse characteristics 或預期仍可能同時影響 industry 與 portfolio。
+              因此證據來自「pair differencing + controls + 理論 scaling/placebo」的組合，而非單一完美 instrument。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="evidence">
+          <div class="chapter-head">
+            <div class="chapter-no">16</div>
+            <div>
+              <h2>實證結果：逐項對照理論</h2>
+              <p>從 group scatter、twin pairs 到 H share 與 age shape。 <span class="page-tag">slides 23–26</span></p>
+            </div>
+          </div>
+
+          <h3>1. Group-level：只有 skewness 有系統性關係</h3>
+          <p>
+            321 個 education × industry groups 中，較高 cyclical skewness risk 對平均 equity share 呈負關係；
+            它同時降低 participation 與 participants 的 conditional share。
+            covariance risk 與 countercyclical variance 在相同圖中沒有明顯關係。
+          </p>
+
+          <h3>2. Identical twin-year differences</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Column (5)</th><th>Coefficient</th><th>|t|</th><th>解讀</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Δ Cyclical skewness</td><td><strong>−0.422</strong></td><td>2.23</td><td>控制 pair 內資產配置、家庭與教育差異後仍為負。</td></tr>
+                <tr><td>Δ Countercyclical variance</td><td>0.504</td><td>1.57</td><td>方向不符且不顯著。</td></tr>
+                <tr><td>Δ Covariance</td><td>0.081</td><td>0.30</td><td>接近零。</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            Tobit dependent variable 是同卵雙胞胎在同一年 equity share 的差；
+            樣本 34,460 observations，標準誤按 industry × education group pairs clustering。
+          </p>
+
+          <h3>3. H/(W+H) placebo：效果單調增強</h3>
+          <p>
+            當 human capital 低於 total wealth 的 20% 時，cyclical-skewness coefficient 約為 0；
+            H share 越高，係數越負。這直接對應
+            <span class="mono">−β<sub>H</sub>H/(W+H)</span>，比全樣本負號更有辨識力。
+          </p>
+
+          <h3>4. Age profile：模型預測 U shape</h3>
+          <ul>
+            <li>20 多歲效果接近 0：fixed participation cost 使許多人無論風險如何都不持股。</li>
+            <li>early 40s 係數最負：參與已提高且 H/W 仍大。</li>
+            <li>退休前後回到 0：H 逐步消失。</li>
+            <li>40–44 歲組中，cyclical skewness 相差 2 s.d. 對應約 3 percentage points 的 equity-share 差異。</li>
+          </ul>
+
+          <div class="big-idea">
+            <strong>最強的結果是 shape，不只是 statistical significance</strong>
+            <p>
+              一個一般 omitted variable 可能產生負號；但同時產生 H-share 單調梯度、低 H placebo 歸零、
+              年齡先變負再回零的非單調形狀，難度高得多。structure 把實證從「找相關」升級成「檢驗整條 response surface」。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="asset-pricing">
+          <div class="chapter-head">
+            <div class="chapter-no">17</div>
+            <div>
+              <h2>回到 asset pricing：微觀機制成立，總量效果有限</h2>
+              <p>誰受到 risk 影響，和誰持有大部分股票，是兩個不同問題。 <span class="page-tag">slides 27–28</span></p>
+            </div>
+          </div>
+
+          <h3>按 financial wealth decile 看</h3>
+          <ul>
+            <li>top three deciles 的 cyclical-skewness effect 不顯著。</li>
+            <li>最富 deciles 的 point estimate 約為 first decile 的 1/25。</li>
+            <li>但 top three deciles 持有 87% 的 financial wealth。</li>
+          </ul>
+
+          <div class="derive">
+            <div class="derive-step">
+              <span>Micro</span>
+              <p>低／中財富工作者確實按 tail risk 調整 portfolio。</p>
+            </div>
+            <div class="derive-step">
+              <span>Aggregation</span>
+              <p>他們持有的 aggregate risky wealth 比重有限。</p>
+            </div>
+            <div class="derive-step">
+              <span>Price</span>
+              <p>labor-income skewness 對 aggregate equity demand 與 premium 的影響小。</p>
+            </div>
+          </div>
+
+          <p>
+            Part 1 的結構量化得到相同結論：對 equity premium 至多約 0.5 percentage point。
+            這不否定 countercyclical idiosyncratic risk 的理論，而是把 asset-pricing 焦點轉向富裕家庭更重要的
+            entrepreneurial/private-business risk。
+          </p>
+
+          <div class="callout intuition">
+            <span class="callout-title">兩個方法為何互相補強？</span>
+            <p>
+              structural model 用完整 equilibrium-relevant portfolio policies 聚合；reduced form 則直接看到 wealth decile
+              的 heterogeneity。兩條獨立路徑都說：behavioral hedge 存在，但受影響者不是掌握大部分金融財富的 marginal investors。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="assumptions">
+          <div class="chapter-head">
+            <div class="chapter-no">18</div>
+            <div>
+              <h2>假設總表：每個假設在模型中做什麼</h2>
+              <p>也標出放寬時，哪一段推論最先改變。</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>假設</th><th>為何需要</th><th>放寬後的影響</th><th>解讀風險</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>CRRA γ</td>
+                  <td>提供 scale-invariant risk tolerance 與可比較的 portfolio rule</td>
+                  <td>若有 habit、Epstein–Zin，風險趨避與 intertemporal substitution 可分離</td>
+                  <td>γ 在模型中同時吸收多個行為 margin</td>
+                </tr>
+                <tr>
+                  <td>Cobb–Douglas C/H bundle</td>
+                  <td>把住房服務納入效用並控制 ν</td>
+                  <td>非同質偏好會改變住房與股票隨財富的配置</td>
+                  <td>固定 expenditure-share 限制可能過強</td>
+                </tr>
+                <tr>
+                  <td>AR(1) persistent income</td>
+                  <td>低維 Markov state，將 shock 映射為長期 H loss</td>
+                  <td>random walk、job ladder 或 regime switching 會改變 H duration</td>
+                  <td>ρ 錯估會直接扭曲 hedging demand</td>
+                </tr>
+                <tr>
+                  <td>Two-normal mixture</td>
+                  <td>以少量參數生成 skewness 與 fat left tail</td>
+                  <td>非參數 tail／更多成分可能捕捉更複雜 shape</td>
+                  <td>mixture identification 與極端尾部 extrapolation 敏感</td>
+                </tr>
+                <tr>
+                  <td>bad mean 線性連 aggregate wage</td>
+                  <td>建立可估的 countercyclical skewness channel</td>
+                  <td>非線性危機 state 可能讓 tail risk 更集中</td>
+                  <td>λ 可能吸收其他 macro covariates</td>
+                </tr>
+                <tr>
+                  <td>所得過程先獨立估</td>
+                  <td>不讓 portfolio targets 反向調整 background risk</td>
+                  <td>joint estimation 可利用更多 cross-equation information</td>
+                  <td>需傳遞 first-stage uncertainty；樣本可比性重要</td>
+                </tr>
+                <tr>
+                  <td>Fixed annual participation cost</td>
+                  <td>生成 low-wealth nonparticipation 與 age U shape</td>
+                  <td>attention、learning、trust 的 state dependence 可能產生不同 dynamics</td>
+                  <td>$250 是多種摩擦的 reduced-form 等價成本</td>
+                </tr>
+                <tr>
+                  <td>Safety net / Social Security 規則</td>
+                  <td>正確計算 tail shock 對可支配所得與 H 的保險</td>
+                  <td>政策 counterfactual 需隨制度更新</td>
+                  <td>跨國外推不可直接沿用美國制度</td>
+                </tr>
+                <tr>
+                  <td>Industry × education group risk</td>
+                  <td>提供可估 group-level tail distribution</td>
+                  <td>firm/occupation/local shocks 可更細緻但更 noisy</td>
+                  <td>current industry 可能由家庭內生選擇</td>
+                </tr>
+                <tr>
+                  <td>Tobit latent index</td>
+                  <td>處理 equity share 在 0 的 mass point</td>
+                  <td>two-part model 可分開 participation 與 conditional share</td>
+                  <td>常態誤差與相同 slope 假設可能 misspecified</td>
+                </tr>
+                <tr>
+                  <td>Identical-twin differencing</td>
+                  <td>消除共同 genes、upbringing、family wealth</td>
+                  <td>individual fixed effects／job shocks 可再加強</td>
+                  <td>不消除雙胞胎後天分化的 unobservables</td>
+                </tr>
+                <tr>
+                  <td>Partial-equilibrium portfolio model</td>
+                  <td>把 prices 視為給定，專注 household policies</td>
+                  <td>general equilibrium 會讓 aggregate demand 反饋 μ、r、wages</td>
+                  <td>微觀 fit 不必然代表大幅 equity-premium 效果</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>讀 structural household finance 的六問</h3>
+          <div class="checklist">
+            <div class="check"><strong>Human capital 如何定價？</strong> 是 actuarial PV、risk-adjusted PV，還是模型隱含 value？</div>
+            <div class="check"><strong>哪個所得 moment 進 portfolio？</strong> mean、variance、tail，還是和 market 的 comoment？</div>
+            <div class="check"><strong>Extensive 與 intensive margin 分開了嗎？</strong> 不參與和低 share 不是同一決策。</div>
+            <div class="check"><strong>哪些參數用外部資料固定？</strong> 核心 moments 還剩多少自由度？</div>
+            <div class="check"><strong>G 的 rank 夠嗎？</strong> 一行 parameter-moment story 不等於 joint identification。</div>
+            <div class="check"><strong>有理論 placebo 嗎？</strong> 最好能指定效果必須歸零的群體，而不只預測平均負號。</div>
+          </div>
+        </section>
+
+        <section class="chapter" id="cheatsheet">
+          <div class="chapter-head">
+            <div class="chapter-no">19</div>
+            <div>
+              <h2>最後速查表</h2>
+              <p>把整份講義壓縮成可直接帶進討論課的版本。</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>公式／概念</th><th>立即聯想到</th><th>研究問題</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><span class="mono">π*=(μ−r)/(γσ²)</span></td><td>Merton benchmark</td><td>若年齡不在式中，age profile 從哪個 state 來？</td></tr>
+                <tr><td><span class="mono">(πW+β<sub>H</sub>H)/(W+H)=a*</span></td><td>total risky exposure</td><td>金融持股是否已扣除 human-capital exposure？</td></tr>
+                <tr><td><span class="mono">r<sub>H</sub>=(H′−H+Y)/H</span></td><td>不可觀察 human-capital return</td><td>所得過程如何把 Y 映射成 H？</td></tr>
+                <tr><td><span class="mono">ζ ~ two-normal mixture</span></td><td>skewness 與 fat tails</td><td>單一 Gaussian 漏掉什麼 downside？</td></tr>
+                <tr><td><span class="mono">μ<sup>−</sup><sub>t</sub>=μ<sup>−</sup>+λΔl<sub>t</sub></span></td><td>countercyclical left tail</td><td>最壞 career shocks 是否和股災同時？</td></tr>
+                <tr><td><span class="mono">Step 1 income → Step 2 portfolio</span></td><td>外部估計紀律</td><td>核心持股 moment 能否反向塑造 risk process？</td></tr>
+                <tr><td><span class="mono">dθ=(G′WG)<sup>−1</sup>G′Wdm</span></td><td>joint SMM identification</td><td>參數互相補償後，moment 真正在辨認誰？</td></tr>
+                <tr><td><span class="mono">−β<sub>H</sub>H/(W+H)</span></td><td>theory scaling</td><td>效果是否在低 H group 與退休時歸零？</td></tr>
+                <tr><td><span class="mono">Δ twin-year portfolios</span></td><td>shared-background differencing</td><td>共同 genes/upbringing 能否解釋相關？</td></tr>
+                <tr><td><span class="mono">87% wealth in top 3 deciles</span></td><td>micro effect ≠ aggregate price effect</td><td>受影響者是否也是 marginal investors？</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="big-idea">
+            <strong>全篇最值得帶走的一句話</strong>
+            <p>
+              Structural household finance 的價值，不只在「用複雜模型估一個參數」；
+              更在於把不可觀察的 balance-sheet exposure 轉成可檢驗的符號、尺度、年齡形狀與 placebo。
+              本例中，真正重要的不是平均所得和股市的 covariance，而是兩者最壞尾部是否在同一時刻發生。
+            </p>
+          </div>
+
+          <details>
+            <summary>討論課可直接使用的 10 個問題</summary>
+            <div>
+              <ol>
+                <li>為何沒有 labor income 時，Merton share 不隨年齡變？</li>
+                <li>risk-free human capital 為何反而讓年輕人應多持股票？</li>
+                <li>β<sub>H</sub> 為何不能用 observed earnings 直接回歸？</li>
+                <li>mean covariance 接近 0 為何不能排除 tail dependence？</li>
+                <li>normal mixture 哪些參數控制 mean、variance 與 skewness？</li>
+                <li>1/3/5-year income moments 如何區分 transitory 與 persistent risk？</li>
+                <li>為何高 γ 會迫使 SMM 同時降低 β？</li>
+                <li>comparative static 的 inverse 為何不同於 re-estimated SMM response？</li>
+                <li>H/(W+H) placebo 如何提高 reduced-form 的可信度？</li>
+                <li>微觀 hedging 成立，為何 aggregate equity premium 仍只受小幅影響？</li>
+              </ol>
+            </div>
+          </details>
+        </section>
+      </main>
+    </div>
+
+    <footer>
+      本筆記依據 Sylvain Catherine 的〈Structural Models in Household Finance〉講義整理；
+      公式沿用講義符號，並補上推導橋接、SMM 局部識別、假設用途與外推限制。
+    </footer>
+  </div>
+
+  <script>
+    (() => {
+      const progress = document.getElementById("reading-progress");
+      const tocLinks = [...document.querySelectorAll(".toc a")];
+      const sections = tocLinks
+        .map((link) => document.querySelector(link.getAttribute("href")))
+        .filter(Boolean);
+
+      const updateProgress = () => {
+        const root = document.documentElement;
+        const max = root.scrollHeight - root.clientHeight;
+        const ratio = max > 0 ? root.scrollTop / max : 0;
+        progress.style.width = `${Math.min(100, Math.max(0, ratio * 100))}%`;
+      };
+
+      const updateActive = () => {
+        const marker = window.scrollY + 125;
+        let active = sections[0];
+        for (const section of sections) {
+          if (section.offsetTop <= marker) active = section;
+        }
+        tocLinks.forEach((link) => {
+          link.classList.toggle(
+            "active",
+            active && link.getAttribute("href") === `#${active.id}`
+          );
+        });
+      };
+
+      const onScroll = () => {
+        updateProgress();
+        updateActive();
+      };
+
+      document.getElementById("expand-all").addEventListener("click", () => {
+        document.querySelectorAll("details").forEach((item) => {
+          item.open = true;
+        });
+      });
+
+      document.getElementById("collapse-all").addEventListener("click", () => {
+        document.querySelectorAll("details").forEach((item) => {
+          item.open = false;
+        });
+      });
+
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", onScroll);
+      onScroll();
+    })();
+  </script>
+</body>
+</html>
