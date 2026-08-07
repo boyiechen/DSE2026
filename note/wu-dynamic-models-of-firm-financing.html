@@ -1,0 +1,2046 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Yufeng Wu：Dynamic Models of Firm Financing 中文導讀，逐步說明 Euler equation、Bellman equation、融資摩擦、SMM 與模型延伸。">
+  <title>Dynamic Models of Firm Financing｜逐式導讀</title>
+  <style>
+    :root {
+      --canvas: #eef1f0;
+      --paper: #ffffff;
+      --paper-2: #f7f8f7;
+      --ink: #1e2725;
+      --muted: #66726e;
+      --line: #d7ddda;
+      --navy: #183c5a;
+      --navy-2: #285d82;
+      --navy-soft: #e7f0f6;
+      --rust: #a34b2e;
+      --rust-dark: #75331f;
+      --rust-soft: #f7eae4;
+      --green: #26705b;
+      --green-dark: #17503f;
+      --green-soft: #e5f2ed;
+      --gold: #9b6a16;
+      --gold-soft: #f7eedb;
+      --purple: #6e517c;
+      --purple-soft: #f0e9f3;
+      --red: #a33d3a;
+      --red-soft: #f8e8e7;
+      --shadow: 0 15px 40px rgba(25, 38, 34, 0.075);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--canvas);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      line-height: 1.76;
+    }
+    a {
+      color: var(--rust-dark);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+    h1, h2, h3, h4 { letter-spacing: 0; }
+    h1 {
+      max-width: 1080px;
+      margin: 0 0 14px;
+      font-size: clamp(2.05rem, 4.8vw, 3.55rem);
+      line-height: 1.06;
+    }
+    h2 {
+      margin: 0;
+      font-size: clamp(1.38rem, 3vw, 1.75rem);
+      line-height: 1.28;
+    }
+    h3 {
+      margin: 27px 0 9px;
+      font-size: 1.15rem;
+      line-height: 1.42;
+    }
+    h4 {
+      margin: 0 0 7px;
+      font-size: 1rem;
+    }
+    p { margin: 0 0 13px; }
+    ul, ol { margin: 8px 0 15px; padding-left: 1.35rem; }
+    li { margin: 5px 0; }
+    strong { font-weight: 820; }
+    code, .mono, .eq {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    code {
+      padding: 1px 5px;
+      border-radius: 4px;
+      color: var(--rust-dark);
+      background: var(--rust-soft);
+      font-size: 0.9em;
+    }
+    button { font: inherit; }
+    .reading-progress {
+      position: fixed;
+      z-index: 30;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--rust), var(--gold), var(--green));
+    }
+    .shell {
+      width: min(1480px, 100%);
+      min-width: 0;
+      margin: 0 auto;
+      padding: 25px;
+    }
+    .masthead {
+      overflow: hidden;
+      margin-bottom: 22px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+    .masthead-copy {
+      padding: 43px 44px 35px;
+      border-top: 7px solid var(--navy);
+      border-bottom: 1px solid var(--line);
+      background:
+        radial-gradient(circle at 94% 4%, rgba(40, 93, 130, 0.16), transparent 28%),
+        radial-gradient(circle at 69% 100%, rgba(163, 75, 46, 0.10), transparent 34%),
+        var(--paper);
+    }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--rust);
+      font-size: 0.79rem;
+      font-weight: 850;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .lead {
+      max-width: 1080px;
+      margin: 0;
+      color: #374844;
+      font-size: 1.08rem;
+    }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 20px;
+      margin-top: 21px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+    .meta span { min-width: 0; overflow-wrap: anywhere; }
+    .thesis-strip {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      background: var(--paper-2);
+    }
+    .thesis-step {
+      position: relative;
+      min-width: 0;
+      min-height: 154px;
+      padding: 19px 20px;
+      border-right: 1px solid var(--line);
+    }
+    .thesis-step:last-child { border-right: 0; }
+    .thesis-step::after {
+      position: absolute;
+      z-index: 2;
+      top: 50%;
+      right: -10px;
+      display: grid;
+      width: 20px;
+      height: 20px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      color: var(--rust);
+      background: var(--paper);
+      content: "→";
+      font-size: 0.72rem;
+      font-weight: 900;
+      transform: translateY(-50%);
+    }
+    .thesis-step:last-child::after { display: none; }
+    .thesis-step span {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 850;
+      letter-spacing: 0.045em;
+      text-transform: uppercase;
+    }
+    .thesis-step strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--navy);
+    }
+    .thesis-step:nth-child(2) strong { color: var(--rust-dark); }
+    .thesis-step:nth-child(3) strong { color: var(--gold); }
+    .thesis-step:nth-child(4) strong { color: var(--purple); }
+    .thesis-step:nth-child(5) strong { color: var(--green-dark); }
+    .thesis-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.5;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 292px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+    .toc {
+      position: sticky;
+      top: 17px;
+      max-height: calc(100vh - 34px);
+      overflow-y: auto;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--paper);
+      box-shadow: 0 9px 28px rgba(29, 37, 35, 0.06);
+    }
+    .toc-title {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 0.77rem;
+      font-weight: 850;
+      letter-spacing: 0.045em;
+      text-transform: uppercase;
+    }
+    .toc a {
+      display: block;
+      margin: 2px 0;
+      padding: 7px 9px;
+      border-left: 3px solid transparent;
+      border-radius: 4px;
+      color: #3e4a47;
+      text-decoration: none;
+      font-size: 0.84rem;
+      line-height: 1.35;
+    }
+    .toc a:hover { background: var(--paper-2); }
+    .toc a.active {
+      border-left-color: var(--rust);
+      color: var(--rust-dark);
+      background: var(--rust-soft);
+      font-weight: 760;
+    }
+    .toc-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+    .toc button {
+      padding: 6px 7px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      color: var(--muted);
+      background: var(--paper-2);
+      cursor: pointer;
+      font-size: 0.75rem;
+    }
+    .content { min-width: 0; }
+    .chapter {
+      margin-bottom: 22px;
+      padding: 31px 34px 34px;
+      scroll-margin-top: 18px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: var(--paper);
+      box-shadow: 0 10px 34px rgba(29, 37, 35, 0.055);
+    }
+    .chapter-head {
+      display: flex;
+      gap: 17px;
+      align-items: flex-start;
+      margin-bottom: 19px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--line);
+    }
+    .chapter-no {
+      flex: 0 0 auto;
+      display: grid;
+      width: 43px;
+      height: 43px;
+      place-items: center;
+      border-radius: 50%;
+      color: white;
+      background: var(--navy);
+      font-weight: 850;
+    }
+    .chapter-head p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.89rem;
+    }
+    .page-tag {
+      display: inline-block;
+      margin-left: 6px;
+      padding: 2px 7px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: var(--paper-2);
+      font-size: 0.69rem;
+      font-weight: 760;
+      vertical-align: 0.15em;
+    }
+    .big-idea {
+      margin: 16px 0 18px;
+      padding: 17px 19px;
+      border-left: 5px solid var(--navy-2);
+      border-radius: 5px;
+      background: var(--navy-soft);
+    }
+    .big-idea strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--navy);
+    }
+    .big-idea p:last-child, .callout p:last-child { margin-bottom: 0; }
+    .callout {
+      margin: 16px 0;
+      padding: 15px 17px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--paper-2);
+    }
+    .callout.assumption {
+      border-left: 5px solid var(--gold);
+      background: var(--gold-soft);
+    }
+    .callout.intuition {
+      border-left: 5px solid var(--green);
+      background: var(--green-soft);
+    }
+    .callout.warning {
+      border-left: 5px solid var(--red);
+      background: var(--red-soft);
+    }
+    .callout.identification {
+      border-left: 5px solid var(--purple);
+      background: var(--purple-soft);
+    }
+    .callout-title {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--ink);
+      font-size: 0.84rem;
+      font-weight: 850;
+      letter-spacing: 0.02em;
+    }
+    .eq {
+      overflow-x: auto;
+      margin: 15px 0;
+      padding: 16px 18px;
+      border: 1px solid #cad6dc;
+      border-radius: 7px;
+      color: #17364b;
+      background: #f4f8fa;
+      font-size: 0.92rem;
+      line-height: 1.72;
+      white-space: nowrap;
+    }
+    .eq .label {
+      float: right;
+      margin-left: 20px;
+      color: var(--muted);
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      font-size: 0.76rem;
+    }
+    .eq-stack {
+      display: grid;
+      gap: 8px;
+      margin: 15px 0;
+    }
+    .eq-stack .eq { margin: 0; }
+    .derive {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin: 16px 0;
+    }
+    .derive-step {
+      position: relative;
+      min-width: 0;
+      padding: 14px 15px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--paper-2);
+    }
+    .derive-step::after {
+      position: absolute;
+      top: 50%;
+      right: -10px;
+      z-index: 2;
+      content: "→";
+      color: var(--rust);
+      font-weight: 900;
+      transform: translateY(-50%);
+    }
+    .derive-step:last-child::after { content: ""; }
+    .derive-step span {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--rust);
+      font-size: 0.72rem;
+      font-weight: 850;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .derive-step p {
+      margin: 0;
+      color: #47534f;
+      font-size: 0.87rem;
+      line-height: 1.55;
+    }
+    .grid-2, .grid-3 {
+      display: grid;
+      gap: 12px;
+      margin: 15px 0;
+    }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .card {
+      min-width: 0;
+      padding: 15px 16px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--paper-2);
+    }
+    .card h4 { color: var(--navy); }
+    .card p, .card li {
+      color: #4d5955;
+      font-size: 0.88rem;
+      line-height: 1.57;
+    }
+    .card p:last-child, .card ul:last-child { margin-bottom: 0; }
+    .bridge {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 12px;
+      align-items: stretch;
+      margin: 17px 0;
+    }
+    .bridge-side {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--paper-2);
+    }
+    .bridge-side:first-child { border-top: 4px solid var(--rust); }
+    .bridge-side:last-child { border-top: 4px solid var(--green); }
+    .bridge-arrow {
+      align-self: center;
+      color: var(--gold);
+      font-size: 1.35rem;
+      font-weight: 900;
+    }
+    .table-wrap {
+      overflow-x: auto;
+      margin: 16px 0;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+    }
+    table {
+      width: 100%;
+      min-width: 660px;
+      border-collapse: collapse;
+      background: var(--paper);
+      font-size: 0.87rem;
+    }
+    th, td {
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    th:last-child, td:last-child { border-right: 0; }
+    tr:last-child td { border-bottom: 0; }
+    th {
+      color: var(--navy);
+      background: var(--navy-soft);
+      font-size: 0.79rem;
+    }
+    td { color: #43504c; }
+    .sequence {
+      counter-reset: sequence;
+      margin: 16px 0;
+      padding: 0;
+      list-style: none;
+    }
+    .sequence li {
+      position: relative;
+      margin: 0;
+      padding: 0 0 18px 46px;
+    }
+    .sequence li::before {
+      position: absolute;
+      top: 1px;
+      left: 0;
+      display: grid;
+      width: 31px;
+      height: 31px;
+      place-items: center;
+      border: 2px solid var(--navy-2);
+      border-radius: 50%;
+      color: var(--navy);
+      background: white;
+      content: counter(sequence);
+      counter-increment: sequence;
+      font-size: 0.78rem;
+      font-weight: 850;
+    }
+    .sequence li::after {
+      position: absolute;
+      top: 32px;
+      bottom: 0;
+      left: 15px;
+      width: 2px;
+      background: var(--line);
+      content: "";
+    }
+    .sequence li:last-child { padding-bottom: 0; }
+    .sequence li:last-child::after { display: none; }
+    details {
+      margin: 12px 0;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--paper);
+    }
+    summary {
+      padding: 12px 15px;
+      color: var(--navy);
+      background: var(--paper-2);
+      cursor: pointer;
+      font-weight: 780;
+    }
+    details > div { padding: 14px 16px 4px; }
+    .term {
+      display: inline-block;
+      border-bottom: 1px dotted var(--muted);
+      cursor: help;
+    }
+    .mini {
+      color: var(--muted);
+      font-size: 0.83rem;
+    }
+    .checklist {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px 15px;
+      margin: 14px 0;
+    }
+    .check {
+      position: relative;
+      padding: 11px 13px 11px 37px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--paper-2);
+      font-size: 0.87rem;
+    }
+    .check::before {
+      position: absolute;
+      top: 11px;
+      left: 13px;
+      color: var(--green);
+      content: "✓";
+      font-weight: 900;
+    }
+    footer {
+      padding: 14px 3px 25px;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 1050px) {
+      .thesis-strip { grid-template-columns: 1fr; }
+      .thesis-step {
+        min-height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .thesis-step:last-child { border-bottom: 0; }
+      .thesis-step::after {
+        top: auto;
+        right: 22px;
+        bottom: -10px;
+        transform: rotate(90deg);
+      }
+      .layout { grid-template-columns: 1fr; }
+      .toc {
+        position: relative;
+        top: auto;
+        max-height: none;
+      }
+      .toc nav {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 760px) {
+      .shell { padding: 10px; }
+      .masthead-copy { padding: 31px 23px 27px; }
+      .chapter { padding: 24px 19px 26px; }
+      .chapter-head { gap: 12px; }
+      .chapter-no { width: 37px; height: 37px; }
+      .derive, .grid-2, .grid-3, .checklist { grid-template-columns: 1fr; }
+      .derive-step::after {
+        top: auto;
+        right: 13px;
+        bottom: -14px;
+        transform: rotate(90deg);
+      }
+      .bridge { grid-template-columns: 1fr; }
+      .bridge-arrow { justify-self: center; transform: rotate(90deg); }
+      .toc nav { grid-template-columns: 1fr; }
+      .eq { font-size: 0.82rem; }
+    }
+    @media print {
+      body { background: white; font-size: 10.5pt; }
+      .reading-progress, .toc, .toc-actions { display: none !important; }
+      .shell { width: 100%; padding: 0; }
+      .layout { display: block; }
+      .masthead, .chapter {
+        margin: 0 0 12px;
+        break-inside: avoid-page;
+        box-shadow: none;
+      }
+      .chapter { padding: 20px; }
+      details > div { display: block !important; }
+      summary { list-style: none; }
+      a { color: inherit; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="reading-progress" id="reading-progress" aria-hidden="true"></div>
+
+  <div class="shell">
+    <header class="masthead">
+      <div class="masthead-copy">
+        <p class="eyebrow">Structural Corporate Finance · Guided Note</p>
+        <h1>Dynamic Models of Firm Financing</h1>
+        <p class="lead">
+          這份筆記不是把投影片逐頁翻譯，而是把它重排成一條可推導的主線：
+          為何融資摩擦會進入投資 Euler equation、為何完整動態模型需要 Bellman equation、
+          如何從政策函數產生槓桿與現金緩衝，以及 SMM 到底靠哪些資料特徵辨認參數。
+        </p>
+        <div class="meta">
+          <span>原講義：Yufeng Wu，41 頁</span>
+          <span>重點：方程式關係 · 推導 · 經濟直覺 · 假設用途</span>
+          <span><a href="../07.Wu/Dynamic_Models_of_Firm_Finance.pdf">開啟原始 PDF</a></span>
+          <span>更新：2026-08-07</span>
+        </div>
+      </div>
+      <div class="thesis-strip" aria-label="全篇推理主線">
+        <div class="thesis-step">
+          <span>Step 1</span>
+          <strong>真實決策有跨期性</strong>
+          <p>今天投資改變明天的資本與獲利，因此必須比較今天的邊際成本與未來的邊際價值。</p>
+        </div>
+        <div class="thesis-step">
+          <span>Step 2</span>
+          <strong>融資摩擦產生 wedge</strong>
+          <p>外部資金不能無成本補洞，內部一美元在受限時比平常更值錢。</p>
+        </div>
+        <div class="thesis-step">
+          <span>Step 3</span>
+          <strong>政策看的是未來狀態</strong>
+          <p>即使限制今天沒綁住，企業也會為明天保留舉債空間或現金。</p>
+        </div>
+        <div class="thesis-step">
+          <span>Step 4</span>
+          <strong>數值模型生成資料</strong>
+          <p>解出政策函數、模擬公司面板，再用矩匹配反推摩擦強度。</p>
+        </div>
+        <div class="thesis-step">
+          <span>Step 5</span>
+          <strong>同一骨架可被延伸</strong>
+          <p>違約、錯價、代理問題、銀行資本、家戶儲蓄與工資談判都能嵌入。</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="toc" aria-label="目錄">
+        <span class="toc-title">閱讀路徑</span>
+        <nav>
+          <a href="#roadmap">00　一張圖看懂全篇</a>
+          <a href="#grammar">01　動態模型的共同文法</a>
+          <a href="#whited-env">02　Whited：環境與限制</a>
+          <a href="#euler">03　投資 Euler equation 推導</a>
+          <a href="#debt-euler">04　債務 FOC 與實證 wedge</a>
+          <a href="#ddw-env">05　DDW：完整動態環境</a>
+          <a href="#bellman">06　Bellman equation 逐項拆解</a>
+          <a href="#debt-capacity">07　債務容量的影子價值</a>
+          <a href="#target">08　目標槓桿與慢速調整</a>
+          <a href="#smm">09　SMM 如何估計模型</a>
+          <a href="#comparative">10　比較靜態與機制辨認</a>
+          <a href="#default">11　延伸一：可違約債務</a>
+          <a href="#misvaluation">12　延伸二：股權錯價</a>
+          <a href="#agency">13　延伸三：代理衝突</a>
+          <a href="#banks">14　銀行與資本緩衝</a>
+          <a href="#saving">15　兩種預防性儲蓄</a>
+          <a href="#identification">16　結構模型 × 準實驗</a>
+          <a href="#labor">17　槓桿與工資談判</a>
+          <a href="#assumptions">18　假設總表與診斷法</a>
+          <a href="#cheatsheet">19　最後速查表</a>
+        </nav>
+        <div class="toc-actions">
+          <button type="button" id="expand-all">展開細節</button>
+          <button type="button" id="collapse-all">收合細節</button>
+        </div>
+      </aside>
+
+      <main class="content">
+        <section class="chapter" id="roadmap">
+          <div class="chapter-head">
+            <div class="chapter-no">00</div>
+            <div>
+              <h2>一張圖看懂全篇</h2>
+              <p>先抓住模型的「因果骨架」，再進公式。 <span class="page-tag">slides 2–3</span></p>
+            </div>
+          </div>
+
+          <div class="big-idea">
+            <strong>一句話版本</strong>
+            <p>
+              因為企業今天的資金選擇會改變明天能否投資，所以一美元的價值不只等於今天能發多少股利；
+              它也等於保留未來融資能力所帶來的選擇權價值。
+            </p>
+          </div>
+
+          <div class="bridge">
+            <div class="bridge-side">
+              <h4>Episode 1：Euler equation test</h4>
+              <p>不必完整解出所有政策，只抓最適化的一階條件，看融資限制是否在跨期投資條件中留下可檢驗的 wedge。</p>
+            </div>
+            <div class="bridge-arrow">→</div>
+            <div class="bridge-side">
+              <h4>Episode 2：full dynamic model</h4>
+              <p>直接指定完整環境、解 Bellman equation、得到政策函數，讓模型同時解釋投資、現金、債務與股權。</p>
+            </div>
+          </div>
+
+          <div class="derive">
+            <div class="derive-step">
+              <span>Primitive</span>
+              <p>生產、衝擊、稅、調整成本與融資摩擦。</p>
+            </div>
+            <div class="derive-step">
+              <span>Solution</span>
+              <p>最適投資與融資政策；影子價格與 Euler equation。</p>
+            </div>
+            <div class="derive-step">
+              <span>Evidence</span>
+              <p>用 GMM 或 SMM 把模型預測和公司資料接起來。</p>
+            </div>
+          </div>
+
+          <div class="callout warning">
+            <span class="callout-title">先避免一個常見誤讀</span>
+            <p>
+              「今天 constraint 沒有 binding」不等於「constraint 不影響今天」。只要企業知道明天可能綁住，
+              今天的現金與債務容量就具有 option value；這正是動態模型和靜態融資回歸最根本的差別。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="grammar">
+          <div class="chapter-head">
+            <div class="chapter-no">01</div>
+            <div>
+              <h2>動態模型的共同文法</h2>
+              <p>state、control、law of motion、Bellman、envelope、Euler 各自做什麼？</p>
+            </div>
+          </div>
+
+          <h3>1. 先區分「已經發生」和「現在可以選」</h3>
+          <div class="grid-2">
+            <div class="card">
+              <h4>狀態 state：進入本期時已給定</h4>
+              <p>例如資本 <span class="mono">k</span>、淨債務 <span class="mono">p</span>、生產力 <span class="mono">z</span>。它們濃縮了過去對未來仍有影響的資訊。</p>
+            </div>
+            <div class="card">
+              <h4>控制 control：本期選擇</h4>
+              <p>例如下期資本 <span class="mono">k′</span>、下期債務 <span class="mono">p′</span>。一旦選定，就透過 law of motion 變成下期狀態。</p>
+            </div>
+          </div>
+
+          <div class="eq">
+            V(x) = max<sub>a∈Γ(x)</sub> { u(x,a) + β E[V(x′) | x,a] }, &nbsp;&nbsp; x′ = T(x,a,ε′)
+          </div>
+
+          <p>
+            Bellman equation 不是另一個額外假設，而是把無限期問題遞迴地重寫：
+            「從現在起的最大價值」等於「本期 payoff」加上「最適地走到下期後的價值」。
+          </p>
+
+          <h3>2. Envelope condition 和 FOC 為何要一起用？</h3>
+          <div class="derive">
+            <div class="derive-step">
+              <span>FOC</span>
+              <p>多選一單位控制變數，今天犧牲多少、明天得到多少？</p>
+            </div>
+            <div class="derive-step">
+              <span>Envelope</span>
+              <p>多帶一單位狀態進入本期，最大化後的價值增加多少？</p>
+            </div>
+            <div class="derive-step">
+              <span>Euler</span>
+              <p>用 envelope 代回 FOC，消去未知的 value derivative，得到跨期邊際條件。</p>
+            </div>
+          </div>
+
+          <details>
+            <summary>數學小抄：最簡單的投資 Euler equation</summary>
+            <div>
+              <p>若 <span class="mono">k′</span> 多一單位，本期成本是 <span class="mono">q<sub>t</sub></span>，下期得到邊際產出與未折舊資本：</p>
+              <div class="eq">q<sub>t</sub> = β E<sub>t</sub>[ MPK<sub>t+1</sub> + (1−δ)q<sub>t+1</sub> ].</div>
+              <p>融資摩擦的工作，就是在這兩邊加上「一美元內部資金在各期有多稀缺」的影子價格。</p>
+            </div>
+          </details>
+
+          <div class="callout assumption">
+            <span class="callout-title">為何需要 Markov 與平穩性假設？</span>
+            <p>
+              若給定目前 state 後，過去歷史不再額外預測未來，value function 才能只寫成
+              <span class="mono">V(x)</span>，而不必把整段歷史都當 state。平穩轉移則讓同一個 Bellman operator
+              每期重複使用，也讓長期模擬矩有穩定的目標分配。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="whited-env">
+          <div class="chapter-head">
+            <div class="chapter-no">02</div>
+            <div>
+              <h2>Whited (1992)：環境與兩個限制</h2>
+              <p>先用最少結構看融資限制如何扭曲投資。 <span class="page-tag">slides 3–4</span></p>
+            </div>
+          </div>
+
+          <h3>1. 企業價值與資本累積</h3>
+          <div class="eq-stack">
+            <div class="eq">
+              V<sub>i0</sub> = E<sub>0</sub> Σ<sub>t=0</sub><sup>∞</sup>
+              ( Π<sub>j=0</sub><sup>t−1</sup> β<sub>ij</sub> ) d<sub>it</sub>.
+            </div>
+            <div class="eq">
+              K<sub>it</sub> = I<sub>it</sub> + (1−δ)K<sub>i,t−1</sub>
+              &nbsp;⇔&nbsp;
+              I<sub>it</sub> = K<sub>it</sub> − (1−δ)K<sub>i,t−1</sub>.
+            </div>
+          </div>
+          <p>
+            今天選 <span class="mono">K<sub>it</sub></span>，等價於選今天投資
+            <span class="mono">I<sub>it</sub></span>。它同時增加今天的資金用途，也增加明天的生產資本，
+            所以投資天然是一個跨期選擇。
+          </p>
+
+          <h3>2. sources-and-uses：所有機制的會計鉸鏈</h3>
+          <div class="eq">
+            d<sub>it</sub> =
+            (1−τ)[F(K<sub>i,t−1</sub>,N<sub>it</sub>) − w<sub>t</sub>N<sub>it</sub>
+            − Ψ(I<sub>it</sub>,K<sub>i,t−1</sub>) − i<sub>t</sub>B<sub>i,t−1</sub>]
+            + B<sub>it</sub> − (1−π<sub>t</sub><sup>e</sup>)B<sub>i,t−1</sub>
+            − P<sub>it</sub>I<sub>it</sub>.
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>項目</th><th>符號</th><th>邊際含義</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>營業現金流</td><td><span class="mono">(1−τ)[F−wN−Ψ−iB]</span></td><td>稅後生產收益，扣掉工資、調整成本與利息。</td></tr>
+                <tr><td>新債</td><td><span class="mono">+B<sub>t</sub></span></td><td>今天多借一美元，立刻多一美元可分配資源。</td></tr>
+                <tr><td>舊債本金</td><td><span class="mono">−(1−π<sup>e</sup>)B<sub>t−1</sub></span></td><td>預期通膨降低實質償還負擔。</td></tr>
+                <tr><td>新投資</td><td><span class="mono">−P<sub>t</sub>I<sub>t</sub></span></td><td>今天買資本的直接支出。</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>3. 兩個 Kuhn–Tucker constraint</h3>
+          <div class="grid-2">
+            <div class="card">
+              <h4>股利非負：d<sub>it</sub> ≥ 0，multiplier λ<sub>it</sub></h4>
+              <p>模型不讓企業任意用負股利籌資。當限制綁住時，內部一美元的價值由 1 提高到 <span class="mono">1+λ</span>。</p>
+            </div>
+            <div class="card">
+              <h4>債務上限：B<sub>it</sub> ≤ B̄<sub>it</sub>，multiplier γ<sub>it</sub></h4>
+              <p>當公司已在債務容量邊界，多借一美元的鬆綁價值是 <span class="mono">γ</span>；未綁住時 <span class="mono">γ=0</span>。</p>
+            </div>
+          </div>
+
+          <div class="callout assumption">
+            <span class="callout-title">為何用 d ≥ 0 代表 costly external equity？</span>
+            <p>
+              這是尖銳但透明的 reduced-form：外部股權不是「有點貴」，而是關閉。若允許企業無成本發股補上任何缺口，
+              一美元內外部資金完全可替代，<span class="mono">λ=0</span>，融資狀況就不會進入投資 Euler equation。
+              後面的 DDW 會用平滑的發股成本放寬這個極端設定。
+            </p>
+          </div>
+
+          <div class="callout assumption">
+            <span class="callout-title">為何假設 risk-neutral owners？</span>
+            <p>
+              線性股利效用把風險趨避和消費平滑拿掉，使任何 cash buffer 都只能來自「保留未來投資能力」。
+              這不是說股東真的不怕風險，而是為了乾淨辨認 corporate financing channel。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="euler">
+          <div class="chapter-head">
+            <div class="chapter-no">03</div>
+            <div>
+              <h2>投資 Euler equation：逐步推導</h2>
+              <p>把今天少發的一美元和明天多出的資本價值連起來。 <span class="page-tag">slide 5</span></p>
+            </div>
+          </div>
+
+          <h3>Step 1：寫出投資的今天邊際成本</h3>
+          <p>令投資的邊際「安裝價格」為：</p>
+          <div class="eq">
+            q<sub>it</sub><sup>I</sup> ≡ Ψ<sub>I,it</sub> + P<sub>it</sub>/(1−τ).
+          </div>
+          <p>
+            多選一單位期末資本，需要多投資一單位；因此同時支付資本品價格
+            <span class="mono">P</span> 與邊際調整成本 <span class="mono">Ψ<sub>I</sub></span>。
+            除以 <span class="mono">1−τ</span> 是把資本支出用與稅前生產收益一致的單位表示。
+          </p>
+
+          <h3>Step 2：列出明天的三個邊際收益</h3>
+          <div class="eq">
+            R<sub>i,t+1</sub><sup>K</sup> ≡
+            F<sub>K,i,t+1</sub> − Ψ<sub>K,i,t+1</sub>
+            + (1−δ)[Ψ<sub>I,i,t+1</sub> + P<sub>i,t+1</sub>/(1−τ)].
+          </div>
+          <div class="grid-3">
+            <div class="card">
+              <h4>F<sub>K</sub></h4>
+              <p>多一單位既有資本帶來的邊際產出。</p>
+            </div>
+            <div class="card">
+              <h4>−Ψ<sub>K</sub></h4>
+              <p>較大的 capital base 如何改變下期調整成本；常見 homogeneous cost 下可降低給定投資率的負擔。</p>
+            </div>
+            <div class="card">
+              <h4>(1−δ)q<sup>I</sup><sub>t+1</sub></h4>
+              <p>沒有折舊的部分留下來，使下期少買同等資本；這是 continuation value。</p>
+            </div>
+          </div>
+
+          <h3>Step 3：資金稀缺使每一美元帶不同權重</h3>
+          <p>
+            今天為了投資少一美元股利，價值損失不是 1，而是
+            <span class="mono">1+λ<sub>it</sub></span>。明天資本產生一美元，價值則是
+            <span class="mono">1+λ<sub>i,t+1</sub></span>。所以原始 FOC 可直觀寫成：
+          </p>
+          <div class="eq">
+            (1+λ<sub>it</sub>) q<sub>it</sub><sup>I</sup>
+            =
+            β<sub>it</sub>E<sub>t</sub>[(1+λ<sub>i,t+1</sub>)R<sub>i,t+1</sub><sup>K</sup>].
+          </div>
+          <p>兩邊除以今天的資金價值，就得到投影片的 investment Euler equation：</p>
+          <div class="eq">
+            β<sub>it</sub>E<sub>t</sub>[
+            ((1+λ<sub>i,t+1</sub>)/(1+λ<sub>it</sub>))
+            {F<sub>K</sub>−Ψ<sub>K</sub>+(1−δ)(Ψ<sub>I</sub>+P<sub>i,t+1</sub>/(1−τ))}
+            ]
+            =
+            Ψ<sub>I</sub>+P<sub>it</sub>/(1−τ).
+            <span class="label">investment Euler</span>
+          </div>
+
+          <div class="big-idea">
+            <strong>核心不是 λ 的水準，而是跨期比率</strong>
+            <p>
+              若今天特別缺錢，<span class="mono">λ<sub>t</sub></span> 高於預期的
+              <span class="mono">λ<sub>t+1</sub></span>，比率小於 1：未來投資收益折回今天時被打折，
+              企業會把投資延後。融資限制因此扭曲的是「何時投資」。
+            </p>
+          </div>
+
+          <details>
+            <summary>為何 envelope theorem 能省掉政策函數的導數？</summary>
+            <div>
+              <p>
+                嚴格微分 value function 時，最適控制 <span class="mono">K<sub>t</sub><sup>*</sup></span>
+                也會隨 state 改變，看似要帶入 <span class="mono">dK*/dK<sub>t−1</sub></span>。
+                但在 interior optimum，控制變數方向的一階導數已是 0；因此這些間接項消失，只留下 state
+                對 payoff 的直接影響。這正是 envelope theorem。
+              </p>
+            </div>
+          </details>
+
+          <div class="callout assumption">
+            <span class="callout-title">為何要有凸調整成本 Ψ？</span>
+            <p>
+              凸成本讓邊際投資成本隨投資率上升，通常給出唯一、平滑的 interior investment policy，
+              也讓 Euler equation 能從連續變動的投資資料識別調整速度。若沒有調整成本，企業可能瞬間跳到最適資本；
+              若只有固定成本，投資會呈現不連續的 <span class="mono">(S,s)</span> 型政策，標準微分 FOC
+              在不投資區域不再適用。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="debt-euler">
+          <div class="chapter-head">
+            <div class="chapter-no">04</div>
+            <div>
+              <h2>債務 FOC、wedge 與 Euler test</h2>
+              <p>用融資選擇把看不見的 λ 連到可觀察的財務比率。 <span class="page-tag">slides 5–8</span></p>
+            </div>
+          </div>
+
+          <h3>1. 債務的一階條件</h3>
+          <div class="eq">
+            (1+λ<sub>it</sub>)
+            − β<sub>it</sub>[1+(1−τ)i<sub>t</sub>−π<sub>t</sub><sup>e</sup>]
+            E<sub>t</sub>(1+λ<sub>i,t+1</sub>)
+            − γ<sub>it</sub> = 0.
+            <span class="label">debt Euler</span>
+          </div>
+
+          <div class="derive">
+            <div class="derive-step">
+              <span>今天</span>
+              <p>多借一美元，多一美元內部資源，價值 <span class="mono">1+λ<sub>t</sub></span>。</p>
+            </div>
+            <div class="derive-step">
+              <span>明天</span>
+              <p>償還本金與稅後利息；預期通膨降低實質負擔。</p>
+            </div>
+            <div class="derive-step">
+              <span>容量</span>
+              <p>若債務上限綁住，多借一美元會耗用價值 <span class="mono">γ<sub>t</sub></span> 的容量。</p>
+            </div>
+          </div>
+
+          <p>
+            這條 FOC 可以解出今天與明天 <span class="mono">1+λ</span> 的關係，再代回 investment Euler。
+            實證者因此不必直接觀察 shadow price，也能透過債務狀態代理 financing wedge。
+          </p>
+
+          <h3>2. 把 wedge 寫成可估參數</h3>
+          <div class="eq">
+            Λ<sub>it</sub> ≡ 1 − (1+λ<sub>i,t+1</sub>)/(1+λ<sub>it</sub>)
+            = c<sub>0</sub> + c<sub>1</sub>DAR + c<sub>2</sub>DAR²
+            + c<sub>3</sub>COV + c<sub>4</sub>COV².
+          </div>
+          <ul>
+            <li><strong>DAR</strong>（debt-to-assets）捕捉公司靠近債務容量的程度。</li>
+            <li><strong>COV</strong>（interest coverage 的逆向壓力指標）捕捉現金流能否負擔利息。</li>
+            <li>平方項允許 wedge 非線性上升，而不是假設每多一點槓桿都有相同影響。</li>
+          </ul>
+
+          <div class="callout identification">
+            <span class="callout-title">GMM 在問什麼？</span>
+            <p>
+              在正確模型下，Euler residual 對企業在期初已知的 instruments 應不可預測。
+              標準模型設 <span class="mono">Λ=0</span>；受限模型估 <span class="mono">c</span>。
+              檢定 <span class="mono">c<sub>0</sub>=⋯=c<sub>4</sub>=0</span>，就是檢定財務狀況是否系統性地改變跨期投資條件。
+            </p>
+          </div>
+
+          <h3>3. 結果該怎麼讀？</h3>
+          <p>
+            標準 Euler equation 對有、無債信評等的公司都遭拒絕，但無評等公司的偏離更嚴重；
+            加入 DAR/COV 後，這些指標對財務不健康組較重要。直覺上，無評等通常更難進入公開債市，
+            因此內部資金稀缺度與財務狀況更緊密。
+          </p>
+
+          <div class="callout warning">
+            <span class="callout-title">Euler test 的限制</span>
+            <p>
+              拒絕無摩擦模型能告訴我們「某個邊際條件不對」，卻不一定能分辨是發股成本、違約風險、錯價、
+              measurement error 或預期形成造成。它也不直接生成完整槓桿與現金分配。
+              這就是為何講義接著轉向 full dynamic structural model。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="ddw-env">
+          <div class="chapter-head">
+            <div class="chapter-no">05</div>
+            <div>
+              <h2>DDW：完整動態環境</h2>
+              <p>DeAngelo–DeAngelo–Whited 把投資和融資放進同一個決策問題。 <span class="page-tag">slides 9–11</span></p>
+            </div>
+          </div>
+
+          <h3>1. 技術與生產力</h3>
+          <div class="eq-stack">
+            <div class="eq">π(k,z) = zk<sup>θ</sup>, &nbsp;&nbsp; 0 &lt; θ &lt; 1.</div>
+            <div class="eq">ln z′ = ρ ln z + ν′.</div>
+            <div class="eq">I = k′ − (1−δ)k.</div>
+          </div>
+
+          <div class="grid-2">
+            <div class="callout assumption">
+              <span class="callout-title">0 &lt; θ &lt; 1：遞減規模報酬</span>
+              <p>讓邊際資本產出隨 k 下降，避免公司只要生產力為正就想無限擴張；配合折現可使 value 有界並產生有限的最適規模。</p>
+            </div>
+            <div class="callout assumption">
+              <span class="callout-title">AR(1) 生產力</span>
+              <p>ρ 把「好消息會持續多久」濃縮成一個參數。若 |ρ|&lt;1，z 會均值回歸，方便建立 stationary distribution 與模擬長期矩。</p>
+            </div>
+          </div>
+
+          <h3>2. 調整成本同時允許平滑與跳躍</h3>
+          <div class="eq">
+            A(k,k′) =
+            γk · 1{I≠0}
+            + (α/2)(I/k)²k.
+          </div>
+          <div class="grid-2">
+            <div class="card">
+              <h4>固定成本 γk</h4>
+              <p>一旦動工就支付，因此小額投資不划算，產生零投資期與 lumpy investment。</p>
+            </div>
+            <div class="card">
+              <h4>凸成本 (α/2)(I/k)²k</h4>
+              <p>短期內大幅調整很貴，讓投資高峰不會無限尖銳，也控制連續調整速度。</p>
+            </div>
+          </div>
+
+          <h3>3. 為何 state 是 (k,p,z)？</h3>
+          <p>
+            <span class="mono">k</span> 決定生產能力，<span class="mono">z</span> 決定當前與預期獲利；
+            <span class="mono">p</span> 是淨債務：<span class="mono">p&gt;0</span> 表示負債，
+            <span class="mono">p&lt;0</span> 表示持有現金。三者足以預測可行集合與未來 payoff。
+          </p>
+
+          <div class="callout assumption">
+            <span class="callout-title">為何不允許同時持有現金與債務？</span>
+            <p>
+              用 net debt 能少掉一個 state，大幅降低 numerical burden。若借款利率高於現金報酬且沒有交易、
+              covenant 或 maturity motive，同時持有兩者通常被支配。但現實公司可能因流動性、受限現金或債務到期結構
+              同時持有，這是簡化的代價。
+            </p>
+          </div>
+
+          <h3>4. 三種 financing friction</h3>
+          <div class="grid-3">
+            <div class="card">
+              <h4>債務上限 p′ ≤ p̄</h4>
+              <p>風險無虞的 perpetual debt，但可借總量有限。它把 lender side 濃縮成一個 exogenous capacity。</p>
+            </div>
+            <div class="card">
+              <h4>現金持有成本</h4>
+              <p><span class="mono">s(p)=s|p|1{p&lt;0}</span>。若完全沒有 carry cost，公司可能囤積過多現金以永久避開未來限制。</p>
+            </div>
+            <div class="card">
+              <h4>外部股權成本</h4>
+              <p><span class="mono">f(e)=1{e&lt;0}(λ<sub>1</sub>e−½λ<sub>2</sub>e²)</span>。e&lt;0 是發股；線性項給 marginal issuance wedge，二次項讓大額發股更貴。</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="chapter" id="bellman">
+          <div class="chapter-head">
+            <div class="chapter-no">06</div>
+            <div>
+              <h2>Bellman equation：逐項拆解</h2>
+              <p>會計式先決定本期 payout，再由最適化決定政策。 <span class="page-tag">slide 12</span></p>
+            </div>
+          </div>
+
+          <div class="eq">
+            V(k,p,z) =
+            max<sub>k′,p′</sub> {
+            e + f(e) + [1/(1+r)] ∫V(k′,p′,z′)g(dz′|z)
+            }.
+            <span class="label">Bellman</span>
+          </div>
+          <div class="eq">
+            e =
+            (1−τ<sub>c</sub>)π(k,z)
+            + p′ − p[1+r(1−τ<sub>c</sub>)]
+            + δkτ<sub>c</sub>
+            − I − A(k,k′) − s(p).
+            <span class="label">sources and uses</span>
+          </div>
+
+          <ol class="sequence">
+            <li><strong>營運產生稅後獲利：</strong><span class="mono">(1−τ<sub>c</sub>)π(k,z)</span>。</li>
+            <li><strong>調整資產負債表：</strong>提高 <span class="mono">p′</span> 是新借款，增加今天可用資金；舊債 <span class="mono">p</span> 要付稅後利息。</li>
+            <li><strong>資本折舊帶來 tax shield：</strong><span class="mono">δkτ<sub>c</sub></span>。</li>
+            <li><strong>支付真實投資與調整成本：</strong><span class="mono">I+A</span>。</li>
+            <li><strong>剩下的 e：</strong>若正，發給股東；若負，代表外部股權注資，再扣掉 <span class="mono">f(e)</span> 的 issuance cost。</li>
+            <li><strong>加上 continuation value：</strong>今天的 <span class="mono">(k′,p′)</span> 成為明天 state，對所有可能 <span class="mono">z′</span> 積分並折現。</li>
+          </ol>
+
+          <h3>value function 和 policy function 不要混在一起</h3>
+          <div class="grid-2">
+            <div class="card">
+              <h4>V(k,p,z)</h4>
+              <p>從這個 state 出發、此後永遠最適行動時，股東可得到的 present value。它是一個「評分函數」。</p>
+            </div>
+            <div class="card">
+              <h4>{k′(k,p,z), p′(k,p,z)}</h4>
+              <p>在每個 state 真正採取的投資與融資選擇。它們是資料中的行為生成器。</p>
+            </div>
+          </div>
+
+          <details>
+            <summary>為何 value function iteration 會收斂？</summary>
+            <div>
+              <p>
+                在 bounded payoff、可行集合良好、固定轉移法則且折現因子
+                <span class="mono">β=1/(1+r)&lt;1</span> 下，Bellman operator
+                <span class="mono">T</span> 滿足 sup-norm contraction：
+              </p>
+              <div class="eq">||TV−TW||<sub>∞</sub> ≤ β ||V−W||<sub>∞</sub>.</div>
+              <p>
+                直覺是：兩個 continuation-value 猜測的最大差距，往回一期間後至少被 β 縮小。
+                最大化本身不會放大這個差距。Banach fixed-point theorem 因而給唯一 fixed point 與反覆迭代收斂。
+                注意：非凸固定成本可讓 policy 不連續或在少數點多值，但不必然破壞 value operator 的 contraction。
+              </p>
+            </div>
+          </details>
+
+          <div class="callout warning">
+            <span class="callout-title">這裡的「積分」和 BLP 的 heterogeneity integration 不同</span>
+            <p>
+              此處積分的是給定今天 z 後、明天生產力 <span class="mono">z′</span> 的機率分配；
+              它是 continuation value 的 conditional expectation。數值上可做 quadrature、離散化或 simulation，
+              但 Bellman contraction 來自折現，不是來自 Monte Carlo draws。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="debt-capacity">
+          <div class="chapter-head">
+            <div class="chapter-no">07</div>
+            <div>
+              <h2>一美元債務容量今天值多少？</h2>
+              <p>DDW 最重要的 envelope/FOC 關係。 <span class="page-tag">slides 13–14</span></p>
+            </div>
+          </div>
+
+          <p>
+            因為 <span class="mono">p</span> 是「淨債務」，提高 p 代表帳上多一美元負債；
+            所以 <span class="mono">−V<sub>p</sub></span> 是今天多保留一美元 debt capacity 的邊際價值。
+          </p>
+          <div class="eq">
+            −V<sub>p</sub>
+            =
+            [1+(1−τ<sub>c</sub>)r − s·1{p&lt;0}]
+            ( −E V<sub>p′</sub> + λ ).
+            <span class="label">slide notation</span>
+          </div>
+          <p class="mini">
+            投影片把折現納入其期望／multiplier 的記法；從 Bellman 直接推導時，可把括號中的第一項明寫為
+            <span class="mono">−βE[V<sub>p′</sub>]</span>，並一致地正規化 multiplier。
+          </p>
+
+          <h3>推導的兩條線</h3>
+          <div class="grid-2">
+            <div class="card">
+              <h4>Envelope：今天帶入更多 p</h4>
+              <p>
+                sources-and-uses 對 p 的導數是
+                <span class="mono">−[1+(1−τ<sub>c</sub>)r−s1{p&lt;0}]</span>。
+                它是借款成本；若 p&lt;0，則是持有現金少賺的淨報酬。
+              </p>
+            </div>
+            <div class="card">
+              <h4>FOC：今天選更多 p′</h4>
+              <p>
+                新借一美元今天增加 payout，但明天留下較高 p′、降低 continuation value；
+                若 <span class="mono">p′=p̄</span>，鬆綁上限還有 shadow value λ。
+              </p>
+            </div>
+          </div>
+          <p>把 p′ 的 FOC 代入 p 的 envelope，就得到上式。重點是右側含未來的 <span class="mono">V<sub>p′</sub></span>。</p>
+
+          <div class="big-idea">
+            <strong>spare debt capacity 是跨期資產</strong>
+            <p>
+              高 z 公司現在現金流雖好，卻也預期未來資本邊際報酬高、投資需求大。它可能刻意少借，
+              避免明天真正需要資金時已碰到 p̄。constraint 透過「未來可能 binding」影響今天。
+            </p>
+          </div>
+
+          <h3>為何不把現金存到無限多？</h3>
+          <ul>
+            <li>現金的 carry cost <span class="mono">s</span> 使保險不是免費。</li>
+            <li>企業借款利息有稅盾，但現金報酬會承受公司稅，產生持有淨成本。</li>
+            <li>最佳 buffer 在「多一美元安全墊的未來利益」等於「今天 carry cost」處停止。</li>
+          </ul>
+
+          <div class="callout assumption">
+            <span class="callout-title">為何先用 risk-free perpetual debt + exogenous ceiling？</span>
+            <p>
+              它刻意把「可借多少」和「違約定價」分開，先單獨看 capacity option。
+              代價是模型不能內生生成 credit spreads、maturity choice 與 recovery；slide 22 的延伸會補上。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="target">
+          <div class="chapter-head">
+            <div class="chapter-no">08</div>
+            <div>
+              <h2>目標槓桿與「看起來很慢」的調整</h2>
+              <p>投資和融資共同決定，使傳統 SOA 回歸容易誤讀。 <span class="page-tag">slides 15–19</span></p>
+            </div>
+          </div>
+
+          <h3>1. 為何模型沒有傳統 interior target？</h3>
+          <p>
+            DDW 有線性 debt tax benefit，卻沒有 bankruptcy cost。在完全靜態問題裡，
+            邊際稅盾不會隨槓桿下降，最適選擇通常落在 corner，而不是 smooth interior optimum。
+            因此作者用一個<strong>操作性目標</strong>：在 arbitrarily long 的 neutral investment-shock sequence
+            下，槓桿最後收斂到哪裡。
+          </p>
+          <p>
+            一個很有用的 benchmark 是把債務稅盾關掉：此時債務不再有長期收益，卻仍會耗用未來融資容量，
+            所以模型的長期 target leverage 是 0。觀察到的正槓桿可以只是為當期投資暫時借款；
+            這也再次說明「目前槓桿」和「長期目標」不是同一件事。
+          </p>
+
+          <div class="callout warning">
+            <span class="callout-title">「target」不是每期都固定的一條直線</span>
+            <p>
+              動態模型中的 desired leverage 會隨 z、k、現金與未來風險改變。用
+              <span class="mono">ΔLev = η(Lev*−Lev)</span> 估出的小 η，把 target movement、
+              投資融資與純調整成本混在一起。
+            </p>
+          </div>
+
+          <h3>2. 為何強 tradeoff 仍可生成慢 SOA？</h3>
+          <ol class="sequence">
+            <li>正面生產力衝擊提高 desired investment。</li>
+            <li>投資支出先吃掉內部現金；若現金不夠，公司暫時提高 debt。</li>
+            <li>因此 observed leverage 可能先<strong>離 target 更遠</strong>，而不是立刻靠近。</li>
+            <li>之後獲利與資本逐步調整，公司才慢慢償債或重建 buffer。</li>
+          </ol>
+          <p>
+            模型可產生約每年 <span class="mono">1/3</span> 到 <span class="mono">1/12</span> 的傳統 SOA。
+            這個慢速不是證明稅盾／融資摩擦很弱，而是 debt 同時是投資的短期 funding vehicle。
+          </p>
+
+          <div class="callout intuition">
+            <span class="callout-title">辨識語句</span>
+            <p>
+              靜態 tradeoff 問：「槓桿離目標多遠？」動態融資模型問：「公司為了哪些未來狀態，
+              願意今天偏離目標？」後者多了一個 option-value margin。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="smm">
+          <div class="chapter-head">
+            <div class="chapter-no">09</div>
+            <div>
+              <h2>SMM 如何估計完整動態模型？</h2>
+              <p>不是直接把 Bellman equation 丟進回歸，而是讓模型生成可比較的面板。 <span class="page-tag">slides 16–17</span></p>
+            </div>
+          </div>
+
+          <div class="eq">
+            θ̂ = arg min<sub>θ</sub>
+            [m<sub>data</sub>−m<sub>sim</sub>(θ)]′ W
+            [m<sub>data</sub>−m<sub>sim</sub>(θ)].
+          </div>
+
+          <ol class="sequence">
+            <li><strong>猜一組結構參數 θ：</strong>生產、shock persistence/variance、調整成本、現金成本、發股成本與 debt capacity。</li>
+            <li><strong>離散 state space 並解 Bellman：</strong>得到每個 <span class="mono">(k,p,z)</span> 的 <span class="mono">k′</span>、<span class="mono">p′</span>。</li>
+            <li><strong>模擬許多公司與年份：</strong>抽 z shocks，讓政策函數推動 states 前進；丟掉 burn-in 以接近 ergodic distribution。</li>
+            <li><strong>算模擬矩：</strong>投資率分配、零投資比例、現金／槓桿、股權發行頻率、序列相關等。</li>
+            <li><strong>比較資料矩：</strong>更新 θ，直到加權距離最小。</li>
+          </ol>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>參數</th><th>主要經濟角色</th><th>較能辨認它的資料特徵</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>θ</td><td>生產曲率／規模報酬</td><td>獲利與 capital scale 的關係</td></tr>
+                <tr><td>ρ, σ<sub>ν</sub></td><td>衝擊持續度與風險</td><td>獲利的 serial correlation 與波動</td></tr>
+                <tr><td>α</td><td>凸調整成本</td><td>投資率的平滑度與 autocorrelation</td></tr>
+                <tr><td>γ</td><td>固定調整成本</td><td>零投資比例、投資 spikes</td></tr>
+                <tr><td>s</td><td>現金 carry cost</td><td>現金持有量與 buffer 上緣</td></tr>
+                <tr><td>λ<sub>1</sub>, λ<sub>2</sub></td><td>發股邊際與凸成本</td><td>發股頻率、發行規模及其 state dependence</td></tr>
+                <tr><td>p̄/k<sub>ss</sub></td><td>標準化 debt capacity</td><td>槓桿上尾、受限頻率、投資對 cash flow 敏感度</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout identification">
+            <span class="callout-title">為何不把 SOA 當 target moment？</span>
+            <p>
+              不直接匹配 SOA，卻檢查估計模型能否重現 SOA，是一個 over-identification／external validation exercise。
+              若模型只因「硬調 SOA」而成功，就無法證明其投資—融資機制真的解釋資料。
+            </p>
+          </div>
+
+          <details>
+            <summary>simulation noise 會不會讓 objective 亂跳？</summary>
+            <div>
+              <p>
+                會，因此實作常對不同參數使用同一組亂數（common random numbers），讓
+                <span class="mono">m<sub>sim</sub>(θ)</span> 的差異主要來自 θ 而不是抽樣運氣；
+                也會增加模擬公司數／期間、做多次重抽，並報告考慮 simulation error 的標準誤。
+              </p>
+            </div>
+          </details>
+        </section>
+
+        <section class="chapter" id="comparative">
+          <div class="chapter-head">
+            <div class="chapter-no">10</div>
+            <div>
+              <h2>比較靜態：從參數到政策的機制鏈</h2>
+              <p>看到結果方向時，要能說出中間每一環。 <span class="page-tag">slides 20–21</span></p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>改變</th><th>第一步</th><th>融資反應</th><th>結果</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>σ<sub>ν</sub> ↑</td>
+                  <td>未來 funding need 的尾部變大</td>
+                  <td>保留更多 cash/debt capacity</td>
+                  <td>長期 target leverage 較低；但投資衝擊發生時 transitory debt 更大</td>
+                </tr>
+                <tr>
+                  <td>ρ ↑</td>
+                  <td>好／壞生產力狀態更持久</td>
+                  <td>一次 shock 對未來投資需求影響更長</td>
+                  <td>precautionary buffer 增加，target leverage 下降</td>
+                </tr>
+                <tr>
+                  <td>profitability ↑</td>
+                  <td>未來成長機會與內部現金流同時提高</td>
+                  <td>高 marginal value of capacity 鼓勵少借</td>
+                  <td>模型可生成 profitability–leverage 負關係，不必只靠 pecking order</td>
+                </tr>
+                <tr>
+                  <td>γ ↑（更 lumpy）</td>
+                  <td>投資集中在少數大額時點</td>
+                  <td>需要更大的預先 buffer</td>
+                  <td>平時較多現金／低槓桿，投資時債務跳升</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout intuition">
+            <span class="callout-title">共同原理</span>
+            <p>
+              只要某個參數提高「未來好機會到來時缺錢」的損失，今天的 spare capacity 就更有價值。
+              所以波動、持續度、獲利機會與 lumpiness 看似不同，最後都透過
+              <span class="mono">E[−V<sub>p′</sub>]</span> 進入今天政策。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="default">
+          <div class="chapter-head">
+            <div class="chapter-no">11</div>
+            <div>
+              <h2>延伸一：可違約債務與內生 credit spread</h2>
+              <p>把 exogenous ceiling 換成 lender 的 break-even pricing。 <span class="page-tag">slides 22–23</span></p>
+            </div>
+          </div>
+
+          <div class="eq">
+            q(k′,b′,z)b′ =
+            [1/(1+r)] E<sub>z′|z</sub>[
+            1{no default}·b′ + 1{default}·ℛ(k′,z′)
+            ].
+          </div>
+          <p>
+            左邊是今天拿到的借款 proceeds；右邊是 lender 明天收到的本金或 recovery 的期望現值。
+            假設競爭、risk-neutral lenders，就有 zero-profit pricing。
+          </p>
+
+          <h3>為何它像一個「soft collateral constraint」？</h3>
+          <ol class="sequence">
+            <li>b′ 增加，提高需要償付的 face value。</li>
+            <li>更多低 z′ 狀態會讓 equity value 降到 0，default set 擴大。</li>
+            <li>預期 repayment 下降，所以每一美元面額的價格 q 下降、spread 上升。</li>
+            <li>企業新增債務的邊際 proceeds 是 <span class="mono">q+b′q<sub>b</sub></span>，低於平均 q。</li>
+            <li>在某處邊際資金太少，企業自願停止加槓桿，不需要一條硬 p̄。</li>
+          </ol>
+
+          <div class="callout assumption">
+            <span class="callout-title">哪些假設讓定價式成立？</span>
+            <p>
+              limited liability 決定 default boundary；recovery 小於 face value 才產生損失；
+              risk-neutral competitive lenders 讓價格等於折現期望 repayment。若 lender 風險趨避或有 aggregate risk premium，
+              q 還會包含 stochastic discount factor，spread 不能全解讀成 expected default loss。
+            </p>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <h4>Hennessy–Whited (2007)</h4>
+              <p>重心放在 idiosyncratic productivity 與大小公司 cross-section，估 costly external finance。</p>
+            </div>
+            <div class="card">
+              <h4>Begenau–Salomão (2019)</h4>
+              <p>加入 aggregate productivity，研究企業融資如何隨 business cycle 改變。</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="chapter" id="misvaluation">
+          <div class="chapter-head">
+            <div class="chapter-no">12</div>
+            <div>
+              <h2>延伸二：股權錯價與 market timing</h2>
+              <p>當一美元外部 equity 不等於一美元 fundamentals。 <span class="page-tag">slides 24–25</span></p>
+            </div>
+          </div>
+
+          <div class="eq">
+            ln ψ′ = μ<sub>ψ</sub> + ρ<sub>zψ</sub>ln z + ρ<sub>ψ</sub>ln ψ + ε<sub>ψ</sub>,
+            &nbsp;&nbsp; ε<sub>ψ</sub> ~ i.i.d. N(0,σ<sub>ψ</sub>²).
+          </div>
+          <p><span class="mono">ψ&gt;1</span> 是 overvaluation；<span class="mono">ψ&lt;1</span> 是 undervaluation。</p>
+
+          <div class="eq-stack">
+            <div class="eq">
+              V(z,φ,K,C) =
+              max<sub>K′,C′,E</sub> (1−τ<sub>d</sub>)D
+              + βE[(f′/f)V(z′,φ′,K′,C′)].
+            </div>
+            <div class="eq">
+              f′/f =
+              [V−(1−τ<sub>d</sub>)D] /
+              [V−(1−τ<sub>d</sub>)D+E/ψ].
+              <span class="label">dilution factor</span>
+            </div>
+          </div>
+          <p class="mini">
+            投影片在 value-function state 中寫 φ、在錯價過程與 dilution 中寫 ψ；經濟角色都是讓市場股權價格偏離 fundamentals 的 state。
+          </p>
+
+          <h3>dilution factor 怎麼看？</h3>
+          <p>
+            公司發行市場價值為 E 的新股。若 ψ 高，同樣籌到 E 只需讓渡較少 fundamental ownership，
+            因為分母中的 <span class="mono">E/ψ</span> 變小，所以既有股東保留的比例 <span class="mono">f′/f</span> 較高。
+          </p>
+
+          <div class="grid-2">
+            <div class="card">
+              <h4>Overvalued：ψ &gt; 1</h4>
+              <p>外部 equity 便宜 → 發股、投資、存現金。公司可利用錯價替未來建立 buffer。</p>
+            </div>
+            <div class="card">
+              <h4>Undervalued：ψ &lt; 1</h4>
+              <p>發股會嚴重 dilution → 偏向 repurchase；但回購耗掉資金，可能 crowd out 真實投資。</p>
+            </div>
+          </div>
+
+          <div class="callout assumption">
+            <span class="callout-title">為何把 ψ 設成外生持續過程？</span>
+            <p>
+              這讓模型能分離 productivity shock 和 mispricing shock，清楚量化 market timing。
+              但它沒有解釋投資人需求、資訊或套利限制如何生成 ψ；若 ψ 與未觀察到的 fundamentals 混在一起，
+              估計會把成長機會誤當錯價。後續 demand-based 模型正是在補這個 microfoundation。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="agency">
+          <div class="chapter-head">
+            <div class="chapter-no">13</div>
+            <div>
+              <h2>延伸三：代理衝突</h2>
+              <p>政策由 manager 的 objective 產生，firm value 反而成為衍生物。 <span class="page-tag">slides 26–27</span></p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <h4>Nikolov–Whited (2014)</h4>
+              <p class="mono">u = (α+s)εk<sup>θ</sup> + sc(1+r) + βd.</p>
+              <p>profit share、equity stake 與 diversion 讓管理者從規模、現金與 payout 得到不同私人利益。</p>
+            </div>
+            <div class="card">
+              <h4>Glover–Levine (2015)</h4>
+              <p>把 stock、options、salary 放入 manager consumption，再用 CRRA utility 評價風險。</p>
+            </div>
+          </div>
+
+          <div class="eq-stack">
+            <div class="eq">
+              U(k,c,ε) = max<sub>k′,c′</sub> {
+              u + [1/(1+r)]E[U(k′,c′,ε′)]
+              }.
+              <span class="label">manager Bellman</span>
+            </div>
+            <div class="eq">
+              V = d + [1/(1+r)]E[V′],
+              &nbsp;沿著 manager 選出的 policy 評價。
+              <span class="label">firm value</span>
+            </div>
+          </div>
+
+          <div class="big-idea">
+            <strong>控制權改變了方程式的順序</strong>
+            <p>
+              無代理問題時，先 maximize shareholder V 再得到 policy；有代理問題時，先 maximize manager U
+              得到 policy，股東 V 只能沿該 policy 計算。兩個 value function 的 policy 未必相同，差距就是 agency distortion。
+            </p>
+          </div>
+
+          <div class="callout identification">
+            <span class="callout-title">最大的實證難題：incentive 多半看不見</span>
+            <p>
+              薪酬合約可觀察，但 diversion、private benefit、manager beliefs 不易觀察。
+              只用公司投資和現金矩可能有 observational equivalence：高現金可來自 precautionary motive，也可來自 empire building。
+              新研究用 earnings forecasts、forecast errors 或管理者主觀預測來額外辨認 beliefs 與私人誘因。
+            </p>
+          </div>
+
+          <div class="callout assumption">
+            <span class="callout-title">為何 Glover–Levine 需要 CRRA？</span>
+            <p>
+              stock/options 讓 manager 的財富暴露於公司風險；若 utility 線性，風險本身沒有代價，
+              很難分析薪酬 convexity 如何改變投資。CRRA 同時提供 risk aversion 與 wealth scaling，
+              但也要求研究者辨認或校準 curvature。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="banks">
+          <div class="chapter-head">
+            <div class="chapter-no">14</div>
+            <div>
+              <h2>從公司 debt capacity 到銀行 capital buffer</h2>
+              <p>同一個動態骨架，只需重新命名 state 與 constraint。 <span class="page-tag">slides 28–30</span></p>
+            </div>
+          </div>
+
+          <div class="eq">
+            L = B + E, &nbsp;&nbsp; E ≥ γL.
+          </div>
+          <p>
+            銀行資產是 loans <span class="mono">L</span>，由短期債／存款
+            <span class="mono">B</span> 與 equity <span class="mono">E</span> 融資。
+            法定資本比率取代一般公司的 debt ceiling。
+          </p>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>DDW 公司</th><th>銀行模型</th><th>共同機制</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>capital k</td><td>loan book L</td><td>今日選擇影響明日賺錢的資產存量</td></tr>
+                <tr><td>investment I</td><td>new lending N</td><td>調整資產規模的 flow</td></tr>
+                <tr><td>debt/cash/equity</td><td>deposits B / equity E</td><td>資產負債表融資組合</td></tr>
+                <tr><td>p ≤ p̄</td><td>E ≥ γL</td><td>外部可行集合的硬邊界</td></tr>
+                <tr><td>costly equity</td><td>D ≥ 0，不能臨時發股</td><td>壞狀態下無法無成本補資本</td></tr>
+                <tr><td>spare debt capacity</td><td>excess capital buffer</td><td>為未來好機會／壞衝擊預留空間</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>為何銀行會持有超過法定最低的資本？</h3>
+          <ol class="sequence">
+            <li>今天把 E/L 壓在 γ，能提高 payout 或多放款。</li>
+            <li>但明天若 loan loss 降低 E，或好放款機會提高 L，資本限制就綁住。</li>
+            <li>臨時發股若昂貴／不可能，銀行只能被迫縮貸。</li>
+            <li>所以今天持有 buffer，等於購買明天不必 fire-sale 或 credit crunch 的保險。</li>
+          </ol>
+
+          <div class="callout assumption">
+            <span class="callout-title">為何設 D ≥ 0（equity issuance shutdown）？</span>
+            <p>
+              若銀行任何時點都能以 fair price 即刻發股，capital regulation 只是一個會計條件，buffer 幾乎沒有價值。
+              禁止負 dividend 是用最強的形式創造 recapitalization friction；更寫實版本可改成 fixed/convex issuance cost。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="saving">
+          <div class="chapter-head">
+            <div class="chapter-no">15</div>
+            <div>
+              <h2>兩種「預防性儲蓄」不要混為一談</h2>
+              <p>企業的 first-order capacity motive 對上家戶的 prudence motive。 <span class="page-tag">slides 31–37</span></p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <h4>DDW：融資容量保險</h4>
+              <p>owner risk-neutral 仍會存現金，因為未來若碰到有利投資卻缺資金，會直接失去正 NPV project。這是 constraint 造成的 first-order loss。</p>
+            </div>
+            <div class="card">
+              <h4>Kaboski–Townsend：消費平滑</h4>
+              <p>家戶有 concave u(c)，收入風險提高低消費狀態的 marginal utility；在 incomplete markets 下用儲蓄自我保險，是 prudence 的 second-order small-risk effect。</p>
+            </div>
+          </div>
+
+          <h3>Kaboski–Townsend setup</h3>
+          <div class="eq-stack">
+            <div class="eq">
+              Y<sub>t+1</sub> =
+              U<sub>t+1</sub>(P<sub>t</sub>GN<sub>t+1</sub> + RD<sub>t</sub>I<sub>t</sub><sup>*</sup>),
+              &nbsp;&nbsp;
+              L<sub>t+1</sub> = Y<sub>t+1</sub> + S<sub>t</sub>(1+r).
+            </div>
+            <div class="eq">
+              max E<sub>0</sub>Σβ<sup>t</sup>u(c<sub>t</sub>)
+              &nbsp;s.t.&nbsp;
+              c<sub>t</sub> + S<sub>t</sub> + D<sub>t</sub>I<sub>t</sub><sup>*</sup> ≤ L<sub>t</sub>,
+              &nbsp; S<sub>t</sub> ≥ s̲P<sub>t</sub>.
+            </div>
+          </div>
+          <p>
+            <span class="mono">D∈{0,1}</span> 表示是否做一個不可切割、規模
+            <span class="mono">I*=i*P</span> 的 project，且 <span class="mono">R&gt;r</span>。
+            儲蓄 S 同時提供明天消費保險，也幫家戶跨過投資門檻。
+          </p>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>假設</th><th>為什麼需要</th><th>拿掉後會怎樣</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>u(c) concave</td><td>低消費狀態的 marginal utility 高，產生 consumption smoothing</td><td>線性效用下，純消費風險不會帶來 prudence motive</td></tr>
+                <tr><td>incomplete insurance</td><td>家戶無法把 idiosyncratic risk 完全轉給市場</td><td>完全保險下，自我儲蓄不必承擔保險功能</td></tr>
+                <tr><td>S ≥ s̲P</td><td>限制 borrowing，避免用未來收入無限平滑</td><td>若能按 r 無限借款，lumpy project 較不需事前累積現金</td></tr>
+                <tr><td>D∈{0,1}</td><td>建立 indivisible investment threshold</td><td>完全可切割時，儲蓄與投資反應較平滑，門檻機制消失</td></tr>
+                <tr><td>R&gt;r</td><td>project 有正 NPV，值得為它累積資金</td><td>若 R≤r，沒有額外投資動機，D 通常為 0</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Boar–Gorea–Midrigan：把企業家與消費者合為一人</h3>
+          <div class="eq-stack">
+            <div class="eq">
+              V(m,z) = max{V<sup>w</sup>,V<sup>e</sup>}, &nbsp;&nbsp;
+              V<sup>e</sup> = max<sub>c,a′,k′,l′</sub>
+              c<sup>1−ϑ</sup>/(1−ϑ) + βE[V(m′,z′)].
+            </div>
+            <div class="eq">
+              c+a′=m, &nbsp; k′=a′+b′, &nbsp; b′≤ξk′,
+              &nbsp; m′=φW+(1+r)a′+π′.
+            </div>
+            <div class="eq">
+              π′ =
+              z′ε′(k′<sup>α</sup>l′<sup>1−α</sup>)<sup>η</sup>
+              − Wl′ − Rk′, &nbsp; R=r+δ.
+            </div>
+          </div>
+          <p>
+            每期先選 worker 或 entrepreneur。企業家財富集中在自己公司，而且
+            <span class="mono">k′,l′</span> 在 <span class="mono">(z′,ε′)</span> 實現前決定，
+            因此經營風險不能事後撤銷；消費、投資、槓桿和 occupational choice 必須一起解。
+          </p>
+
+          <div class="callout assumption">
+            <span class="callout-title">為何 shocks 用 mixture of normals、而且有 fat tails？</span>
+            <p>
+              私人企業 profit share 在資料中非常 volatile，單一常態往往低估極端結果；
+              fat tails 會放大集中持股的 downside risk，進而提高 precautionary wealth。
+              若錯用 thin tails，模型可能為了匹配高現金而誤估 borrowing constraint 或 risk aversion。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="identification">
+          <div class="chapter-head">
+            <div class="chapter-no">16</div>
+            <div>
+              <h2>結構模型如何和準實驗互補？</h2>
+              <p>一邊給外生變異，一邊把 treatment effect 翻成 primitive。 <span class="page-tag">slides 33–34</span></p>
+            </div>
+          </div>
+
+          <div class="bridge">
+            <div class="bridge-side">
+              <h4>Reduced form / quasi-experiment</h4>
+              <p>用政策變動、資格門檻或 treated × post 找到較可信的 causal effect，但未必知道是哪個 state 或 shadow value 在移動。</p>
+            </div>
+            <div class="bridge-arrow">⇄</div>
+            <div class="bridge-side">
+              <h4>Structural dynamic model</h4>
+              <p>把 treatment 映射成 borrowing limit、collateral value 或資金成本，能做 counterfactual，但結果依賴模型結構。</p>
+            </div>
+          </div>
+
+          <h3>兩種結合法</h3>
+          <div class="grid-2">
+            <div class="card">
+              <h4>A. 外部驗證與參數映射</h4>
+              <p>先用未受政策影響的資料估模型，再把實際 credit expansion 餵進模型；比較模擬 treatment effect 和實際 reduced-form effect。</p>
+            </div>
+            <div class="card">
+              <h4>B. 直接把 treatment effect 當 moment</h4>
+              <p>在 SMM/GMM objective 中加入政策前後、處理控制組差異。外生政策變異可特別辨認 constraint parameter。</p>
+            </div>
+          </div>
+
+          <p>
+            Kaboski–Townsend 用 Thai Million Baht credit expansion 做模型驗證；
+            Li–Whited–Wu 用反 recharacterization laws 改變 collateral rights，觀察 treated firms 的槓桿反應，
+            再讓模型恢復 borrowing constraint 的移動。
+          </p>
+
+          <div class="callout identification">
+            <span class="callout-title">為何這比只匹配平均槓桿更有識別力？</span>
+            <p>
+              平均槓桿可由 debt capacity、現金成本、發股成本或 productivity risk 多種組合產生。
+              一個只改變 collateral enforceability 的外生 shock，則對 debt capacity 有定向變異；
+              模型必須同時匹配 level 與政策衝擊的 response，observational equivalence 會大幅縮小。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="labor">
+          <div class="chapter-head">
+            <div class="chapter-no">17</div>
+            <div>
+              <h2>槓桿不只融資：也改變工資談判</h2>
+              <p>Michaels–Page–Whited 將 labor 與 defaultable debt 加入 DDW。 <span class="page-tag">slides 38–39</span></p>
+            </div>
+          </div>
+
+          <div class="eq-stack">
+            <div class="eq">
+              P(k,n,b,z) = max<sub>k′,n′,b′</sub>
+              D̂ + qE[P(k′,n′,b′,z′)].
+            </div>
+            <div class="eq">
+              output = z′(k′)<sup>α</sup>(n′)<sup>β</sup>,
+              &nbsp; default if z′ &lt; ẑ(k′,n′,b′).
+            </div>
+            <div class="eq">
+              Hiring cost = c<sub>n</sub>(n′−n)1{n′−n&gt;0}.
+            </div>
+          </div>
+
+          <div class="eq">
+            (1−ω)W/n′ + ω ∂W/∂n′
+            =
+            ωqE[∂a′/∂n′ | z′≥ẑ]
+            + (1−ω)ℓ.
+            <span class="label">Stole–Zwiebel bargain</span>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>方程式部分</th><th>含義</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><span class="mono">(1−ω)W/n′ + ωW<sub>n</sub></span></td><td>平均工資和多雇一人的 wage-bill effect 組成的 marginal wage。</td></tr>
+                <tr><td><span class="mono">ωqE[a′<sub>n</sub>|survive]</span></td><td>企業存活時，worker 對 continuation surplus 的邊際貢獻。</td></tr>
+                <tr><td><span class="mono">(1−ω)ℓ</span></td><td>worker 的 outside option。</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>debt channel 的完整箭頭</h3>
+          <div class="big-idea">
+            <strong>b′ ↑ → ẑ ↑ → survival states 減少 → expected worker contribution ↓ → bargained W ↓</strong>
+            <p>
+              更多債務讓公司在更多低生產力狀態違約；worker 能分享 continuation surplus 的狀態變少，
+              因而降低談判工資。債務除了補投資資金，也成為改變 stakeholder bargaining position 的策略工具。
+            </p>
+          </div>
+
+          <div class="callout assumption">
+            <span class="callout-title">為何需要 hiring cost 與 Stole–Zwiebel bargaining？</span>
+            <p>
+              hiring cost 讓 employment 成為慢動的 state，當期雇用會影響未來 surplus；
+              Stole–Zwiebel 假設逐一和邊際員工談判，使企業規模影響 marginal wage bill。
+              若工資完全競爭且外生等於 marginal product，槓桿就沒有這條 bargaining channel。
+            </p>
+          </div>
+        </section>
+
+        <section class="chapter" id="assumptions">
+          <div class="chapter-head">
+            <div class="chapter-no">18</div>
+            <div>
+              <h2>假設總表：需要它做什麼、代價是什麼</h2>
+              <p>讀任何 dynamic corporate finance paper 都可用這張表診斷。</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>假設</th><th>模型中的工作</th><th>放寬後最先改變哪裡</th><th>應留意的解讀風險</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>risk-neutral owners</td><td>隔離純 financing/investment motive</td><td>objective 改成 concave utility 或 SDF</td><td>cash buffer 不含 shareholder consumption insurance</td></tr>
+                <tr><td>0&lt;θ&lt;1</td><td>遞減邊際產出、有限規模</td><td>MPK 與 value boundedness</td><td>可能把組織資本／市場勢力濃縮成曲率</td></tr>
+                <tr><td>AR(1), |ρ|&lt;1</td><td>低維 Markov、均值回歸</td><td>conditional expectation 與 stationary distribution</td><td>忽略 regime shifts、long memory</td></tr>
+                <tr><td>convex adjustment cost</td><td>平滑且常為唯一的投資政策</td><td>investment FOC</td><td>也可能吸收 measurement error 或 time aggregation</td></tr>
+                <tr><td>fixed adjustment cost</td><td>零投資與 lumpiness</td><td>policy 不連續，需 global maximization</td><td>標準局部 Euler condition 不覆蓋所有 state</td></tr>
+                <tr><td>p′≤p̄</td><td>外生 debt capacity</td><td>KKT multiplier、可行集合</td><td>不能解釋 spread 與 lender response</td></tr>
+                <tr><td>cash carry cost s</td><td>避免無限 hoarding、生成 interior buffer</td><td>p&lt;0 時的 envelope</td><td>s 可能混合稅、agency、流動性回報</td></tr>
+                <tr><td>costly external equity</td><td>讓 internal funds 有 shadow value</td><td>payout kink 與 financing policy</td><td>估計成本可能吸收 adverse selection 等多種摩擦</td></tr>
+                <tr><td>risk-free lenders</td><td>債務成本固定、隔離 capacity</td><td>改成 q(k′,b′,z)</td><td>無法生成 default spread</td></tr>
+                <tr><td>competitive risk-neutral lenders</td><td>q 等於 expected repayment PV</td><td>debt-pricing equation</td><td>spread 不含 aggregate risk premium</td></tr>
+                <tr><td>manager controls policy</td><td>把 agency incentive 放進 choice</td><td>先解 U，再沿 policy 算 V</td><td>latent incentives 容易與 financing frictions 混淆</td></tr>
+                <tr><td>investment before shocks</td><td>建立不可撤銷的企業家風險</td><td>E[V] 的 timing</td><td>若現實可快速調整，模型會高估 exposure</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>四問診斷法</h3>
+          <div class="checklist">
+            <div class="check"><strong>State 足夠嗎？</strong> 給定 state 後，歷史還預測未來嗎？</div>
+            <div class="check"><strong>Constraint 做什麼？</strong> 它改變可行集合，還是改變價格？</div>
+            <div class="check"><strong>哪個 margin 在辨認？</strong> level、頻率、波動、持續度或 treatment response？</div>
+            <div class="check"><strong>有 observational equivalence 嗎？</strong> 另一種摩擦能否產生同樣矩？</div>
+            <div class="check"><strong>Timing 對嗎？</strong> 控制是在 shock 前還是後選？</div>
+            <div class="check"><strong>Policy 是否平滑？</strong> 若有 fixed cost/kink，只看 FOC 可能漏掉 global choice。</div>
+          </div>
+        </section>
+
+        <section class="chapter" id="cheatsheet">
+          <div class="chapter-head">
+            <div class="chapter-no">19</div>
+            <div>
+              <h2>最後速查表</h2>
+              <p>把整份講義壓縮成可以帶去討論課的版本。</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>看到這條式子</th><th>立刻想到</th><th>經濟問題</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><span class="mono">(1+λ<sub>t+1</sub>)/(1+λ<sub>t</sub>)</span></td><td>跨期 internal-funds shadow price</td><td>融資限制如何改變投資 timing？</td></tr>
+                <tr><td><span class="mono">V=max{current+βEV′}</span></td><td>Bellman recursion</td><td>今天政策如何改變未來 state？</td></tr>
+                <tr><td><span class="mono">−V<sub>p</sub></span></td><td>spare debt capacity 的邊際價值</td><td>為何 constraint slack 仍影響今天？</td></tr>
+                <tr><td><span class="mono">m<sub>data</sub>−m<sub>sim</sub>(θ)</span></td><td>SMM</td><td>哪些動態矩在辨認哪個 primitive？</td></tr>
+                <tr><td><span class="mono">qb′=βE[repayment]</span></td><td>endogenous debt price</td><td>槓桿如何內生提高 spread？</td></tr>
+                <tr><td><span class="mono">E/ψ</span></td><td>發股的 fundamental dilution</td><td>錯價如何造成 market timing 與 real investment？</td></tr>
+                <tr><td><span class="mono">U-manager → policy → V-firm</span></td><td>agency</td><td>誰的 objective 真正在控制政策？</td></tr>
+                <tr><td><span class="mono">E≥γL</span></td><td>bank capital constraint</td><td>為何銀行持有 excess buffer？</td></tr>
+                <tr><td><span class="mono">D∈{0,1}, R&gt;r</span></td><td>lumpy positive-NPV project</td><td>儲蓄是消費保險還是投資門檻？</td></tr>
+                <tr><td><span class="mono">b′↑⇒ẑ↑⇒W↓</span></td><td>strategic debt</td><td>槓桿如何改變 stakeholder bargaining？</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="big-idea">
+            <strong>全篇最值得帶走的一句話</strong>
+            <p>
+              Dynamic firm finance 的中心不是「公司今天借多少」，而是「今天的資產負債表，
+              如何改變公司在明天不同狀態下可採取的行動」。所有 cash buffer、slow leverage adjustment、
+              credit spread、bank capital 與 strategic debt，都是這個 continuation-value 邏輯的不同版本。
+            </p>
+          </div>
+
+          <details>
+            <summary>討論課可直接使用的 8 個檢查問題</summary>
+            <div>
+              <ol>
+                <li>模型裡誰最大化什麼 objective？</li>
+                <li>進入本期時哪些變數已給定，哪些能選？</li>
+                <li>哪條會計式把 real side 和 financial side 接起來？</li>
+                <li>哪個 constraint 產生 shadow price？</li>
+                <li>今天 slack 的 constraint 為何仍可能重要？</li>
+                <li>哪些 moments 分別辨認 shock、technology 與 financing cost？</li>
+                <li>模型的 target 是固定參數，還是 state-dependent policy？</li>
+                <li>若拿掉最關鍵假設，主要 empirical prediction 是否還存在？</li>
+              </ol>
+            </div>
+          </details>
+        </section>
+      </main>
+    </div>
+
+    <footer>
+      本筆記依據 Yufeng Wu 的〈Dynamic Models of Firm Financing〉講義整理；公式沿用講義符號，
+      並補上推導橋接、假設用途與可能的識別限制。建議遇到 timing 或下標疑問時對照原 PDF。
+    </footer>
+  </div>
+
+  <script>
+    (() => {
+      const progress = document.getElementById("reading-progress");
+      const tocLinks = [...document.querySelectorAll(".toc a")];
+      const sections = tocLinks
+        .map((link) => document.querySelector(link.getAttribute("href")))
+        .filter(Boolean);
+
+      const updateProgress = () => {
+        const root = document.documentElement;
+        const max = root.scrollHeight - root.clientHeight;
+        const ratio = max > 0 ? root.scrollTop / max : 0;
+        progress.style.width = `${Math.min(100, Math.max(0, ratio * 100))}%`;
+      };
+
+      const updateActive = () => {
+        const marker = window.scrollY + 125;
+        let active = sections[0];
+        for (const section of sections) {
+          if (section.offsetTop <= marker) active = section;
+        }
+        tocLinks.forEach((link) => {
+          link.classList.toggle(
+            "active",
+            active && link.getAttribute("href") === `#${active.id}`
+          );
+        });
+      };
+
+      const onScroll = () => {
+        updateProgress();
+        updateActive();
+      };
+
+      document.getElementById("expand-all").addEventListener("click", () => {
+        document.querySelectorAll("details").forEach((item) => {
+          item.open = true;
+        });
+      });
+
+      document.getElementById("collapse-all").addEventListener("click", () => {
+        document.querySelectorAll("details").forEach((item) => {
+          item.open = false;
+        });
+      });
+
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", onScroll);
+      onScroll();
+    })();
+  </script>
+</body>
+</html>
